@@ -3,6 +3,29 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --color-white: #fbfbfb;
+  --color-black: #2f2f2f;
+  --color-black-400: #4d4d4d;
+  --color-black-200: #8e8e8e;
+
+  --color-bg-secondary: #f5f5f5;
+
+  --color-blue: #2E2EF8;
+  --color-blue-400: #8A8AF9;
+
+  --color-magent: #EB449C;
+  --color-magent-400: #F296C7;
+  --color-magent-200: #F9E7F1;
+
+  --color-purple: #783FD0;
+  --color-purple-400: #B394E3;
+
+  --color-red-500: #ef4444;
+  --color-gray-200: #e4e4e7;
+  --color-green-500: #22c55e;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
