@@ -3,10 +3,12 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -28,19 +30,25 @@ export function Header() {
         <nav className="hidden md:flex items-center gap-8">
           <Link
             href="/acerca-de"
-            className="relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-magent after:transition-all after:duration-300 hover:after:w-full"
+            className={`relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-magent after:transition-all after:duration-300 ${
+              pathname === "/acerca-de" ? "after:w-full" : "after:w-0 hover:after:w-full"
+            }`}
           >
             Acerca de
           </Link>
           <Link
             href="/educacion"
-            className="relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-magent after:transition-all after:duration-300 hover:after:w-full"
+            className={`relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-magent after:transition-all after:duration-300 ${
+              pathname === "/educacion" ? "after:w-full" : "after:w-0 hover:after:w-full"
+            }`}
           >
             Educación
           </Link>
           <Link
             href="/contacto"
-            className="relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-magent after:transition-all after:duration-300 hover:after:w-full"
+            className={`relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-magent after:transition-all after:duration-300 ${
+              pathname === "/contacto" ? "after:w-full" : "after:w-0 hover:after:w-full"
+            }`}
           >
             Contacto
           </Link>
@@ -92,21 +100,27 @@ export function Header() {
           <Link
             href="/acerca-de"
             onClick={toggleMenu}
-            className="text-white text-xl hover:text-magent transition-colors"
+            className={`text-xl transition-colors ${
+              pathname === "/acerca-de" ? "text-magent" : "text-white hover:text-magent"
+            }`}
           >
             Acerca de
           </Link>
           <Link
             href="/educacion"
             onClick={toggleMenu}
-            className="text-white text-xl hover:text-magent transition-colors"
+            className={`text-xl transition-colors ${
+              pathname === "/educacion" ? "text-magent" : "text-white hover:text-magent"
+            }`}
           >
             Educación
           </Link>
           <Link
             href="/contacto"
             onClick={toggleMenu}
-            className="text-white text-xl hover:text-magent transition-colors"
+            className={`text-xl transition-colors ${
+              pathname === "/contacto" ? "text-magent" : "text-white hover:text-magent"
+            }`}
           >
             Contacto
           </Link>

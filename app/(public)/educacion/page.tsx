@@ -7,13 +7,13 @@ export default function AboutUs() {
   return (
     <div className="flex flex-col w-full">
       <section className="relative w-full min-h-screen flex flex-col md:flex-row items-center justify-between gap-3 p-6 md:px-[12%] bg-linear-to-r from-blue via-purple to-magent">
-        <div className="flex flex-col gap-5 md:gap-10 z-10 md:mt-24">
+        <div className="flex flex-col gap-5 md:gap-10 z-20 md:mt-24">
           <h1 className="font-bold text-white text-4xl md:text-5xl">
             Manual de ejercicio terapéutico
           </h1>
           <p className="text-white text-2xl font-medium max-w-lg">
-            Descarga el nuevo manual de ejercicio 
-            terapéutico para mujeres con diagnóstico 
+            Descarga el nuevo manual de ejercicio
+            terapéutico para mujeres con diagnóstico
             de cáncer de mama.
           </p>
           <Button className="w-fit px-16 py-5 text-xl">
@@ -29,11 +29,10 @@ export default function AboutUs() {
         />
         <Image
           src={"/brand/element-onocoactivate.svg"}
-          alt="Icono Oncoactivate"
+          alt="Elemento decorativo Oncoactivate"
           fill
-          className="object-cover z-10"
+          className="absolute inset-0 object-cover z-10"
         />
-        
       </section>
       <section className="relative w-full flex flex-col md:flex-row items-center justify-between gap-10 p-6 md:pt-32 md:px-[10%]">
         <div className="flex flex-col">
