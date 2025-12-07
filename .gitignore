@@ -1,24 +1,86 @@
-# Nuxt dev/build outputs
-.output
-.data
-.nuxt
-.nitro
-.cache
-dist
+# ============================
+# Next.js build output
+# ============================
+.next/
+out/
+build/
 
+# Serverless output (Vercel, Netlify, etc.)
+.vercel/
+.netlify/
+
+# ============================
 # Node dependencies
-node_modules
+# ============================
+node_modules/
 
-# Logs
-logs
-*.log
-
-# Misc
-.DS_Store
-.fleet
-.idea
-
-# Local env files
+# ============================
+# Environment variables
+# ============================
 .env
-.env.*
-!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ============================
+# Logs
+# ============================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun-debug.log*
+
+# ============================
+# System files
+# ============================
+.DS_Store
+Thumbs.db
+
+# ============================
+# Editor files
+# ============================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+
+# ============================
+# TypeScript
+# ============================
+*.tsbuildinfo
+
+# ============================
+# Testing
+# ============================
+coverage/
+.nyc_output/
+
+# ============================
+# Next/Image cache
+# ============================
+.next/cache/
+
+# ============================
+# Storybook
+# ============================
+.storybook-out/
+storybook-static/
+
+# ============================
+# Turborepo / monorepo caches
+# ============================
+turbo/
+dist/
+
+# ============================
+# Lint caches
+# ============================
+.eslintcache
+
+# ============================
+# Local dev data
+# ============================
+*.local.db
