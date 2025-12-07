@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full">
       <section className="relative w-full h-screen flex items-center justify-start px-6 md:px-[12%]">
-        <div className="flex flex-col gap-5 md:gap-10 z-10 md:mt-24">
+        <div className="flex flex-col gap-5 md:gap-10 z-20 md:mt-24">
           <h1 className="font-bold text-white text-4xl md:text-5xl">
             Bienvenidas a Oncoactívate
           </h1>
@@ -18,12 +18,18 @@ export default function Home() {
             Regístrate
           </Button>
         </div>
-        <div className="absolute inset-0 bg-black/50" />
         <Image
           src={"/img/woman-hero-desktop.jpg"}
           alt="Mujer ejercitandose"
           fill
           className="object-cover -z-10"
+        />
+        <div className="absolute inset-0 bg-black/50 z-0" />
+        <Image
+          src={"/brand/element-onocoactivate.svg"}
+          alt="Elemento decorativo Oncoactivate"
+          fill
+          className="absolute inset-0 object-cover z-10"
         />
       </section>
       <section className="relative w-full flex items-center justify-around flex-wrap gap-10 py-20 px-6 md:px-[12%]">
