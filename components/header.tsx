@@ -16,7 +16,10 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 flex items-center justify-center w-full bg-blue px-6 h-16 z-50">
       <div className="flex w-full md:w-[85%] items-center justify-between h-full">
         <div className="flex items-center h-full">
-          <Link href="/" className="flex items-center gap-2 relative h-full w-40 md:w-60">
+          <Link
+            href="/"
+            className="flex items-center gap-2 relative h-full w-40 md:w-60"
+          >
             <Image
               src={"/brand/imagotype-landing.png"}
               alt="Logo Oncoactive"
@@ -31,7 +34,9 @@ export function Header() {
           <Link
             href="/acerca-de"
             className={`relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-magent after:transition-all after:duration-300 ${
-              pathname === "/acerca-de" ? "after:w-full" : "after:w-0 hover:after:w-full"
+              pathname === "/acerca-de"
+                ? "after:w-full"
+                : "after:w-0 hover:after:w-full"
             }`}
           >
             Acerca de
@@ -39,7 +44,9 @@ export function Header() {
           <Link
             href="/educacion"
             className={`relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-magent after:transition-all after:duration-300 ${
-              pathname === "/educacion" ? "after:w-full" : "after:w-0 hover:after:w-full"
+              pathname === "/educacion"
+                ? "after:w-full"
+                : "after:w-0 hover:after:w-full"
             }`}
           >
             Educación
@@ -47,7 +54,9 @@ export function Header() {
           <Link
             href="/contacto"
             className={`relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-magent after:transition-all after:duration-300 ${
-              pathname === "/contacto" ? "after:w-full" : "after:w-0 hover:after:w-full"
+              pathname === "/contacto"
+                ? "after:w-full"
+                : "after:w-0 hover:after:w-full"
             }`}
           >
             Contacto
@@ -56,12 +65,8 @@ export function Header() {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="outline">
-            Ingresar
-          </Button>
-          <Button>
-            Registrarme
-          </Button>
+          <Button variant="outline">Ingresar</Button>
+          <Button>Registrarme</Button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -101,7 +106,9 @@ export function Header() {
             href="/acerca-de"
             onClick={toggleMenu}
             className={`text-xl transition-colors ${
-              pathname === "/acerca-de" ? "text-magent" : "text-white hover:text-magent"
+              pathname === "/acerca-de"
+                ? "text-magent"
+                : "text-white hover:text-magent"
             }`}
           >
             Acerca de
@@ -110,7 +117,9 @@ export function Header() {
             href="/educacion"
             onClick={toggleMenu}
             className={`text-xl transition-colors ${
-              pathname === "/educacion" ? "text-magent" : "text-white hover:text-magent"
+              pathname === "/educacion"
+                ? "text-magent"
+                : "text-white hover:text-magent"
             }`}
           >
             Educación
@@ -119,7 +128,9 @@ export function Header() {
             href="/contacto"
             onClick={toggleMenu}
             className={`text-xl transition-colors ${
-              pathname === "/contacto" ? "text-magent" : "text-white hover:text-magent"
+              pathname === "/contacto"
+                ? "text-magent"
+                : "text-white hover:text-magent"
             }`}
           >
             Contacto

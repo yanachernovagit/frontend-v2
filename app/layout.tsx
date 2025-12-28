@@ -22,9 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body
-        className={`${titilliumWeb.className} antialiased`}
-      >
+      <body className={`${titilliumWeb.className} antialiased`}>
         {children}
       </body>
     </html>

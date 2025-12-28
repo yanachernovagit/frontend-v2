@@ -38,7 +38,7 @@ export function useCommonUtils() {
   const formatDisplayNumber = (value: number, decimals?: number): string => {
     // Si no se especifican decimales, detectar automáticamente
     const isInteger = Number.isInteger(value);
-    const finalDecimals = decimals !== undefined ? decimals : (isInteger ? 0 : 1);
+    const finalDecimals = decimals !== undefined ? decimals : isInteger ? 0 : 1;
 
     return value.toLocaleString("es-ES", {
       minimumFractionDigits: finalDecimals,

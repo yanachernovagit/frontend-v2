@@ -18,17 +18,6 @@ export function AuthGuard({ children }: AuthGuardProps) {
     }
   }, [isAuthenticated, loading, router]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-blue">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-white border-r-transparent"></div>
-          <p className="mt-4 text-white">Cargando...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (!isAuthenticated) {
     return null;
   }
