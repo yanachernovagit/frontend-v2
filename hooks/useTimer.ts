@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { AppState } from "react-native";
 
 interface UseTimerProps {
   initialSeconds: number;
@@ -13,7 +12,6 @@ export const useTimer = ({ initialSeconds, isEnabled }: UseTimerProps) => {
   );
   const [timerStarted, setTimerStarted] = useState(false);
   const lastTimestampRef = useRef<number | null>(null);
-  const appStateRef = useRef<string>(AppState.currentState);
 
   useEffect(() => {
     setRemainingSeconds(initialSeconds);
@@ -38,23 +36,15 @@ export const useTimer = ({ initialSeconds, isEnabled }: UseTimerProps) => {
       });
     }, 1000);
 
-    const sub = AppState.addEventListener("change", (nextState) => {
-      const prevState = appStateRef.current;
-      appStateRef.current = nextState;
-
+    // Handle page visibility changes (browser tab active/inactive)
+    const handleVisibilityChange = () => {
       if (!timerStarted) return;
 
-      if (
-        prevState.match(/active|foreground/) &&
-        nextState.match(/inactive|background/)
-      ) {
+      if (document.hidden) {
+        // Tab became inactive
         lastTimestampRef.current = Date.now();
-      }
-      if (
-        prevState.match(/inactive|background/) &&
-        nextState === "active" &&
-        lastTimestampRef.current
-      ) {
+      } else if (lastTimestampRef.current) {
+        // Tab became active again
         const elapsedMs = Date.now() - lastTimestampRef.current;
         const elapsedSec = Math.floor(elapsedMs / 1000);
         if (elapsedSec > 0) {
@@ -69,11 +59,13 @@ export const useTimer = ({ initialSeconds, isEnabled }: UseTimerProps) => {
         }
         lastTimestampRef.current = Date.now();
       }
-    });
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       clearInterval(interval);
-      sub.remove();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [isEnabled, timerStarted]);
 
