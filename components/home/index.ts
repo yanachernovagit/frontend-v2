@@ -4,5 +4,4 @@ export * from "./TaskCarrousel";
 export * from "./TaskCard";
 export * from "./SkeletonTaskList";
 export * from "./SkeletonTaskCard";
-export * from "./Progress";
 export * from "./DailyStepsChart";

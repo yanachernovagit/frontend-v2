@@ -72,17 +72,7 @@ export function TasksCarousel() {
     .sort((a, b) => Number(a.disabled ?? false) - Number(b.disabled ?? false));
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <h2 className="inline-flex gap-2 font-bold text-black-400 mb-3">
-        <Image
-          src="/icons/magent/Task-magent.svg"
-          alt="Tasks"
-          width={25}
-          height={25}
-        />
-        Mis Tareas
-      </h2>
-
+    <div className="w-full flex flex-col">
       <Card className="flex-1 min-h-0 p-2 space-y-4 overflow-y-auto bg-bg-secondary rounded-xl">
         {loading ? (
           <SkeletonTaskList count={3} />

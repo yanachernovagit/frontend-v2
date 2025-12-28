@@ -6,7 +6,7 @@ type Props = {
 
 export function SkeletonEvaluationList({ count = 4 }: Props) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 p-2">
       {Array.from({ length: count }).map((_, index) => (
         <SkeletonEvaluationCard key={index} />
       ))}

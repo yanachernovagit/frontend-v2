@@ -50,13 +50,16 @@ export function EvaluationCard({
               {name}
             </h3>
             {completed && (
-              <Image
-                src="/icons/magent/Task-magent.svg"
-                alt="Completada"
-                width={20}
-                height={20}
-                className="shrink-0"
-              />
+              <div className="flex items-center gap-1 text-magent">
+                <Image
+                  src="/icons/magent/Task-magent.svg"
+                  alt="Completada"
+                  width={20}
+                  height={20}
+                  className="shrink-0"
+                />
+                Completado
+              </div>
             )}
           </div>
 
