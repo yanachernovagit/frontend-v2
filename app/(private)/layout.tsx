@@ -24,6 +24,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { useAuth } from "@/hooks/useAuth";
+import { LoggedUserHeader } from "@/components/shared/LoggedUserHeader";
 
 const menuItems = [
   { icon: Home, label: "Inicio", href: "/inicio" },
@@ -52,7 +53,7 @@ export default function PrivateLayout({
   return (
     <AuthGuard>
       <SidebarProvider defaultOpen={true}>
-        <div className="flex h-screen w-full bg-blue p-8 gap-8">
+        <div className="flex h-screen w-full bg-blue p-5 gap-8">
           <Sidebar className="border-none" collapsible="none">
             <SidebarHeader className="mb-8">
               <div className="flex items-center gap-2">
@@ -98,7 +99,10 @@ export default function PrivateLayout({
                     className="text-white hover:bg-white/10 h-12"
                     asChild
                   >
-                    <button onClick={handleLogout} className="flex items-center gap-3">
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-3"
+                    >
                       <LogOut className="w-5 h-5" />
                       <span className="text-base">Cerrar sesión</span>
                     </button>
@@ -109,9 +113,10 @@ export default function PrivateLayout({
           </Sidebar>
 
           <div className="flex-1 flex flex-col min-h-0">
-            <div className="bg-white rounded-3xl flex-1 overflow-y-auto p-8">
-              {children}
-            </div>
+            <main className="bg-white rounded-3xl flex-1 overflow-hidden p-4 flex flex-col min-h-0">
+              <LoggedUserHeader />
+              <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>
+            </main>
           </div>
         </div>
       </SidebarProvider>

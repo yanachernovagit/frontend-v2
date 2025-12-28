@@ -2,7 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, Facebook, Instagram, Twitter, Linkedin, Check } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  Facebook,
+  Instagram,
+  Twitter,
+  Linkedin,
+  Check,
+} from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -64,8 +72,8 @@ export default function Contacto() {
           </h1>
           <p className="text-xl font-medium text-white">
             ¿Tienes preguntas o quieres saber más sobre nuestro programa?
-            Estamos aquí para ayudarte. Contáctanos a través de cualquiera
-            de nuestros canales.
+            Estamos aquí para ayudarte. Contáctanos a través de cualquiera de
+            nuestros canales.
           </p>
         </div>
 
@@ -76,7 +84,9 @@ export default function Contacto() {
               <div className="w-16 h-16 rounded-full bg-magent/10 flex items-center justify-center">
                 <Mail className="w-8 h-8 text-magent" />
               </div>
-              <h3 className="font-bold text-xl text-black-400">Correo Electrónico</h3>
+              <h3 className="font-bold text-xl text-black-400">
+                Correo Electrónico
+              </h3>
               <button
                 onClick={handleCopyEmail}
                 className="text-lg text-magent hover:underline transition-all flex items-center gap-2"
@@ -91,7 +101,9 @@ export default function Contacto() {
                 )}
               </button>
               <p className="text-sm text-gray-600">
-                {emailCopied ? "El correo se copió al portapapeles" : "Haz clic para copiar"}
+                {emailCopied
+                  ? "El correo se copió al portapapeles"
+                  : "Haz clic para copiar"}
               </p>
             </CardContent>
           </Card>
@@ -104,7 +116,7 @@ export default function Contacto() {
               </div>
               <h3 className="font-bold text-xl text-black-400">Teléfono</h3>
               <a
-                href={`tel:${contactPhone.replace(/\s/g, '')}`}
+                href={`tel:${contactPhone.replace(/\s/g, "")}`}
                 className="text-lg text-magent hover:underline transition-all"
               >
                 {contactPhone}
@@ -148,11 +160,10 @@ export default function Contacto() {
                 ¿Quieres unirte a nuestra comunidad?
               </h3>
               <p className="text-lg text-gray-700 mb-6">
-                Regístrate y sé parte de Oncoactívate. Juntos avanzamos hacia una vida más activa.
+                Regístrate y sé parte de Oncoactívate. Juntos avanzamos hacia
+                una vida más activa.
               </p>
-              <Button className="px-16 py-5 text-xl">
-                Regístrate Ahora
-              </Button>
+              <Button className="px-16 py-5 text-xl">Regístrate Ahora</Button>
             </CardContent>
           </Card>
         </div>
