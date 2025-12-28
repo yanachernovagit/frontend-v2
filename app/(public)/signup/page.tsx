@@ -7,7 +7,14 @@ import { signUpService } from "@/services/authService";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -171,11 +178,7 @@ export default function SignUpPage() {
                 {error}
               </div>
             )}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Registrando..." : "Registrarse"}
             </Button>
           </form>
@@ -183,7 +186,10 @@ export default function SignUpPage() {
         <CardFooter className="flex justify-center">
           <div className="text-sm text-center text-gray-600">
             ¿Ya tienes una cuenta?{" "}
-            <Link href="/signin" className="text-blue-600 hover:underline font-medium">
+            <Link
+              href="/signin"
+              className="text-blue-600 hover:underline font-medium"
+            >
               Inicia sesión
             </Link>
           </div>
