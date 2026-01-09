@@ -18,29 +18,51 @@ export default function UpdatePasswordPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isValidLink, setIsValidLink] = useState(true);
+  const [isValidLink, setIsValidLink] = useState<boolean | null>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        // Supabase automatically detects the access_token from the URL hash
-        // and creates a temporary session
-        const supabase = getSupabase();
-        const { data, error } = await supabase.auth.getSession();
+    const supabase = getSupabase();
 
-        if (error || !data.session) {
-          setIsValidLink(false);
-        }
-      } catch {
-        setIsValidLink(false);
-      } finally {
+    // Listen for auth state changes - Supabase will process the hash automatically
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        // Valid recovery link - user can now change password
+        setIsValidLink(true);
+        setIsCheckingSession(false);
+      } else if (event === "SIGNED_IN" && session) {
+        // Also valid - sometimes it comes as SIGNED_IN with a session
+        setIsValidLink(true);
+        setIsCheckingSession(false);
+      }
+    });
+
+    // Also check if there's already a session (in case the event already fired)
+    const checkExistingSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        setIsValidLink(true);
         setIsCheckingSession(false);
       }
     };
 
-    checkSession();
-  }, []);
+    // Set a timeout to show invalid link if no auth event fires
+    const timeout = setTimeout(() => {
+      if (isValidLink === null) {
+        setIsValidLink(false);
+        setIsCheckingSession(false);
+      }
+    }, 3000);
+
+    checkExistingSession();
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
+  }, [isValidLink]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,7 +107,7 @@ export default function UpdatePasswordPage() {
     );
   }
 
-  if (!isValidLink) {
+  if (isValidLink === false) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
         <Card className="w-full max-w-md">
