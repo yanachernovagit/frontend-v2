@@ -16,7 +16,7 @@ interface UseUserPlanReturn {
   refetch: () => Promise<void>;
 }
 
-export const useUserPlan = (userId?: string): UseUserPlanReturn => {
+export const useUserPlan = (): UseUserPlanReturn => {
   const [userPlan, setUserPlan] = useState<UserPlan | null>(null);
   const [changedRoutine, setChangedRoutine] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -24,13 +24,11 @@ export const useUserPlan = (userId?: string): UseUserPlanReturn => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchUserPlan = useCallback(async () => {
-    if (!userId) return;
-
     setLoading(true);
     setError(null);
 
     try {
-      const plan = await getUserPlanService(userId);
+      const plan = await getUserPlanService();
       setUserPlan(plan);
     } catch (err) {
       const errorMessage =
@@ -39,13 +37,12 @@ export const useUserPlan = (userId?: string): UseUserPlanReturn => {
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, []);
 
   const updatePlanProgress = async () => {
-    if (!userId) return;
     setUpdatingProgress(true);
     try {
-      const plan = await updateUserPlanProgressService(userId);
+      const plan = await updateUserPlanProgressService();
       if (plan.progressRoutine !== userPlan?.progressRoutine) {
         setChangedRoutine(true);
       }
@@ -72,10 +69,8 @@ export const useUserPlan = (userId?: string): UseUserPlanReturn => {
   };
 
   useEffect(() => {
-    if (userId) {
-      fetchUserPlan();
-    }
-  }, [userId, fetchUserPlan]);
+    fetchUserPlan();
+  }, [fetchUserPlan]);
 
   return {
     userPlan,

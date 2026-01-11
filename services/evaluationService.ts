@@ -6,11 +6,9 @@ import {
 } from "@/types";
 import authApi from "./authApi";
 
-export async function getUserEvaluationsService(
-  userId: string,
-): Promise<GroupedUserEvaluations> {
+export async function getUserEvaluationsService(): Promise<GroupedUserEvaluations> {
   try {
-    const response = await authApi.get(ENDPOINTS.EVALUATIONS.USER_LIST(userId));
+    const response = await authApi.get(ENDPOINTS.EVALUATIONS.USER_LIST);
     return response.data;
   } catch {
     throw new Error("No se pudieron obtener tus evaluaciones.");

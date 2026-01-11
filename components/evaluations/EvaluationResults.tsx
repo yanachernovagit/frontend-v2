@@ -4,12 +4,13 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCommonUtils } from "@/hooks/useCommonUtils";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   expectedResults: Record<string, any>;
   inputValues: Record<string, string>;
   onInputChange: (key: string, value: string) => void;
-  onSubmit: () => void;
+  onSubmit: () => Promise<void>;
 };
 
 export const EvaluationResults = ({
@@ -19,6 +20,7 @@ export const EvaluationResults = ({
   onSubmit,
 }: Props) => {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { formatNumericValue } = useCommonUtils();
 
   const expectedResultEntries = Object.entries(expectedResults);
@@ -32,9 +34,18 @@ export const EvaluationResults = ({
     return typeof value === "string" && value.trim().length > 0;
   });
 
+  const handleSubmit = async () => {
+    if (!allInputsFilled || isLoading) return;
+    setIsLoading(true);
+    try {
+      await onSubmit();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-white rounded-3xl p-6 w-full">
-      {/* Header */}
       <div className="mb-6">
         <h2 className="text-3xl font-bold text-gray-900 mb-1">
           Registro de resultados
@@ -80,13 +91,19 @@ export const EvaluationResults = ({
         })}
       </div>
 
-      {/* Submit Button */}
       <Button
-        onClick={allInputsFilled ? onSubmit : () => {}}
-        disabled={!allInputsFilled}
-        className={`w-full mt-4 py-6 ${allInputsFilled ? "bg-purple hover:bg-purple/90" : "bg-gray-400"}`}
+        onClick={handleSubmit}
+        disabled={!allInputsFilled || isLoading}
+        className={`w-full mt-4 py-6 ${allInputsFilled && !isLoading ? "bg-purple hover:bg-purple/90" : "bg-gray-400"}`}
       >
-        <span className="text-white font-bold text-xl">Aceptar</span>
+        {isLoading ? (
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-5 w-5 animate-spin text-white" />
+            <span className="text-white font-bold text-xl">Enviando...</span>
+          </div>
+        ) : (
+          <span className="text-white font-bold text-xl">Aceptar</span>
+        )}
       </Button>
     </div>
   );
