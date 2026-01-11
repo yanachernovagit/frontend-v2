@@ -14,20 +14,18 @@ export const ENDPOINTS = {
     CREATE_BULK: "/api/v1/profile-questions/answer/bulk",
   },
   STEPS: {
-    BY_USER_PERIOD: (userId: string, period: string) =>
-      `/userStep/userId/${userId}/period/${period}`,
-    CREATE: "/userStep",
+    BY_PERIOD: (period: number) => `/api/v1/user-step/period/${period}`,
+    CREATE: "/api/v1/user-step",
   },
   EVALUATIONS: {
-    USER_LIST: (userId: string) => `/api/v1/evaluation/${userId}`,
+    ALL: "/api/v1/evaluation",
+    USER_LIST: "/api/v1/evaluation/user",
     COMPLETE: "/api/v1/evaluation/complete",
   },
   USER_PLAN: {
-    GET: (userId: string) => `/api/v1/plan/${userId}`,
-    UPDATE_EXERCISE: (userId: string) => `/api/v1/plan/${userId}/progress`,
-  },
-  USER_EXERCISE: {
-    CURRENT_BY_USER: (userId: string) => `/userExercise/current/user/${userId}`,
+    GET: "/api/v1/plan",
+    UPDATE_EXERCISE: "/api/v1/plan/progress",
+    UPDATE_PHASE: "/api/v1/plan/phase",
   },
   USER_TASKS: {
     GET: "/api/v1/users/tasks",

@@ -1,27 +1,21 @@
 import authApi from "./authApi";
 import { ENDPOINTS } from "@/constants/endpoints";
+import { UserStep } from "@/types/user-step";
 
 export async function getDailyStepsService(
-  userId: string,
-  period: string,
-): Promise<number> {
+  period: number,
+): Promise<UserStep[]> {
   try {
-    const response = await authApi.get(
-      ENDPOINTS.STEPS.BY_USER_PERIOD(userId, period),
-    );
-    return response.data.data[0]?.steps || 0;
+    const response = await authApi.get(ENDPOINTS.STEPS.BY_PERIOD(period));
+    return response.data.data || [];
   } catch {
     throw new Error("No se pudieron obtener tus pasos diarios.");
   }
 }
 
-export async function postDailyStepsService(
-  userId: string,
-  steps: number,
-): Promise<void> {
+export async function postDailyStepsService(steps: number): Promise<void> {
   try {
     const response = await authApi.post(ENDPOINTS.STEPS.CREATE, {
-      userId,
       steps,
     });
     return response.data;

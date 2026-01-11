@@ -1,4 +1,8 @@
-import { ProgressPointEnum } from "@/constants/enums";
+import {
+  EvaluationTypeEnum,
+  PhaseEnum,
+  ProgressPointEnum,
+} from "@/constants/enums";
 
 export interface Evaluation {
   id: string;
@@ -9,6 +13,7 @@ export interface Evaluation {
   logoUrl: string;
   videoUrl: string;
   isTime: boolean;
+  type: EvaluationTypeEnum;
   seconds: number;
   order: number;
   expectedResults: Record<string, string>;
@@ -38,7 +43,7 @@ export interface GroupedUserEvaluations {
 }
 
 export type CompleteEvaluationDto = {
-  userId: string;
   evaluationId: string;
+  phase: PhaseEnum;
   results: Record<string, any>;
 };

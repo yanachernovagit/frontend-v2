@@ -14,7 +14,6 @@ const authApi = axios.create({
 
 authApi.interceptors.request.use(async (config) => {
   try {
-    // Only access localStorage on the client side
     if (typeof window !== "undefined") {
       const token = localStorage.getItem(TOKEN_KEY);
       if (token) {

@@ -30,3 +30,8 @@ export interface UserPlan {
   completedToday: boolean;
   routines: Routine[];
 }
+
+export type ChangePlanPhaseDto = {
+  phase: number;
+  surgeryDate: string;
+};
