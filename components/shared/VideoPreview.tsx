@@ -9,8 +9,6 @@ type Props = {
   loop?: boolean;
   muted?: boolean;
   className?: string;
-  posterUrl?: string;
-  showPosterUntilReady?: boolean;
   loadingBackgroundClassName?: string;
   allowFullscreen?: boolean;
   isActive?: boolean;
@@ -24,8 +22,6 @@ export function VideoPreview({
   loop = true,
   muted = false,
   className = "",
-  posterUrl,
-  showPosterUntilReady = true,
   loadingBackgroundClassName = "bg-gray-100",
   allowFullscreen = false,
   isActive = true,
@@ -86,8 +82,6 @@ export function VideoPreview({
 
   if (!videoUrl) return null;
 
-  const showPoster = showPosterUntilReady && posterUrl && !isReady;
-
   return (
     <div
       className={`
@@ -96,14 +90,6 @@ export function VideoPreview({
         ${className}
       `}
     >
-      {showPoster && (
-        <Image
-          src={posterUrl}
-          alt="Video poster"
-          className="absolute inset-0 w-full h-full object-cover z-10"
-        />
-      )}
-
       <video
         ref={videoRef}
         src={videoUrl}

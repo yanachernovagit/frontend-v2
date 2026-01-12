@@ -20,7 +20,7 @@ import { LoggedUserHeader } from "@/components/shared/LoggedUserHeader";
 const menuItems = [
   { icon: Home, label: "Inicio", href: "/inicio" },
   /* { icon: User, label: "Mi perfil", href: "/perfil" }, */
-  /* { icon: Dumbbell, label: "Mi plan", href: "/plan" }, */
+  { icon: Dumbbell, label: "Mi plan", href: "/plan" },
   /* { icon: TrendingUp, label: "Mi progreso", href: "/progreso" }, */
   { icon: Shield, label: "Test de evaluación", href: "/evaluaciones" },
   /* { icon: Users, label: "Comunidad", href: "/comunidad" },
