@@ -7,7 +7,7 @@ import {
 
 interface UseUserPlanReturn {
   userPlan: UserPlan | null;
-  updatePlanProgress: () => void;
+  updatePlanProgress: () => Promise<void>;
   changedRoutine: boolean;
   viewNextRoutine: () => void;
   loading: boolean;

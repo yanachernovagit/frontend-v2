@@ -46,8 +46,8 @@ export function EvaluationsList({
     userPlan.currentWeek <= userPlan.totalWeeks;
 
   return (
-    <Card className="bg-bg-secondary rounded-xl h-full flex flex-col gap-1 pt-0">
-      <div className="flex gap-2 pt-2 px-2">
+    <Card className="bg-bg-secondary rounded-xl h-full flex flex-col gap-1 p-2">
+      <div className="flex gap-2">
         <Button
           variant={filter === "pre" ? "default" : "outline_magent"}
           onClick={() => setFilter("pre")}
@@ -76,7 +76,7 @@ export function EvaluationsList({
       ) : (
         <div className="relative flex-1 min-h-0">
           <div
-            className={`space-y-3 overflow-y-auto h-full p-2 transition-all ${
+            className={`space-y-3 overflow-y-auto h-full py-2 transition-all ${
               isPostPlanLocked ? "blur-sm pointer-events-none" : ""
             }`}
           >

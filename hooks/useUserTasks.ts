@@ -9,19 +9,13 @@ interface UseUserTasksReturn {
   refetch: () => Promise<void>;
 }
 
-export const useUserTasks = (userId?: string): UseUserTasksReturn => {
+export const useUserTasks = (): UseUserTasksReturn => {
   const [userTasks, setUserTasks] = useState<UserTasksStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchUserTasks = useCallback(async () => {
-    if (!userId) {
-      setUserTasks(null);
-      setError(null);
-      setLoading(false);
-      return;
-    }
-
+    setUserTasks(null);
     setLoading(true);
     setError(null);
 
@@ -36,7 +30,7 @@ export const useUserTasks = (userId?: string): UseUserTasksReturn => {
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
     fetchUserTasks();
