@@ -5,30 +5,26 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signInService } from "@/services/authService";
 import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { USER_ROLES } from "@/constants/UserRoles";
 
 export default function SignInPage() {
   const router = useRouter();
-  const { login, isAuthenticated, loading } = useAuth();
+  const { login, isAuthenticated, loading, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showAdminSelection, setShowAdminSelection] = useState(false);
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      router.push("/inicio");
+      if (user?.user_metadata?.role === USER_ROLES.ADMIN) {
+        setShowAdminSelection(true);
+      } else {
+        router.push("/inicio");
+      }
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, router, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +34,6 @@ export default function SignInPage() {
     try {
       const response = await signInService({ email, password });
       login(response.accessToken);
-      router.push("/inicio");
     } catch (err: any) {
       setError(err.message || "Error al iniciar sesión");
     } finally {
@@ -47,85 +42,89 @@ export default function SignInPage() {
   };
 
   if (loading) {
+    return <div className="p-8 text-center">Cargando...</div>;
+  }
+
+  if (showAdminSelection) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-          <p className="mt-4 text-gray-600">Verificando sesión...</p>
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-purple p-4">
+        <div className="w-full max-w-sm bg-white rounded-xl p-6">
+          <h1 className="text-xl font-bold text-center mb-6">
+            Bienvenido Admin
+          </h1>
+          <p className="text-center mb-6 text-gray-600">¿A dónde deseas ir?</p>
+
+          <div className="space-y-4">
+            <button
+              onClick={() => router.push("/admin")}
+              className="w-full bg-purple text-white py-3 rounded-lg hover:bg-purple/90 transition-colors font-medium"
+            >
+              Ir al Panel de Administración
+            </button>
+
+            <button
+              onClick={() => router.push("/inicio")}
+              className="w-full bg-white text-purple border border-purple py-3 rounded-lg hover:bg-purple/5 transition-colors font-medium"
+            >
+              Ir a la Aplicación
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            Iniciar Sesión
-          </CardTitle>
-          <CardDescription className="text-center">
-            Ingresa tu correo y contraseña para acceder
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Correo electrónico
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="tu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">
-                Contraseña
-              </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
-                {error}
-              </div>
-            )}
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-2">
-          <div className="text-sm text-center text-gray-600">
-            ¿No tienes una cuenta?{" "}
-            <Link
-              href="/signup"
-              className="text-blue-600 hover:underline font-medium"
-            >
-              Regístrate
-            </Link>
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-purple p-4">
+      <div className="w-full max-w-sm bg-white rounded-xl p-6">
+        <h1 className="text-xl font-bold text-center mb-4">Iniciar Sesión</h1>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm mb-1">Correo electrónico</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={isLoading}
+              className="w-full border rounded px-3 py-2"
+            />
           </div>
-          <Link
-            href="/reset-password"
-            className="text-sm text-blue-600 hover:underline text-center"
+
+          <div>
+            <label className="block text-sm mb-1">Contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={isLoading}
+              className="w-full border rounded px-3 py-2"
+            />
+          </div>
+
+          {error && <div className="text-red-500 text-sm">{error}</div>}
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-purple text-white py-2 rounded"
           >
+            {isLoading ? "Cargando..." : "Iniciar Sesión"}
+          </button>
+        </form>
+
+        <div className="mt-4 text-center text-sm">
+          <Link href="/signup" className="text-purple">
+            Registrarse
+          </Link>
+          {" | "}
+          <Link href="/reset-password" className="text-purple">
             ¿Olvidaste tu contraseña?
           </Link>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

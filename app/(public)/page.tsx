@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -13,7 +14,9 @@ export default function Home() {
             Explora recursos, haz tu terapia física y se parte de la comunidad
             Oncoactivate. ¡Juntos avanzamos hacia una vida más activa!
           </p>
-          <Button className="w-fit px-16 py-5 text-xl">Regístrate</Button>
+          <Link href="/signup">
+            <Button className="w-fit px-16 py-5 text-xl">Regístrate</Button>
+          </Link>
         </div>
         <Image
           src={"/img/woman-hero-desktop.jpg"}

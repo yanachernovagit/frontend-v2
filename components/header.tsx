@@ -65,8 +65,12 @@ export function Header() {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="outline">Ingresar</Button>
-          <Button>Registrarme</Button>
+          <Link href="/signin">
+            <Button variant="outline">Ingresar</Button>
+          </Link>
+          <Link href="/signup">
+            <Button>Registrarme</Button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -137,12 +141,14 @@ export function Header() {
           </Link>
 
           <div className="flex flex-col items-center gap-4 mt-8">
-            <Button variant="outline" className="w-40" onClick={toggleMenu}>
-              Ingresar
-            </Button>
-            <Button className="w-40" onClick={toggleMenu}>
-              Registrarme
-            </Button>
+            <Link href="/signin" onClick={toggleMenu}>
+              <Button variant="outline" className="w-40">
+                Ingresar
+              </Button>
+            </Link>
+            <Link href="/signup" onClick={toggleMenu}>
+              <Button className="w-40">Registrarme</Button>
+            </Link>
           </div>
         </nav>
       </div>

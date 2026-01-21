@@ -11,6 +11,7 @@ type DecodedToken = Record<string, any> & {
   phone: string;
   user_metadata: {
     fullName: string;
+    role?: string;
   };
 };
 
