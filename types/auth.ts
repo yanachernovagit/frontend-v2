@@ -43,6 +43,7 @@ export type SupabaseAuthSession = {
     user_metadata: {
       email_verified: boolean;
       fullName: string;
+      role?: string;
     };
     identities: {
       identity_id: string;

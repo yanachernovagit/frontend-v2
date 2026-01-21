@@ -89,7 +89,9 @@ export default function UpdatePasswordPage() {
       setIsSuccess(true);
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Error al actualizar la contraseña";
+        err instanceof Error
+          ? err.message
+          : "Error al actualizar la contraseña";
       setError(message);
     } finally {
       setIsLoading(false);

@@ -5,3 +5,4 @@ export * from "./task";
 export * from "./user-plan";
 export * from "./profile-question";
 export * from "./user-task";
+export * from "./admin";

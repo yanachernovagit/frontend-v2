@@ -8,7 +8,7 @@ export default function PublicLayout({
   return (
     <>
       <Header />
-      <main className="mt-16">{children}</main>
+      <main className="pt-16">{children}</main>
     </>
   );
 }
