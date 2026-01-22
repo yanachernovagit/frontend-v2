@@ -24,6 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Evaluation } from "@/types";
+import { MediaUploadField } from "@/components/admin/media/MediaUploadField";
 
 const evaluationSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
@@ -247,6 +248,17 @@ export function EvaluationFormModal({
                       <FormLabel className="text-black-400 text-sm font-semibold">
                         URL de imagen
                       </FormLabel>
+                      <MediaUploadField
+                        accept="image/*"
+                        folder="evaluations/images"
+                        disabled={isLoading}
+                        onUploaded={(url) =>
+                          form.setValue("imageUrl", url, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          })
+                        }
+                      />
                       <FormControl>
                         <Input
                           {...field}
@@ -267,6 +279,17 @@ export function EvaluationFormModal({
                       <FormLabel className="text-black-400 text-sm font-semibold">
                         URL de logo
                       </FormLabel>
+                      <MediaUploadField
+                        accept="image/*"
+                        folder="evaluations/logos"
+                        disabled={isLoading}
+                        onUploaded={(url) =>
+                          form.setValue("logoUrl", url, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          })
+                        }
+                      />
                       <FormControl>
                         <Input
                           {...field}
@@ -288,6 +311,17 @@ export function EvaluationFormModal({
                     <FormLabel className="text-black-400 text-sm font-semibold">
                       URL de video
                     </FormLabel>
+                    <MediaUploadField
+                      accept="video/*"
+                      folder="evaluations/videos"
+                      disabled={isLoading}
+                      onUploaded={(url) =>
+                        form.setValue("videoUrl", url, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        })
+                      }
+                    />
                     <FormControl>
                       <Input
                         {...field}

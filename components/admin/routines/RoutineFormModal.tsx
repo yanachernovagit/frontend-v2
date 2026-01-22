@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RoutineCatalog } from "@/types";
+import { MediaUploadField } from "@/components/admin/media/MediaUploadField";
 
 const routineSchema = z.object({
   title: z.string().min(1, "El titulo es requerido"),
@@ -172,6 +173,17 @@ export function RoutineFormModal({
                     <FormLabel className="text-black-400 text-sm font-semibold">
                       URL de icono
                     </FormLabel>
+                    <MediaUploadField
+                      accept="image/*"
+                      folder="routines/icons"
+                      disabled={isLoading}
+                      onUploaded={(url) =>
+                        form.setValue("iconUrl", url, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        })
+                      }
+                    />
                     <FormControl>
                       <Input
                         {...field}

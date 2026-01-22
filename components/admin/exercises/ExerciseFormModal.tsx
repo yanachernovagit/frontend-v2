@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ExerciseCatalog } from "@/types";
+import { MediaUploadField } from "@/components/admin/media/MediaUploadField";
 
 const exerciseSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
@@ -198,6 +199,17 @@ export function ExerciseFormModal({
                     <FormLabel className="text-black-400 text-sm font-semibold">
                       URL de video
                     </FormLabel>
+                    <MediaUploadField
+                      accept="video/*"
+                      folder="exercises/videos"
+                      disabled={isLoading}
+                      onUploaded={(url) =>
+                        form.setValue("videoUrl", url, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        })
+                      }
+                    />
                     <FormControl>
                       <Input
                         {...field}
@@ -218,6 +230,17 @@ export function ExerciseFormModal({
                     <FormLabel className="text-black-400 text-sm font-semibold">
                       URL de portada
                     </FormLabel>
+                    <MediaUploadField
+                      accept="image/*"
+                      folder="exercises/covers"
+                      disabled={isLoading}
+                      onUploaded={(url) =>
+                        form.setValue("videoCoverUrl", url, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        })
+                      }
+                    />
                     <FormControl>
                       <Input
                         {...field}

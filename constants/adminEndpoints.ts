@@ -32,4 +32,10 @@ export const ADMIN_ENDPOINTS = {
     LIST: "/api/v1/admin/users",
     UPDATE_ROLE: (id: string) => `/api/v1/admin/users/${id}/role`,
   },
+  MEDIA: {
+    LIST: "/api/v1/admin/media",
+    UPLOAD: "/api/v1/admin/media/upload",
+    RENAME: "/api/v1/admin/media/rename",
+    DELETE: "/api/v1/admin/media",
+  },
 };
