@@ -12,6 +12,7 @@ import {
   LogOut,
   Users,
   Home,
+  Image as ImageIcon,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -22,6 +23,7 @@ const menuItems = [
   { icon: ListChecks, label: "Rutinas", href: "/admin/routines" },
   { icon: HelpCircle, label: "Preguntas", href: "/admin/questions" },
   { icon: Users, label: "Usuarios", href: "/admin/users" },
+  { icon: ImageIcon, label: "Multimedia", href: "/admin/media" },
 ];
 
 export function AdminSidebar() {
