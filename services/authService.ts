@@ -6,12 +6,13 @@ import {
   SignUpDto,
   ChangePasswordDto,
   RequestResetPasswordDto,
-  SupabaseAuthSession,
+  UpdatePasswordWithTokenDto,
+  AuthSession,
 } from "@/types/auth";
 
 export async function signInService(
   data: SignInDto,
-): Promise<SupabaseAuthSession> {
+): Promise<AuthSession> {
   try {
     const response = await api.post(ENDPOINTS.AUTH.SIGNIN, data);
     return response.data;
@@ -95,6 +96,25 @@ export async function requestResetPasswordService(
       message = "Correo incorrecto.";
     } else if (status === 400) {
       message = "Correo inválido. Revisa el formato.";
+    } else if (status === 500) {
+      message = "Error del servidor. Intenta nuevamente más tarde.";
+    }
+
+    throw new Error(message);
+  }
+}
+
+export async function updatePasswordWithTokenService(
+  data: UpdatePasswordWithTokenDto,
+): Promise<void> {
+  try {
+    await api.post(ENDPOINTS.AUTH.UPDATE_PASSWORD, data);
+  } catch (error: any) {
+    const status = error?.response?.status;
+    let message = "No se pudo actualizar la contraseña.";
+
+    if (status === 400) {
+      message = "El enlace es inválido o ha expirado.";
     } else if (status === 500) {
       message = "Error del servidor. Intenta nuevamente más tarde.";
     }

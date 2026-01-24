@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getSupabase } from "@/lib/supabase";
+import { updatePasswordWithTokenService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,51 +18,22 @@ export default function UpdatePasswordPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isValidLink, setIsValidLink] = useState<boolean | null>(null);
-  const [isCheckingSession, setIsCheckingSession] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
+  const [isCheckingToken, setIsCheckingToken] = useState(true);
 
   useEffect(() => {
-    const supabase = getSupabase();
+    const hash = window.location.hash;
+    if (hash) {
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get("access_token");
+      const type = params.get("type");
 
-    // Listen for auth state changes - Supabase will process the hash automatically
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY") {
-        // Valid recovery link - user can now change password
-        setIsValidLink(true);
-        setIsCheckingSession(false);
-      } else if (event === "SIGNED_IN" && session) {
-        // Also valid - sometimes it comes as SIGNED_IN with a session
-        setIsValidLink(true);
-        setIsCheckingSession(false);
+      if (accessToken && type === "recovery") {
+        setToken(accessToken);
       }
-    });
-
-    // Also check if there's already a session (in case the event already fired)
-    const checkExistingSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        setIsValidLink(true);
-        setIsCheckingSession(false);
-      }
-    };
-
-    // Set a timeout to show invalid link if no auth event fires
-    const timeout = setTimeout(() => {
-      if (isValidLink === null) {
-        setIsValidLink(false);
-        setIsCheckingSession(false);
-      }
-    }, 3000);
-
-    checkExistingSession();
-
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(timeout);
-    };
-  }, [isValidLink]);
+    }
+    setIsCheckingToken(false);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,14 +49,15 @@ export default function UpdatePasswordPage() {
       return;
     }
 
+    if (!token) {
+      setError("Token de recuperación no encontrado");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const supabase = getSupabase();
-      const { error } = await supabase.auth.updateUser({ password });
-
-      if (error) throw error;
-
+      await updatePasswordWithTokenService({ token, newPassword: password });
       setIsSuccess(true);
     } catch (err: unknown) {
       const message =
@@ -98,7 +70,7 @@ export default function UpdatePasswordPage() {
     }
   };
 
-  if (isCheckingSession) {
+  if (isCheckingToken) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
         <div className="text-center">
@@ -109,7 +81,7 @@ export default function UpdatePasswordPage() {
     );
   }
 
-  if (isValidLink === false) {
+  if (!token) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
         <Card className="w-full max-w-md">
@@ -160,7 +132,7 @@ export default function UpdatePasswordPage() {
               </div>
             </div>
             <CardTitle className="text-2xl font-bold text-center">
-              ¡Contraseña actualizada!
+              Contraseña actualizada
             </CardTitle>
             <CardDescription className="text-center">
               Tu contraseña ha sido actualizada exitosamente. Ya puedes cerrar

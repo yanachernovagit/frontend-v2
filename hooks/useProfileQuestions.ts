@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { ProfileQuestion, ProfileQuestionAnswer } from "@/types";
 import { getProfileService } from "@/services/profileQuestionsService";

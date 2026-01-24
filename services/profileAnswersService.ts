@@ -22,7 +22,7 @@ export async function saveAllProfileAnswersService(
       answers: payload,
     });
     return response.data;
-  } catch (error) {
+  } catch {
     throw new Error("No se pudieron guardar las respuestas.");
   }
 }

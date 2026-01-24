@@ -21,8 +21,7 @@ authApi.interceptors.request.use(async (config) => {
         config.headers.Authorization = `Bearer ${token}`;
       }
     }
-  } catch (e) {
-    // ignore storage errors silently
+  } catch {
   }
   return config;
 });

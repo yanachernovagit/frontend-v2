@@ -20,11 +20,12 @@ export type RequestResetPasswordDto = {
   email: string;
 };
 
-export type RefreshTokenDto = {
-  refreshToken: string;
+export type UpdatePasswordWithTokenDto = {
+  token: string;
+  newPassword: string;
 };
 
-export type SupabaseAuthSession = {
+export type AuthSession = {
   accessToken: string;
   refreshToken: string;
   user: {
