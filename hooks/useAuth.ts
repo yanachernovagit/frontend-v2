@@ -2,6 +2,27 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
 const TOKEN_KEY = "auth_token";
+const REFRESH_TOKEN_KEY = "refresh_token";
+
+type AuthListener = (token: string | null) => void;
+const authListeners = new Set<AuthListener>();
+
+export const AuthEvents = {
+  subscribe: (listener: AuthListener) => {
+    authListeners.add(listener);
+    return () => {
+      authListeners.delete(listener);
+    };
+  },
+  emit: (token: string | null) => {
+    authListeners.forEach((listener) => listener(token));
+  },
+};
+
+type AuthTokens = {
+  accessToken: string;
+  refreshToken?: string | null;
+};
 
 type DecodedToken = Record<string, any> & {
   sub?: string;
@@ -20,7 +41,7 @@ function decodeJwt(token: string): DecodedToken | null {
     const payload = jwtDecode(token) as DecodedToken | null;
     return payload ?? null;
   } catch (e) {
-    console.warn("Failed to decode JWT with jsonwebtoken:", e);
+    console.warn("Failed to decode JWT:", e);
     return null;
   }
 }
@@ -40,6 +61,12 @@ export function useAuth() {
     }
   }, []);
 
+  useEffect(() => {
+    return AuthEvents.subscribe((nextToken) => {
+      setToken(nextToken);
+    });
+  }, []);
+
   const user = useMemo(() => (token ? decodeJwt(token) : null), [token]);
 
   const isExpired = useMemo(() => {
@@ -49,10 +76,15 @@ export function useAuth() {
     return now >= exp;
   }, [user]);
 
-  const login = useCallback((newToken: string) => {
-    setToken(newToken);
+  const login = useCallback((tokens: AuthTokens) => {
+    setToken(tokens.accessToken);
     if (typeof window !== "undefined") {
-      localStorage.setItem(TOKEN_KEY, newToken);
+      localStorage.setItem(TOKEN_KEY, tokens.accessToken);
+      if (tokens.refreshToken) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
+      } else {
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+      }
     }
   }, []);
 
@@ -60,6 +92,7 @@ export function useAuth() {
     setToken(null);
     if (typeof window !== "undefined") {
       localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
     }
   }, []);
 
@@ -76,6 +109,7 @@ export function useAuth() {
 
 export const AuthStorage = {
   TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
   get: () => {
     if (typeof window !== "undefined") {
       return Promise.resolve(localStorage.getItem(TOKEN_KEY));
@@ -88,9 +122,22 @@ export const AuthStorage = {
     }
     return Promise.resolve();
   },
+  getRefresh: () => {
+    if (typeof window !== "undefined") {
+      return Promise.resolve(localStorage.getItem(REFRESH_TOKEN_KEY));
+    }
+    return Promise.resolve(null);
+  },
+  setRefresh: (value: string) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(REFRESH_TOKEN_KEY, value);
+    }
+    return Promise.resolve();
+  },
   clear: () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
     }
     return Promise.resolve();
   },
