@@ -13,14 +13,12 @@ import { SkeletonRoutineList } from "./SkeletonRoutineList";
 type Props = {
   userPlan?: UserPlan | null;
   loading: boolean;
-  refetch: () => void;
   onSelectExercise?: (routineIndex: number, exerciseIndex: number) => void;
 };
 
 export function RoutineCarousel({
   userPlan,
   loading,
-  refetch,
   onSelectExercise,
 }: Props) {
   const router = useRouter();
@@ -29,16 +27,7 @@ export function RoutineCarousel({
   const currentRoutineIndex = userPlan?.progressRoutine ?? 0;
   const currentExerciseIndex = userPlan?.progressExercise ?? 0;
 
-  const isFirstRender = useRef(true);
   const currentExerciseRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    refetch();
-  }, [refetch]);
 
   // Auto-scroll to current exercise when it changes
   useEffect(() => {

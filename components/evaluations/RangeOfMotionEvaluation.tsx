@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Check, CheckCircle } from "lucide-react";
+import { Check, CheckCircle, Loader2 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import { VideoPreview } from "../shared";
 type Props = {
   evaluation: Evaluation;
   onComplete: (results: Record<string, string>) => Promise<void>;
-  completedResults?: Record<string, any> | null;
+  completedResults?: Record<string, unknown> | null;
 };
 
 export function RangeOfMotionEvaluation({
@@ -22,25 +22,33 @@ export function RangeOfMotionEvaluation({
   onComplete,
   completedResults,
 }: Props) {
-  const [selectedOptions, setSelectedOptions] = useState<
-    Record<string, string>
-  >({});
+  const [selectedOptionKey, setSelectedOptionKey] = useState<string | null>(
+    null,
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const expectedResultEntries = Object.entries(
     evaluation.expectedResults ?? {},
   );
 
-  const allOptionsSelected = expectedResultEntries.every(([key]) => {
-    return selectedOptions[key]?.trim().length > 0;
-  });
+  const hasSelectedOption = selectedOptionKey !== null;
 
-  const handleSelectOption = (key: string, value: string) => {
-    setSelectedOptions((prev) => ({ ...prev, [key]: value }));
+  const handleSelectOption = (key: string) => {
+    setSelectedOptionKey(key);
   };
 
   const handleSubmit = async () => {
-    if (!allOptionsSelected) return;
-    await onComplete(selectedOptions);
+    if (!selectedOptionKey || isSubmitting) return;
+
+    const selectedLabel = evaluation.expectedResults?.[selectedOptionKey];
+    if (!selectedLabel) return;
+
+    setIsSubmitting(true);
+    try {
+      await onComplete({ respuesta: selectedLabel });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderVideoPreview = () => {
@@ -80,7 +88,14 @@ export function RangeOfMotionEvaluation({
               </h2>
             </div>
           </div>
-          {renderVideoPreview()}
+          <div className="flex justify-center w-full">
+            <Image
+              src={evaluation.imageUrl}
+              alt={evaluation.name}
+              width={250}
+              height={200}
+            />
+          </div>
 
           {evaluation.howToDo && (
             <p className="text-xl text-gray-700 leading-6 text-center">
@@ -142,8 +157,14 @@ export function RangeOfMotionEvaluation({
               </h2>
             </div>
           </div>
-
-          {renderVideoPreview()}
+          <div className="flex justify-center w-full">
+            <Image
+              src={evaluation.imageUrl}
+              alt={evaluation.name}
+              width={250}
+              height={200}
+            />
+          </div>
 
           {evaluation.howToDo && (
             <p className="text-xl text-gray-700 leading-6 text-center">
@@ -160,15 +181,16 @@ export function RangeOfMotionEvaluation({
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {expectedResultEntries.map(([key, label]) => {
-              const isSelected = selectedOptions[key] === label;
+              const isSelected = selectedOptionKey === key;
 
               return (
                 <button
                   key={key}
                   type="button"
-                  onClick={() => handleSelectOption(key, label as string)}
+                  onClick={() => handleSelectOption(key)}
+                  disabled={isSubmitting}
                   className={`
                     w-full p-4 rounded-xl border-2 flex items-center justify-between
                     transition
@@ -208,10 +230,17 @@ export function RangeOfMotionEvaluation({
 
         <Button
           onClick={handleSubmit}
-          disabled={!allOptionsSelected}
+          disabled={!hasSelectedOption || isSubmitting}
           className="w-full h-14 bg-purple text-white text-lg font-bold disabled:bg-gray-400"
         >
-          Enviar resultados
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Enviando...
+            </span>
+          ) : (
+            "Enviar resultados"
+          )}
         </Button>
       </CardContent>
     </Card>

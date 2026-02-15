@@ -35,13 +35,14 @@ export function CompletedEvaluationView({
   const { formatDisplayNumber } = useCommonUtils();
 
   const isTimeType = evaluation.type === EvaluationTypeEnum.TIME;
+  const isMeasureType = evaluation.type === EvaluationTypeEnum.MEASURE;
 
   const getResultLabel = (key: string): { label: string; unit: string } => {
     const expectedResult = evaluation.expectedResults[key];
 
     return {
       label: expectedResult ?? key.replace(/_/g, " "),
-      unit: isTimeType ? "" : "ml",
+      unit: isMeasureType ? "ml" : "",
     };
   };
 
@@ -194,9 +195,9 @@ export function CompletedEvaluationView({
                 {Object.entries(results.results).map(([key, value]) => {
                   const { label, unit } = getResultLabel(key);
 
-                  const formattedValue = isTimeType
-                    ? value
-                    : Number(value).toFixed(1);
+                  const formattedValue = isMeasureType
+                    ? Number(value).toFixed(1)
+                    : String(value);
 
                   return (
                     <div

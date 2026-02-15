@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { UserPlan } from "@/types";
 import {
   getUserPlanService,
@@ -22,6 +22,7 @@ export const useUserPlan = (): UseUserPlanReturn => {
   const [loading, setLoading] = useState(false);
   const [updatingProgress, setUpdatingProgress] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasFetchedOnMount = useRef(false);
 
   const fetchUserPlan = useCallback(async () => {
     setLoading(true);
@@ -69,6 +70,8 @@ export const useUserPlan = (): UseUserPlanReturn => {
   };
 
   useEffect(() => {
+    if (hasFetchedOnMount.current) return;
+    hasFetchedOnMount.current = true;
     fetchUserPlan();
   }, [fetchUserPlan]);
 

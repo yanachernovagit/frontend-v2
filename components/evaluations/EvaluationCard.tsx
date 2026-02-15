@@ -22,6 +22,8 @@ export function EvaluationCard({ evaluation, onPress }: Props) {
   const { formatDisplayNumber } = useCommonUtils();
 
   const isTimeType = type === EvaluationTypeEnum.TIME;
+  const isMeasureType = type === EvaluationTypeEnum.MEASURE;
+  const isMovementRangeType = type === EvaluationTypeEnum.MOVEMENT_RANGE;
 
   const formatTime = () => {
     const minutes = Math.floor(seconds / 60);
@@ -78,6 +80,11 @@ export function EvaluationCard({ evaluation, onPress }: Props) {
                 <Timer className="h-4 w-4 text-purple" />
                 <span className="text-gray-700">Duración: {formatTime()}</span>
               </>
+            ) : isMovementRangeType ? (
+              <>
+                <Edit className="h-4 w-4 text-purple" />
+                <span className="text-gray-700">Selecciona una opción</span>
+              </>
             ) : (
               <>
                 <Edit className="h-4 w-4 text-purple" />
@@ -99,11 +106,11 @@ export function EvaluationCard({ evaluation, onPress }: Props) {
                 {Object.entries(results).map(([key, value]) => {
                   const label =
                     evalData.expectedResults[key] || key.replace(/_/g, " ");
-                  const unit = isTimeType ? "" : "ml";
+                  const unit = isMeasureType ? "ml" : "";
 
-                  const formattedValue = isTimeType
-                    ? value
-                    : formatDisplayNumber(Number(value));
+                  const formattedValue = isMeasureType
+                    ? formatDisplayNumber(Number(value))
+                    : String(value);
 
                   return (
                     <div
@@ -138,6 +145,11 @@ export function EvaluationCard({ evaluation, onPress }: Props) {
               <>
                 <Timer className="h-4 w-4 text-purple" />
                 <span className="text-gray-700">Duración: {formatTime()}</span>
+              </>
+            ) : isMovementRangeType ? (
+              <>
+                <Edit className="h-4 w-4 text-purple" />
+                <span className="text-gray-700">Selecciona una opción</span>
               </>
             ) : (
               <>
