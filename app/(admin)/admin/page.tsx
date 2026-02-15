@@ -6,6 +6,7 @@ import {
   Dumbbell,
   HelpCircle,
   ListChecks,
+  Shuffle,
   Users,
   ArrowRight,
 } from "lucide-react";
@@ -35,6 +36,14 @@ const sections = [
     icon: ListChecks,
     color: "blue",
     statKey: "routines" as const,
+  },
+  {
+    title: "Variaciones",
+    description: "Gestiona variaciones de rutinas por fase y etapa.",
+    href: "/admin/routine-variations",
+    icon: Shuffle,
+    color: "blue",
+    statKey: "routineVariations" as const,
   },
   {
     title: "Preguntas",
@@ -96,7 +105,9 @@ export default function AdminDashboardPage() {
                 {loading ? (
                   <span className="text-sm text-gray-400">...</span>
                 ) : (
-                  <span className={`text-sm font-medium ${colors.split(" ")[1]}`}>
+                  <span
+                    className={`text-sm font-medium ${colors.split(" ")[1]}`}
+                  >
                     {stats[section.statKey]}
                   </span>
                 )}
@@ -105,15 +116,6 @@ export default function AdminDashboardPage() {
             </Link>
           );
         })}
-      </div>
-
-      {/* Welcome Card */}
-      <div className="p-6 bg-purple/5 border border-purple/10 rounded-xl">
-        <h2 className="font-semibold mb-2">Bienvenido al Panel de Administración</h2>
-        <p className="text-sm text-gray-600">
-          Desde aquí puedes gestionar todo el contenido de la plataforma.
-          Selecciona una sección para comenzar.
-        </p>
       </div>
     </div>
   );

@@ -140,21 +140,16 @@ export function DataTable<T extends { id: string }>({
 
   return (
     <div className="space-y-7">
-      <div className="flex items-center justify-between flex-wrap gap-5 p-7 rounded-2xl bg-gradient-to-br from-white via-purple/5 to-magent/8 border border-purple/20 shadow-[0_8px_24px_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.6)_inset] hover:shadow-[0_12px_32px_0_rgba(0,0,0,0.15),0_0_0_1px_rgba(255,255,255,0.7)_inset] transition-all duration-500 relative overflow-hidden">
+      <div className="flex items-center justify-between flex-wrap gap-5 p-7 rounded-2xl bg-gradient-to-br from-white via-purple/5 to-magent/8 border border-purple/20  transition-all duration-500 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-magent/12 to-transparent rounded-full blur-3xl pointer-events-none" />
-        <div className="space-y-3 relative z-10">
-          <h1 className="text-3xl font-bold text-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+        <div className="flex items-center gap-3 relative z-10">
+          <h1 className="text-3xl font-bold text-black tracking-tight">
             {title}
           </h1>
-          <div className="flex items-center gap-3">
-            <div className="h-1 w-12 bg-gradient-to-r from-purple via-magent to-purple rounded-full shadow-[0_2px_8px_rgba(120,63,208,0.4)]" />
-            <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple/15 to-magent/15 border border-purple/30 shadow-[0_2px_8px_0_rgba(0,0,0,0.08)]">
-              <p className="text-xs text-purple font-bold uppercase tracking-wider">
-                {filteredAndSortedData.length}{" "}
-                {filteredAndSortedData.length === 1 ? "registro" : "registros"}
-              </p>
-            </div>
-          </div>
+          <span className="px-3 py-1 rounded-lg bg-purple/10 text-xs text-purple font-bold uppercase tracking-wider">
+            {filteredAndSortedData.length}{" "}
+            {filteredAndSortedData.length === 1 ? "registro" : "registros"}
+          </span>
         </div>
         {onCreate && (
           <Button

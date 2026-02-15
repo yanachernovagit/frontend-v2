@@ -28,6 +28,13 @@ export const ADMIN_ENDPOINTS = {
     UPDATE: (id: string) => `/api/v1/admin/questions/${id}`,
     DELETE: (id: string) => `/api/v1/admin/questions/${id}`,
   },
+  ROUTINE_VARIATIONS: {
+    LIST: "/api/v1/admin/routine-variations",
+    GET: (id: string) => `/api/v1/admin/routine-variations/${id}`,
+    CREATE: "/api/v1/admin/routine-variations",
+    UPDATE: (id: string) => `/api/v1/admin/routine-variations/${id}`,
+    DELETE: (id: string) => `/api/v1/admin/routine-variations/${id}`,
+  },
   USERS: {
     LIST: "/api/v1/admin/users",
     UPDATE_ROLE: (id: string) => `/api/v1/admin/users/${id}/role`,
