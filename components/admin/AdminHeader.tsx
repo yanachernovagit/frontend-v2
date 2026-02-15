@@ -28,7 +28,7 @@ export function AdminHeader() {
     .slice(0, 2);
 
   return (
-    <div className="flex items-center justify-between mb-6 pb-6 border-b">
+    <div className="flex items-center justify-between p-6 border-b">
       {/* Left: Logo + Breadcrumb */}
       <div className="flex items-center gap-4">
         <Image

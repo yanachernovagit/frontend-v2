@@ -8,6 +8,7 @@ interface AdminStats {
   evaluations: number;
   exercises: number;
   routines: number;
+  routineVariations: number;
   questions: number;
   users: number;
 }
@@ -16,6 +17,7 @@ const initialStats: AdminStats = {
   evaluations: 0,
   exercises: 0,
   routines: 0,
+  routineVariations: 0,
   questions: 0,
   users: 0,
 };

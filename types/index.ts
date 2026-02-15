@@ -8,3 +8,4 @@ export * from "./profile-question";
 export * from "./user-task";
 export * from "./admin";
 export * from "./user-step";
+export * from "./routine-variation";
