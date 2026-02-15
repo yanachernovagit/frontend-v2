@@ -7,7 +7,7 @@ import { useCommonUtils } from "@/hooks/useCommonUtils";
 import { Loader2 } from "lucide-react";
 
 type Props = {
-  expectedResults: Record<string, any>;
+  expectedResults: Record<string, string>;
   inputValues: Record<string, string>;
   onInputChange: (key: string, value: string) => void;
   onSubmit: () => Promise<void>;

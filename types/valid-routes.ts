@@ -1,5 +1,7 @@
 export type ValidRoutes =
-  | "/(tabs)/evaluation-test"
-  | "/(tabs)/plan"
-  | "/(tabs)/progress"
-  | "/(tabs)/profile";
+  | "/profile"
+  | "/evaluation-test"
+  | "/plan"
+  | "/progress"
+  | "/inicio"
+  | "/evaluaciones";

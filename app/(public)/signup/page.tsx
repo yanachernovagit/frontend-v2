@@ -67,8 +67,8 @@ export default function SignUpPage() {
       });
 
       router.push("/signin?registered=true");
-    } catch (err: any) {
-      setError(err.message || "Error al registrarse");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al registrarse");
     } finally {
       setIsLoading(false);
     }

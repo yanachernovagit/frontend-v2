@@ -51,6 +51,7 @@ const routineVariationSchema = z.object({
 });
 
 type FormValues = z.infer<typeof routineVariationSchema>;
+type FormInputValues = z.input<typeof routineVariationSchema>;
 
 interface RoutineVariationFormModalProps {
   open: boolean;
@@ -68,7 +69,7 @@ function ExercisesPanel({
   exerciseCatalogs,
 }: {
   routineIndex: number;
-  control: ReturnType<typeof useForm<FormValues>>["control"];
+  control: ReturnType<typeof useForm<FormInputValues>>["control"];
   exerciseCatalogs: ExerciseCatalog[];
 }) {
   const { fields, append, remove } = useFieldArray({
@@ -129,7 +130,11 @@ function ExercisesPanel({
                     <Input
                       type="number"
                       {...orderField}
-                      value={orderField.value ?? ""}
+                      value={
+                        typeof orderField.value === "number"
+                          ? orderField.value
+                          : ""
+                      }
                       onChange={(e) =>
                         orderField.onChange(
                           e.target.value === "" ? "" : Number(e.target.value),
@@ -178,7 +183,7 @@ export function RoutineVariationFormModal({
     null,
   );
 
-  const form = useForm<FormValues>({
+  const form = useForm<FormInputValues, unknown, FormValues>({
     resolver: zodResolver(routineVariationSchema),
     defaultValues: {
       name: "",
@@ -532,7 +537,11 @@ export function RoutineVariationFormModal({
                               <Input
                                 type="number"
                                 {...field}
-                                value={field.value ?? ""}
+                                value={
+                                  typeof field.value === "number"
+                                    ? field.value
+                                    : ""
+                                }
                                 onChange={(e) =>
                                   field.onChange(
                                     e.target.value === ""

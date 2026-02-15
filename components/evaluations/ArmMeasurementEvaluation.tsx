@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { CheckCircle, AlertTriangle, XCircle, Check } from "lucide-react";
+import { CheckCircle, AlertTriangle, XCircle, Loader2 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import { VideoPreview } from "../shared";
 type Props = {
   evaluation: Evaluation;
   onComplete: (results: Record<string, string>) => Promise<void>;
-  completedResults?: Record<string, any> | null;
+  completedResults?: Record<string, unknown> | null;
 };
 
 type HealthStatus = {
@@ -35,6 +35,7 @@ export function ArmMeasurementEvaluation({
 }: Props) {
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
   const [showVolumeInputs, setShowVolumeInputs] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { formatDisplayNumber } = useCommonUtils();
 
   /* =========================
@@ -90,8 +91,13 @@ export function ArmMeasurementEvaluation({
   });
 
   const handleSubmit = async () => {
-    if (!allArmInputsFilled) return;
-    await onComplete(inputValues);
+    if (!allArmInputsFilled || isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      await onComplete(inputValues);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderVideoPreview = () => {
@@ -228,10 +234,17 @@ export function ArmMeasurementEvaluation({
 
           <Button
             onClick={handleSubmit}
-            disabled={!allArmInputsFilled}
+            disabled={!allArmInputsFilled || isSubmitting}
             className="w-full h-14 bg-purple text-white text-lg font-bold disabled:bg-gray-400"
           >
-            Enviar resultados
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Enviando...
+              </span>
+            ) : (
+              "Enviar resultados"
+            )}
           </Button>
         </CardContent>
       </Card>

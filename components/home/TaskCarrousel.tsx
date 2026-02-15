@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
 import { Task } from "@/types";
 import { useUserTasks } from "@/hooks/useUserTasks";
 import { useEffect } from "react";
@@ -12,8 +11,7 @@ import { TaskCard } from "./TaskCard";
 import { Card } from "../ui/card";
 
 export function TasksCarousel() {
-  const { user } = useAuth();
-  const { userTasks, loading, refetch } = useUserTasks(user?.sub);
+  const { userTasks, loading, refetch } = useUserTasks();
 
   useEffect(() => {
     refetch();

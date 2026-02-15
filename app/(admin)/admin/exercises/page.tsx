@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Play, ImageIcon } from "lucide-react";
 
 import { DataTable } from "@/components/admin/DataTable";

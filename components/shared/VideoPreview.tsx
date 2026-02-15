@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 type Props = {
@@ -29,18 +28,15 @@ export function VideoPreview({
   onUnmount,
 }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    setIsReady(false);
-  }, [videoUrl]);
+  const [readyVideoUrl, setReadyVideoUrl] = useState<string | null>(null);
+  const isReady = readyVideoUrl === videoUrl;
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     const handleCanPlay = () => {
-      setIsReady(true);
+      setReadyVideoUrl(videoUrl ?? null);
       if (autoPlay && isActive) {
         video.play().catch(() => {});
       }
@@ -52,7 +48,7 @@ export function VideoPreview({
     return () => {
       video.removeEventListener("canplay", handleCanPlay);
     };
-  }, [autoPlay, isActive, onReady]);
+  }, [autoPlay, isActive, onReady, videoUrl]);
 
   useEffect(() => {
     const video = videoRef.current;

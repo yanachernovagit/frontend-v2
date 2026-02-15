@@ -6,11 +6,7 @@ import { ImageIcon } from "lucide-react";
 import { DataTable } from "@/components/admin/DataTable";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { RoutineFormModal } from "@/components/admin/routines/RoutineFormModal";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAdminRoutines } from "@/hooks/useAdminRoutines";
 import { RoutineCatalog } from "@/types";
 

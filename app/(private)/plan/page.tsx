@@ -24,7 +24,6 @@ export default function PlanPage() {
   const {
     userPlan,
     loading: loadingPlan,
-    refetch: refetchPlan,
     updatePlanProgress,
     updatingProgress,
     changedRoutine,
@@ -140,7 +139,6 @@ export default function PlanPage() {
             <RoutineCarousel
               userPlan={userPlan}
               loading={loadingPlan || loadingTasks}
-              refetch={refetchPlan}
               onSelectExercise={handleSelectExercise}
             />
           </div>

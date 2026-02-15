@@ -24,7 +24,7 @@ type AuthTokens = {
   refreshToken?: string | null;
 };
 
-type DecodedToken = Record<string, any> & {
+type DecodedToken = Record<string, unknown> & {
   sub?: string;
   exp?: number;
   iat?: number;

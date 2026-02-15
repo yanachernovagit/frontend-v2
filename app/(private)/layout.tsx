@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-import { Home, Shield, LogOut } from "lucide-react";
+import { Home, Shield, LogOut, Dumbbell } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { AuthGuard } from "@/components/auth/AuthGuard";

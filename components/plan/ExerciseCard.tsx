@@ -54,7 +54,7 @@ export function ExerciseCard({
         ) : null}
         <div className="flex items-center gap-3 mb-4">
           <div className="w-8 h-8 bg-magent rounded-full flex items-center justify-center text-white font-bold">
-            {exercise.order}
+            {exercise.order + 1}
           </div>
           <h2 className="text-2xl font-bold text-black flex-1">
             {exercise.name}

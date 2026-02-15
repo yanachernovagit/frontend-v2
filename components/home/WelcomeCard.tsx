@@ -10,7 +10,7 @@ import Image from "next/image";
 
 export const WelcomeCard = () => {
   const { user } = useAuth();
-  const { userTasks, loading, refetch } = useUserTasks(user?.sub);
+  const { userTasks, loading, refetch } = useUserTasks();
   const router = useRouter();
 
   useEffect(() => {

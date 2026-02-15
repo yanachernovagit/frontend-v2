@@ -14,12 +14,6 @@ export const useTimer = ({ initialSeconds, isEnabled }: UseTimerProps) => {
   const lastTimestampRef = useRef<number | null>(null);
 
   useEffect(() => {
-    setRemainingSeconds(initialSeconds);
-    setIsTimerFinished(!isEnabled || initialSeconds === 0);
-    setTimerStarted(false);
-  }, [initialSeconds, isEnabled]);
-
-  useEffect(() => {
     if (!isEnabled || !timerStarted) return;
 
     lastTimestampRef.current = Date.now();

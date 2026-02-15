@@ -1,8 +1,7 @@
 import { FC } from "react";
-import { SvgProps } from "react-native-svg";
 
 export type TestItemDto = {
-  icon: FC<SvgProps>;
+  icon: FC<{ className?: string }>;
   title: string;
   description: string;
   type: "measurement" | "time";

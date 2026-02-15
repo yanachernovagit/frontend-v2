@@ -7,11 +7,7 @@ import { DataTable } from "@/components/admin/DataTable";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { EvaluationFormModal } from "@/components/admin/evaluations/EvaluationFormModal";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAdminEvaluations } from "@/hooks/useAdminEvaluations";
 import { Evaluation } from "@/types";
 

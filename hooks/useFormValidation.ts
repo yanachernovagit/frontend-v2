@@ -1,4 +1,10 @@
-import { useForm, UseFormReturn, FieldValues } from "react-hook-form";
+import {
+  useForm,
+  UseFormReturn,
+  FieldValues,
+  DefaultValues,
+  Resolver,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
@@ -8,11 +14,11 @@ import { z } from "zod";
  */
 export function useFormValidation<T extends FieldValues>(
   schema: z.ZodTypeAny,
-  defaultValues?: Partial<T>,
+  defaultValues?: DefaultValues<T>,
 ): UseFormReturn<T> {
   return useForm<T>({
-    resolver: zodResolver(schema as any) as any,
-    defaultValues: defaultValues as any,
+    resolver: zodResolver(schema as never) as Resolver<T>,
+    defaultValues,
     mode: "onChange", // Valida mientras el usuario escribe
     reValidateMode: "onChange", // Re-valida en cada cambio
   });
@@ -24,11 +30,11 @@ export function useFormValidation<T extends FieldValues>(
  */
 export function useFormValidationOnSubmit<T extends FieldValues>(
   schema: z.ZodTypeAny,
-  defaultValues?: Partial<T>,
+  defaultValues?: DefaultValues<T>,
 ): UseFormReturn<T> {
   return useForm<T>({
-    resolver: zodResolver(schema as any) as any,
-    defaultValues: defaultValues as any,
+    resolver: zodResolver(schema as never) as Resolver<T>,
+    defaultValues,
     mode: "onSubmit",
     reValidateMode: "onChange", // Después del primer submit, valida en tiempo real
   });

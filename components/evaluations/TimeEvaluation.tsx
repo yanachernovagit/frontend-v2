@@ -17,7 +17,7 @@ import { EvaluationResults } from "./EvaluationResults";
 type Props = {
   evaluation: Evaluation;
   onComplete: (results: Record<string, string>) => Promise<void>;
-  completedResults?: Record<string, any> | null;
+  completedResults?: Record<string, unknown> | null;
 };
 
 export function TimeEvaluation({
@@ -106,7 +106,9 @@ export function TimeEvaluation({
                     <p className="text-sm font-semibold text-gray-500 capitalize mb-1">
                       {label}
                     </p>
-                    <p className="text-2xl font-bold text-purple">{value}</p>
+                    <p className="text-2xl font-bold text-purple">
+                      {String(value)}
+                    </p>
                   </div>
                 );
               })}

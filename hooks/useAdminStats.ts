@@ -54,7 +54,9 @@ export function useAdminStats() {
       setStats(newStats);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al cargar estadísticas");
+      setError(
+        err instanceof Error ? err.message : "Error al cargar estadísticas",
+      );
     } finally {
       setLoading(false);
     }

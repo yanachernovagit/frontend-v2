@@ -33,9 +33,12 @@ export default function SignInPage() {
 
     try {
       const response = await signInService({ email, password });
-      login({ accessToken: response.accessToken, refreshToken: response.refreshToken });
-    } catch (err: any) {
-      setError(err.message || "Error al iniciar sesión");
+      login({
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      });
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al iniciar sesión");
     } finally {
       setIsLoading(false);
     }

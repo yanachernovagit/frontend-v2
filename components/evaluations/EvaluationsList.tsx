@@ -17,6 +17,7 @@ type Props = {
   } | null;
   loading?: boolean;
   showAll?: boolean;
+  hideInstructions?: boolean;
   onSelectEvaluation?: (evaluation: UserEvaluation) => void;
   selectedEvaluationId?: string;
 };

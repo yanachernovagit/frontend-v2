@@ -25,7 +25,7 @@ export interface UserEvaluation {
   evaluation: Evaluation;
   completed: boolean;
   doneAt: string | null;
-  results: Record<string, any> | null;
+  results: Record<string, unknown> | null;
   progressPoint: ProgressPointEnum;
 }
 
@@ -34,7 +34,7 @@ export interface CompletedUserEvaluation {
   userId: string;
   evaluationId: string;
   doneAt: string;
-  results: Record<string, any>;
+  results: Record<string, unknown>;
 }
 
 export interface GroupedUserEvaluations {
@@ -45,5 +45,5 @@ export interface GroupedUserEvaluations {
 export type CompleteEvaluationDto = {
   evaluationId: string;
   phase: PhaseEnum;
-  results: Record<string, any>;
+  results: Record<string, unknown>;
 };

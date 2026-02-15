@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { ProfileQuestion, ProfileQuestionAnswer } from "@/types";
 import { getProfileService } from "@/services/profileQuestionsService";
@@ -32,7 +32,7 @@ export const useProfileQuestions = (): UseProfileQuestionsReturn => {
 
   const storageKey = user?.sub ? `profile_answers_${user.sub}` : null;
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -51,16 +51,18 @@ export const useProfileQuestions = (): UseProfileQuestionsReturn => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [storageKey]);
 
   useEffect(() => {
     fetchQuestions();
-  }, []);
+  }, [fetchQuestions]);
 
   const updateAnswer = (questionId: string, answer: string) => {
+    const currentUserId = user?.sub;
+    if (!currentUserId) return;
     setAnswers((prev) => {
       const updated = prev.filter((a) => a.questionId !== questionId);
-      updated.push({ questionId, answer, userId: user?.sub! });
+      updated.push({ questionId, answer, userId: currentUserId });
       if (storageKey) {
         AsyncStorage.setItem(storageKey, JSON.stringify(updated)).catch(
           () => {},
