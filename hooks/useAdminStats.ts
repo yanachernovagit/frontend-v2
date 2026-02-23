@@ -11,6 +11,8 @@ interface AdminStats {
   routineVariations: number;
   questions: number;
   users: number;
+  notifications: number;
+  [key: string]: number;
 }
 
 const initialStats: AdminStats = {
@@ -20,6 +22,7 @@ const initialStats: AdminStats = {
   routineVariations: 0,
   questions: 0,
   users: 0,
+  notifications: 0,
 };
 
 // Cache simple para evitar re-fetches

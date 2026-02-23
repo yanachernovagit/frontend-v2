@@ -9,3 +9,4 @@ export * from "./user-task";
 export * from "./admin";
 export * from "./user-step";
 export * from "./routine-variation";
+export * from "./notification";

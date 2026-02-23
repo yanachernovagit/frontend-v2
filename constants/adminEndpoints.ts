@@ -45,4 +45,12 @@ export const ADMIN_ENDPOINTS = {
     RENAME: "/api/v1/admin/media/rename",
     DELETE: "/api/v1/admin/media",
   },
+  NOTIFICATIONS: {
+    TEMPLATES: "/api/v1/admin/notifications/templates",
+    UPDATE_TEMPLATE: (id: string) =>
+      `/api/v1/admin/notifications/templates/${id}`,
+    STATS: "/api/v1/admin/notifications/stats",
+    LOGS: "/api/v1/admin/notifications/logs",
+    SEND_TEST: "/api/v1/admin/notifications/test",
+  },
 };

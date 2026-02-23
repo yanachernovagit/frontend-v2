@@ -9,6 +9,7 @@ import {
   Shuffle,
   Users,
   ArrowRight,
+  Bell,
 } from "lucide-react";
 import { useAdminStats } from "@/hooks/useAdminStats";
 
@@ -61,6 +62,14 @@ const sections = [
     color: "magent",
     statKey: "users" as const,
   },
+  {
+    title: "Notificaciones",
+    description: "Gestiona plantillas y revisa el historial de envios.",
+    href: "/admin/notifications",
+    icon: Bell,
+    color: "purple",
+    statKey: "notifications" as const,
+  },
 ];
 
 const colorMap = {
@@ -105,11 +114,14 @@ export default function AdminDashboardPage() {
                 {loading ? (
                   <span className="text-sm text-gray-400">...</span>
                 ) : (
-                  <span
-                    className={`text-sm font-medium ${colors.split(" ")[1]}`}
-                  >
-                    {stats[section.statKey]}
-                  </span>
+                  stats[section.statKey] !==
+                    undefined && (
+                    <span
+                      className={`text-sm font-medium ${colors.split(" ")[1]}`}
+                    >
+                      {stats[section.statKey]}
+                    </span>
+                  )
                 )}
               </div>
               <p className="text-sm text-gray-500">{section.description}</p>
