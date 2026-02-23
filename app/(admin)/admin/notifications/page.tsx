@@ -10,7 +10,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAdminNotifications } from "@/hooks/useAdminNotifications";
 import { NotificationTemplate, NotificationLog } from "@/types";
-import { RefreshCw, Send } from "lucide-react";
+import {
+  RefreshCw,
+  Send,
+  BarChart3,
+  Bell,
+  CalendarDays,
+} from "lucide-react";
 
 type Tab = "templates" | "logs" | "test";
 
@@ -31,6 +37,7 @@ export default function AdminNotificationsPage() {
     templates,
     logs,
     logsFetched,
+    stats,
     loading,
     logsLoading,
     error,
@@ -189,6 +196,58 @@ export default function AdminNotificationsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Stats Overview */}
+      {stats && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="p-5 rounded-2xl bg-gradient-to-br from-white via-purple/5 to-magent/8 border border-purple/20">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 rounded-lg bg-purple/10">
+                <BarChart3 className="w-5 h-5 text-purple" />
+              </div>
+              <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                Total enviadas
+              </span>
+            </div>
+            <p className="text-3xl font-bold text-black">{stats.totalSent}</p>
+          </div>
+          <div className="p-5 rounded-2xl bg-gradient-to-br from-white via-purple/5 to-magent/8 border border-purple/20">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 rounded-lg bg-green-100">
+                <CalendarDays className="w-5 h-5 text-green-600" />
+              </div>
+              <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                Hoy
+              </span>
+            </div>
+            <p className="text-3xl font-bold text-black">{stats.sentToday}</p>
+          </div>
+          <div className="p-5 rounded-2xl bg-gradient-to-br from-white via-purple/5 to-magent/8 border border-purple/20">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 rounded-lg bg-blue-100">
+                <Bell className="w-5 h-5 text-blue-600" />
+              </div>
+              <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                Por tipo
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {stats.byType &&
+                Object.entries(stats.byType).map(([type, count]) => (
+                  <Badge
+                    key={type}
+                    className="bg-purple/10 text-purple border border-purple/20 font-semibold text-xs"
+                  >
+                    {type}: {count}
+                  </Badge>
+                ))}
+              {(!stats.byType || Object.keys(stats.byType).length === 0) && (
+                <span className="text-sm text-gray-400">Sin datos</span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-2">
         {tabs.map((tab) => (
           <button

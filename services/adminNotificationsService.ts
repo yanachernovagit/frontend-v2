@@ -31,7 +31,24 @@ export async function updateNotificationTemplate(
 export async function getNotificationStats(): Promise<NotificationStats> {
   try {
     const response = await authApi.get(ADMIN_ENDPOINTS.NOTIFICATIONS.STATS);
-    return response.data;
+    const raw = response.data;
+
+    // Transform backend shape { total, today, byType: [{ type, _count }] }
+    // to frontend shape { totalSent, sentToday, byType: Record<string, number> }
+    const byType: Record<string, number> = {};
+    if (Array.isArray(raw.byType)) {
+      for (const item of raw.byType) {
+        byType[item.type] = (item._count as any)?._all ?? item._count ?? 0;
+      }
+    } else if (raw.byType && typeof raw.byType === "object") {
+      Object.assign(byType, raw.byType);
+    }
+
+    return {
+      totalSent: raw.totalSent ?? raw.total ?? 0,
+      sentToday: raw.sentToday ?? raw.today ?? 0,
+      byType,
+    };
   } catch {
     throw new Error("No se pudieron obtener las estadisticas.");
   }
