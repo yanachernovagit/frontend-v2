@@ -35,12 +35,6 @@ const teamMembers: TeamMember[] = [
     description:
       "¡Hola! Soy Scarlet, soy alegre, optimista, me gusta hacer ejercicio, disfruto de conocer nuevos lugares y tomar fotos bonitas. También, soy kinesióloga de la Pontificia Universidad Católica de Chile, donde me formé en rehabilitación kinésica en pacientes oncológicos. Mi día a día transcurre entre la Unidad de Oncología Ambulatoria del Hospital Sótero del Río y los cuidados paliativos domiciliarios, lugares que me han enseñado a amar mi quehacer y valorar la importancia de la kinesiología en todas las etapas del cáncer. Estas experiencias y la necesidad de que toda persona con diagnóstico de cáncer tenga acceso a la rehabilitación me han motivado a participar de Oncoactívate, creo fervientemente en el impacto transformador del ejercicio en la vida de las personas. Estoy aquí para brindarles herramientas y que juntas, tengamos una vida más activa.",
   },
-  {
-    name: "Yana Chernova",
-    image: "/img-team/Yana.png",
-    description:
-      "Soy una desarrolladora de software de Ucrania, trabajando en el sector bancario. Mi motivación para crear Oncoactívate proviene de una experiencia personal: mi abuela falleció a causa del cáncer de mama. A través de esta aplicación, quiero ofrecer apoyo e información a quienes luchan contra esta enfermedad. Me apasiona el deporte y disfruto pasar tiempo con mis dos perros. Creo en el equilibrio entre el trabajo y la vida personal, y en el poder de la tecnología para hacer el bien. Con Oncoactívate, espero marcar una diferencia significativa en la vida de muchas personas.",
-  },
 ];
 
 export default function TeamSection() {

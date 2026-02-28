@@ -2,11 +2,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
+import SectionNav from "@/components/SectionNav";
+
+const sections = [
+  { id: "manual", label: "Manual" },
+  { id: "cancer", label: "Hablemos de cáncer" },
+  { id: "tipos", label: "Tipos de cáncer" },
+  { id: "etapas", label: "Etapas" },
+  { id: "tratamientos", label: "Tratamientos" },
+  { id: "terapia-fisica", label: "Terapia física" },
+  { id: "glosario", label: "Glosario" },
+];
 
 export default function AboutUs() {
   return (
     <div className="flex flex-col w-full">
-      <section className="relative w-full min-h-screen flex flex-col md:flex-row items-center justify-between gap-3 p-6 md:px-[12%] bg-linear-to-r from-blue via-purple to-magent">
+      <SectionNav sections={sections} />
+      <section id="manual" className="relative w-full min-h-screen flex flex-col md:flex-row items-center justify-between gap-3 p-6 md:px-[12%] bg-linear-to-r from-blue via-purple to-magent scroll-mt-16">
         <div className="flex flex-col gap-5 md:gap-10 z-20 md:mt-24">
           <h1 className="font-bold text-white text-4xl md:text-5xl">
             Manual de ejercicio terapéutico
@@ -31,7 +43,7 @@ export default function AboutUs() {
           className="absolute inset-0 object-cover z-10"
         />
       </section>
-      <section className="relative w-full flex flex-col md:flex-row items-center justify-between gap-10 p-6 md:pt-32 md:px-[10%]">
+      <section id="cancer" className="relative w-full flex flex-col md:flex-row items-center justify-between gap-10 p-6 md:pt-32 md:px-[10%] scroll-mt-28">
         <div className="flex flex-col">
           <h2 className="font-bold text-magent text-3xl md:text-4xl">
             Hablemos de cáncer
@@ -52,7 +64,7 @@ export default function AboutUs() {
           className="rounded-lg shadow"
         />
       </section>
-      <section className="relative w-full flex flex-col items-center gap-10 p-6 md:pt-24 md:px-[10%]">
+      <section id="tipos" className="relative w-full flex flex-col items-center gap-10 p-6 md:pt-24 md:px-[10%] scroll-mt-28">
         <div className="flex flex-col gap-5">
           <h2 className="font-bold text-magent text-3xl md:text-4xl">
             ¿Qué es el Cáncer de Mama?
@@ -193,7 +205,7 @@ export default function AboutUs() {
           </div>
         </div>
       </section>
-      <section className="relative w-full flex flex-col items-center gap-10 p-6 md:py-24 md:px-[10%]">
+      <section id="etapas" className="relative w-full flex flex-col items-center gap-10 p-6 md:py-24 md:px-[10%] scroll-mt-28">
         <div className="flex flex-col gap-5">
           <h2 className="font-bold text-magent text-3xl md:text-4xl">
             Etapas del Cáncer de Mama
@@ -272,7 +284,7 @@ export default function AboutUs() {
           </div>
         </div>
       </section>
-      <section className="relative w-full flex flex-col items-center gap-10 p-6 md:py-16 md:px-[10%]">
+      <section id="tratamientos" className="relative w-full flex flex-col items-center gap-10 p-6 md:py-16 md:px-[10%] scroll-mt-28">
         <div className="flex flex-col gap-5">
           <h2 className="font-bold text-magent text-3xl md:text-4xl">
             ¿Cuáles son los tratamientos para el cáncer?
@@ -798,7 +810,7 @@ export default function AboutUs() {
           </div>
         </div>
       </section>
-      <section className="relative w-full flex flex-col md:flex-row items-center gap-10 p-6 md:py-20 md:px-[12%]">
+      <section id="terapia-fisica" className="relative w-full flex flex-col md:flex-row items-center gap-10 p-6 md:py-20 md:px-[12%] scroll-mt-28">
         <div className="flex-1 flex flex-col gap-8">
           <div className="flex flex-col gap-4">
             <h2 className="font-bold text-magent text-3xl md:text-4xl">
@@ -837,7 +849,7 @@ export default function AboutUs() {
           />
         </div>
       </section>
-      <section className="relative w-full flex flex-col items-center gap-10 md:py-20 p-6">
+      <section id="glosario" className="relative w-full flex flex-col items-center gap-10 md:py-20 p-6 scroll-mt-28">
         <h2 className="font-bold text-magent text-3xl md:text-4xl">Glosario</h2>
 
         <div className="w-full max-w-5xl">
