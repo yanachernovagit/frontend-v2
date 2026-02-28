@@ -52,6 +52,16 @@ export function Header() {
             Educación
           </Link>
           <Link
+            href="/volumen-brazo"
+            className={`relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-magent after:transition-all after:duration-300 ${
+              pathname === "/volumen-brazo"
+                ? "after:w-full"
+                : "after:w-0 hover:after:w-full"
+            }`}
+          >
+            Volumen de brazo
+          </Link>
+          <Link
             href="/contacto"
             className={`relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-magent after:transition-all after:duration-300 ${
               pathname === "/contacto"
@@ -127,6 +137,17 @@ export function Header() {
             }`}
           >
             Educación
+          </Link>
+          <Link
+            href="/volumen-brazo"
+            onClick={toggleMenu}
+            className={`text-xl transition-colors ${
+              pathname === "/volumen-brazo"
+                ? "text-magent"
+                : "text-white hover:text-magent"
+            }`}
+          >
+            Volumen de brazo
           </Link>
           <Link
             href="/contacto"

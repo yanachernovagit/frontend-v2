@@ -36,4 +36,8 @@ export const ENDPOINTS = {
     REMOVE_TOKEN: "/api/v1/notifications/token",
     PREFERENCES: "/api/v1/notifications/preferences",
   },
+  PUBLIC: {
+    ARM_VOLUME: "/api/v1/evaluation/measure/calculate",
+    ARM_VOLUME_VIDEO: "/api/v1/evaluation/measure",
+  },
 };
