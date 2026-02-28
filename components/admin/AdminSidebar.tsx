@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Brain,
   ClipboardCheck,
   Dumbbell,
   HelpCircle,
@@ -28,6 +29,7 @@ const menuItems = [
   { icon: Users, label: "Usuarios", href: "/admin/users" },
   { icon: ImageIcon, label: "Multimedia", href: "/admin/media" },
   { icon: Bell, label: "Notificaciones", href: "/admin/notifications" },
+  { icon: Brain, label: "IA", href: "/admin/ai" },
 ];
 
 export function AdminSidebar() {

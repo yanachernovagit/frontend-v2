@@ -12,6 +12,7 @@ interface AdminStats {
   questions: number;
   users: number;
   notifications: number;
+  prescriptions: number;
   [key: string]: number;
 }
 
@@ -23,12 +24,12 @@ const initialStats: AdminStats = {
   questions: 0,
   users: 0,
   notifications: 0,
+  prescriptions: 0,
 };
 
-// Cache simple para evitar re-fetches
 let cachedStats: AdminStats | null = null;
 let cacheTimestamp = 0;
-const CACHE_DURATION = 60000; // 1 minuto
+const CACHE_DURATION = 60000;
 
 export function useAdminStats() {
   const [stats, setStats] = useState<AdminStats>(cachedStats || initialStats);
@@ -36,7 +37,6 @@ export function useAdminStats() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchStats = useCallback(async (force = false) => {
-    // Usar caché si es válido
     const now = Date.now();
     if (!force && cachedStats && now - cacheTimestamp < CACHE_DURATION) {
       setStats(cachedStats);
@@ -50,7 +50,6 @@ export function useAdminStats() {
       const response = await authApi.get<AdminStats>(ADMIN_ENDPOINTS.STATS);
       const newStats = response.data;
 
-      // Actualizar caché
       cachedStats = newStats;
       cacheTimestamp = now;
 

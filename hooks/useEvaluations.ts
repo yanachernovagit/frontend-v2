@@ -7,8 +7,7 @@ import type {
   CompleteEvaluationDto,
   GroupedUserEvaluations,
 } from "@/types";
-import { useCallback, useEffect, useState } from "react";
-import { set } from "zod";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface UseUserPlanReturn {
   evaluations: GroupedUserEvaluations | null;
@@ -26,14 +25,16 @@ export const useEvaluations = (): UseUserPlanReturn => {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
   const fetchEvaluations = useCallback(async () => {
-    setLoading(true);
+    if (!hasFetched.current) setLoading(true);
     setError(null);
 
     try {
       const _evaluations = await getUserEvaluationsService();
       setEvaluations(_evaluations);
+      hasFetched.current = true;
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Error desconocido";

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  Brain,
   ClipboardCheck,
   Dumbbell,
   HelpCircle,
@@ -69,6 +70,14 @@ const sections = [
     icon: Bell,
     color: "purple",
     statKey: "notifications" as const,
+  },
+  {
+    title: "IA",
+    description: "Configura la prescripción con inteligencia artificial.",
+    href: "/admin/ai",
+    icon: Brain,
+    color: "magent",
+    statKey: "prescriptions" as const,
   },
 ];
 
