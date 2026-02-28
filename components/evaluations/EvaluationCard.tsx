@@ -15,9 +15,15 @@ type Props = {
   evaluation: UserEvaluation;
   onPress?: () => void;
   isSelected?: boolean;
+  hideResults?: boolean;
 };
 
-export function EvaluationCard({ evaluation, onPress, isSelected }: Props) {
+export function EvaluationCard({
+  evaluation,
+  onPress,
+  isSelected,
+  hideResults = false,
+}: Props) {
   const { evaluation: evalData, completed, results } = evaluation;
   const { name, description, type, seconds, logoUrl, imageUrl } = evalData;
   const { formatDisplayNumber } = useCommonUtils();
@@ -25,6 +31,7 @@ export function EvaluationCard({ evaluation, onPress, isSelected }: Props) {
   const isTimeType = type === EvaluationTypeEnum.TIME;
   const isMeasureType = type === EvaluationTypeEnum.MEASURE;
   const isMovementRangeType = type === EvaluationTypeEnum.MOVEMENT_RANGE;
+  const isCompactCompleted = completed && hideResults;
 
   const formatTime = () => {
     const minutes = Math.floor(seconds / 60);
@@ -36,12 +43,16 @@ export function EvaluationCard({ evaluation, onPress, isSelected }: Props) {
     <Card
       onClick={onPress}
       className={`
-        rounded-2xl border-2 transition p-4 min-h-[180px]
+        rounded-2xl border-2 transition p-4 ${isCompactCompleted ? "min-h-[120px]" : "min-h-[180px]"}
         ${isSelected ? "border-purple" : "border-transparent"}
         ${onPress ? "cursor-pointer hover:shadow-md" : ""}
       `}
     >
-      <CardContent className="flex flex-col justify-between gap-3 p-0 min-h-[148px]">
+      <CardContent
+        className={`flex flex-col justify-between gap-3 p-0 ${
+          isCompactCompleted ? "min-h-[88px]" : "min-h-[148px]"
+        }`}
+      >
         <div className="flex items-center h-14">
           <div className="shrink-0 w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden">
             {imageUrl ? (
@@ -96,49 +107,47 @@ export function EvaluationCard({ evaluation, onPress, isSelected }: Props) {
           </div>
         )}
 
-        {completed && results && (
-          <>
-            <div className="flex items-center justify-center gap-2 rounded-xl border-2 border-purple bg-purple px-4 py-2">
-              <Image src={ApprovalWhite} alt={name} width={20} height={20} />
-              <span className="font-bold text-white">Completado</span>
-            </div>
+        {completed && (
+          <div className="flex items-center justify-center gap-2 rounded-xl border-2 border-purple bg-purple px-4 py-2">
+            <Image src={ApprovalWhite} alt={name} width={20} height={20} />
+            <span className="font-bold text-white">Completado</span>
+          </div>
+        )}
 
-            <div className="pt-3 border-t border-gray-200">
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(results).map(([key, value]) => {
-                  const label =
-                    evalData.expectedResults[key] || key.replace(/_/g, " ");
-                  const unit = isMeasureType ? "ml" : "";
+        {completed && results && !hideResults && (
+          <div className="pt-3 border-t border-gray-200">
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(results).map(([key, value]) => {
+                const label =
+                  evalData.expectedResults[key] || key.replace(/_/g, " ");
+                const unit = isMeasureType ? "ml" : "";
 
-                  const formattedValue = isMeasureType
-                    ? formatDisplayNumber(Number(value))
-                    : String(value);
+                const formattedValue = isMeasureType
+                  ? formatDisplayNumber(Number(value))
+                  : String(value);
 
-                  return (
-                    <div
-                      key={key}
-                      className="w-[48%] rounded-xl border border-gray-200 bg-white p-3"
-                    >
-                      <p className="text-sm text-gray-500 capitalize">
-                        {label}
-                      </p>
+                return (
+                  <div
+                    key={key}
+                    className="w-[48%] rounded-xl border border-gray-200 bg-white p-3"
+                  >
+                    <p className="text-sm text-gray-500 capitalize">{label}</p>
 
-                      <div className="mt-1 flex items-baseline">
-                        <span className="text-xl font-bold text-purple">
-                          {formattedValue}
+                    <div className="mt-1 flex items-baseline">
+                      <span className="text-xl font-bold text-purple">
+                        {formattedValue}
+                      </span>
+                      {unit && (
+                        <span className="ml-1 text-sm font-semibold text-purple">
+                          {unit}
                         </span>
-                        {unit && (
-                          <span className="ml-1 text-sm font-semibold text-purple">
-                            {unit}
-                          </span>
-                        )}
-                      </div>
+                      )}
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          </>
+          </div>
         )}
 
         {completed && !results && (

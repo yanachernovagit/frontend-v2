@@ -3,10 +3,11 @@
 import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { UserEvaluation } from "@/types";
+import { UserEvaluation, UserPlan } from "@/types";
 import { EvaluationCard } from "./EvaluationCard";
 import { SkeletonEvaluationList } from "./SkeletonEvaluationList";
 import { useUserPlan } from "@/hooks/useUserPlan";
+import { useEvaluations } from "@/hooks/useEvaluations";
 
 type FilterType = "pre" | "post";
 
@@ -18,51 +19,89 @@ type Props = {
   loading?: boolean;
   showAll?: boolean;
   hideInstructions?: boolean;
+  hideResults?: boolean;
+  userPlan?: UserPlan | null;
+  filter?: FilterType;
+  onFilterChange?: (filter: FilterType) => void;
   onSelectEvaluation?: (evaluation: UserEvaluation) => void;
   selectedEvaluationId?: string;
 };
 
 export function EvaluationsList({
   evaluations,
-  loading = false,
+  loading,
   showAll = false,
+  hideResults = false,
+  userPlan,
+  filter,
+  onFilterChange,
   onSelectEvaluation,
   selectedEvaluationId,
 }: Props) {
-  const [filter, setFilter] = useState<FilterType>("pre");
-  const { userPlan } = useUserPlan();
+  const [internalFilter, setInternalFilter] = useState<FilterType>("pre");
+  const resolvedFilter = filter ?? internalFilter;
+
+  const shouldUseInternalData =
+    evaluations === undefined && loading === undefined;
+  const shouldUseInternalPlan = userPlan === undefined;
+
+  const { userPlan: internalUserPlan } = useUserPlan({
+    autoFetch: shouldUseInternalPlan,
+  });
+  const { evaluations: internalEvaluations, loading: internalLoading } =
+    useEvaluations({
+      autoFetch: shouldUseInternalData,
+    });
+
+  const resolvedUserPlan = shouldUseInternalPlan ? internalUserPlan : userPlan;
+  const resolvedEvaluations = shouldUseInternalData
+    ? internalEvaluations
+    : (evaluations ?? null);
+  const resolvedLoading = shouldUseInternalData
+    ? internalLoading
+    : Boolean(loading);
 
   const filteredEvaluations = useMemo(() => {
-    if (!evaluations) return [];
+    if (!resolvedEvaluations) return [];
 
     const allEvaluations =
-      filter === "pre" ? evaluations.pre_plan : evaluations.post_plan;
+      resolvedFilter === "pre"
+        ? resolvedEvaluations.pre_plan
+        : resolvedEvaluations.post_plan;
 
     return showAll ? allEvaluations : allEvaluations.filter((e) => e.completed);
-  }, [evaluations, showAll, filter]);
+  }, [resolvedEvaluations, showAll, resolvedFilter]);
 
   const isPostPlanLocked =
-    filter === "post" && userPlan && userPlan.currentWeek > userPlan.totalWeeks;
+    resolvedFilter === "post" &&
+    resolvedUserPlan &&
+    resolvedUserPlan.currentWeek > resolvedUserPlan.totalWeeks;
 
   return (
     <Card className="bg-bg-secondary rounded-xl h-full flex flex-col gap-1 p-2">
       <div className="flex gap-2">
         <Button
-          variant={filter === "pre" ? "default" : "outline_magent"}
-          onClick={() => setFilter("pre")}
+          variant={resolvedFilter === "pre" ? "default" : "outline_magent"}
+          onClick={() => {
+            setInternalFilter("pre");
+            onFilterChange?.("pre");
+          }}
           className="flex-1"
         >
           Pre-cirugía
         </Button>
         <Button
-          variant={filter === "post" ? "default" : "outline_magent"}
-          onClick={() => setFilter("post")}
+          variant={resolvedFilter === "post" ? "default" : "outline_magent"}
+          onClick={() => {
+            setInternalFilter("post");
+            onFilterChange?.("post");
+          }}
           className="flex-1"
         >
           Post-cirugía
         </Button>
       </div>
-      {loading ? (
+      {resolvedLoading ? (
         <SkeletonEvaluationList count={3} />
       ) : filteredEvaluations.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
@@ -85,6 +124,7 @@ export function EvaluationsList({
                 evaluation={evalItem}
                 onPress={() => onSelectEvaluation?.(evalItem)}
                 isSelected={selectedEvaluationId === evalItem.evaluation.id}
+                hideResults={hideResults}
               />
             ))}
           </div>
@@ -99,7 +139,8 @@ export function EvaluationsList({
                   evaluaciones post-cirugía
                 </p>
                 <p className="text-xs text-purple font-semibold mt-3">
-                  Semana {userPlan?.currentWeek} de {userPlan?.totalWeeks}
+                  Semana {resolvedUserPlan?.currentWeek} de{" "}
+                  {resolvedUserPlan?.totalWeeks}
                 </p>
               </div>
             </div>

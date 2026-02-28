@@ -1,4 +1,4 @@
-import { UserPlan } from "@/types";
+import { ChangePlanPhaseDto, UserPlan } from "@/types";
 import authApi from "./authApi";
 import { ENDPOINTS } from "@/constants/endpoints";
 
@@ -17,5 +17,19 @@ export async function updateUserPlanProgressService(): Promise<UserPlan> {
     return response.data;
   } catch {
     throw new Error("No se pudo actualizar tu progreso en el plan.");
+  }
+}
+
+export async function changePlanPhaseService(
+  data: ChangePlanPhaseDto,
+): Promise<UserPlan> {
+  try {
+    const response = await authApi.patch(
+      ENDPOINTS.USER_PLAN.UPDATE_PHASE,
+      data,
+    );
+    return response.data;
+  } catch {
+    throw new Error("No se pudo actualizar la fase del plan.");
   }
 }

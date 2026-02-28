@@ -19,7 +19,13 @@ interface UseUserPlanReturn {
   refetch: () => Promise<void>;
 }
 
-export const useEvaluations = (): UseUserPlanReturn => {
+type UseEvaluationsOptions = {
+  autoFetch?: boolean;
+};
+
+export const useEvaluations = ({
+  autoFetch = true,
+}: UseEvaluationsOptions = {}): UseUserPlanReturn => {
   const [evaluations, setEvaluations] = useState<GroupedUserEvaluations | null>(
     null,
   );
@@ -45,8 +51,9 @@ export const useEvaluations = (): UseUserPlanReturn => {
   }, []);
 
   useEffect(() => {
+    if (!autoFetch) return;
     fetchEvaluations();
-  }, [fetchEvaluations]);
+  }, [autoFetch, fetchEvaluations]);
 
   const completeEvaluation = useCallback(
     async (data: CompleteEvaluationDto): Promise<CompletedUserEvaluation> => {
