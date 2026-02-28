@@ -65,6 +65,7 @@ export default function EvaluationsPage() {
               {selectedEvaluation.evaluation.type ===
               EvaluationTypeEnum.TIME ? (
                 <TimeEvaluation
+                  key={selectedEvaluation.evaluation.id}
                   evaluation={selectedEvaluation.evaluation}
                   onComplete={handleCompleteEvaluation}
                   completedResults={selectedEvaluation.results}

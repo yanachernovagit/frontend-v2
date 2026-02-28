@@ -31,7 +31,7 @@ export function ExerciseCard({
   return (
     <div className="flex flex-col w-full h-full">
       <div className="flex-1 overflow-y-auto w-full">
-        {exercise.videoUrl ? (
+        {exercise.videoUrl && (
           <div className="w-full h-72 rounded-2xl overflow-hidden bg-black border border-gray-200 mb-4">
             <VideoPreview
               videoUrl={exercise.videoUrl}
@@ -42,16 +42,7 @@ export function ExerciseCard({
               loadingBackgroundClassName="bg-purple-400"
             />
           </div>
-        ) : exercise.videoCoverUrl ? (
-          <div className="w-full h-60 relative mb-4">
-            <Image
-              src={exercise.videoCoverUrl}
-              alt={exercise.name}
-              fill
-              className="object-contain"
-            />
-          </div>
-        ) : null}
+        )}
         <div className="flex items-center gap-3 mb-4">
           <div className="w-8 h-8 bg-magent rounded-full flex items-center justify-center text-white font-bold">
             {exercise.order + 1}
@@ -150,7 +141,14 @@ export function ExerciseCard({
             disabled={isUpdating}
             className="bg-magent w-full font-bold h-12"
           >
-            Hecho
+            {isUpdating ? (
+              <>
+                <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-r-transparent" />
+                Guardando...
+              </>
+            ) : (
+              "Hecho"
+            )}
           </Button>
         </div>
       )}

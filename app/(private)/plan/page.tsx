@@ -36,7 +36,7 @@ export default function PlanPage() {
     useState<SelectedExercise>(null);
 
   const handleCompleteProfile = useCallback(() => {
-    router.push("/auth/questions");
+    router.push("/preguntas");
   }, [router]);
 
   const handleCompleteEvaluation = useCallback(() => {
@@ -61,13 +61,31 @@ export default function PlanPage() {
     [],
   );
 
+  const isBlocked =
+    loadingTasks ||
+    !userTasks ||
+    !userTasks.profileCompleted ||
+    !userTasks.firstEvaluationCompleted ||
+    (userPlan &&
+      userPlan.currentWeek > userPlan.totalWeeks &&
+      !userTasks.secondEvaluationCompleted);
+
   return (
-    <div className="h-full w-full grid grid-cols-2 gap-3 overflow-hidden">
+    <div
+      className={`h-full w-full grid gap-3 overflow-hidden ${isBlocked ? "grid-cols-1" : "grid-cols-2"}`}
+    >
       <Card className="bg-bg-secondary rounded-xl h-full flex flex-col gap-1 p-2 w-full overflow-hidden">
         <h2 className="font-bold text-2xl text-magent text-center w-full shrink-0">
           Ejercicios de hoy
         </h2>
-        {!loadingTasks && !userTasks ? (
+        {loadingTasks ? (
+          <div className="h-full w-full flex flex-col items-center justify-center px-8">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-magent border-r-transparent mb-4" />
+            <p className="text-center text-xl font-bold text-magent">
+              Cargando...
+            </p>
+          </div>
+        ) : !loadingTasks && !userTasks ? (
           <div className="h-full w-full flex flex-col items-center justify-center px-8">
             <p className="text-center text-xl font-bold text-magent mb-4">
               No se pudieron cargar tus tareas. Por favor, intenta nuevamente.
@@ -145,19 +163,21 @@ export default function PlanPage() {
         )}
       </Card>
 
-      <Card className="bg-white rounded-xl h-full flex items-center justify-center overflow-hidden p-3">
-        <ExerciseContainer
-          userPlan={userPlan}
-          loading={loadingPlan}
-          updatingProgress={updatingProgress}
-          changedRoutine={changedRoutine}
-          routineIndex={selectedExercise?.routineIndex}
-          exerciseIndex={selectedExercise?.exerciseIndex}
-          updatePlanProgress={handleUpdateProgress}
-          viewNextRoutine={viewNextRoutine}
-          onExerciseChange={handleExerciseChange}
-        />
-      </Card>
+      {!isBlocked && (
+        <Card className="bg-white rounded-xl h-full flex items-center justify-center overflow-hidden p-3">
+          <ExerciseContainer
+            userPlan={userPlan}
+            loading={loadingPlan}
+            updatingProgress={updatingProgress}
+            changedRoutine={changedRoutine}
+            routineIndex={selectedExercise?.routineIndex}
+            exerciseIndex={selectedExercise?.exerciseIndex}
+            updatePlanProgress={handleUpdateProgress}
+            viewNextRoutine={viewNextRoutine}
+            onExerciseChange={handleExerciseChange}
+          />
+        </Card>
+      )}
     </div>
   );
 }
