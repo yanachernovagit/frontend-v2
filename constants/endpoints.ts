@@ -31,4 +31,9 @@ export const ENDPOINTS = {
   USER_TASKS: {
     GET: "/api/v1/users/tasks",
   },
+  NOTIFICATIONS: {
+    REGISTER_TOKEN: "/api/v1/notifications/token",
+    REMOVE_TOKEN: "/api/v1/notifications/token",
+    PREFERENCES: "/api/v1/notifications/preferences",
+  },
 };

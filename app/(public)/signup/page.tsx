@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signUpService } from "@/services/authService";
+import { signInService, signUpService } from "@/services/authService";
 import { useAuth } from "@/hooks/useAuth";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import {
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -67,7 +67,17 @@ export default function SignUpPage() {
         phone: formData.phone,
       });
 
-      router.push("/signin?registered=true");
+      const session = await signInService({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      login({
+        accessToken: session.accessToken,
+        refreshToken: session.refreshToken,
+      });
+
+      router.push("/preguntas");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Error al registrarse");
     } finally {
@@ -118,10 +128,7 @@ export default function SignUpPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label
-                htmlFor="fullName"
-                className="text-sm font-medium"
-              >
+              <label htmlFor="fullName" className="text-sm font-medium">
                 Nombre completo
               </label>
               <Input
@@ -136,10 +143,7 @@ export default function SignUpPage() {
               />
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="email"
-                className="text-sm font-medium"
-              >
+              <label htmlFor="email" className="text-sm font-medium">
                 Correo electrónico
               </label>
               <Input
@@ -154,10 +158,7 @@ export default function SignUpPage() {
               />
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="phone"
-                className="text-sm font-medium"
-              >
+              <label htmlFor="phone" className="text-sm font-medium">
                 Teléfono
               </label>
               <Input
@@ -172,10 +173,7 @@ export default function SignUpPage() {
               />
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="password"
-                className="text-sm font-medium"
-              >
+              <label htmlFor="password" className="text-sm font-medium">
                 Contraseña
               </label>
               <Input
@@ -190,10 +188,7 @@ export default function SignUpPage() {
               />
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="confirmPassword"
-                className="text-sm font-medium"
-              >
+              <label htmlFor="confirmPassword" className="text-sm font-medium">
                 Confirmar contraseña
               </label>
               <Input

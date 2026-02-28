@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { ProfileQuestion, ProfileQuestionAnswer } from "@/types";
 import { getProfileService } from "@/services/profileQuestionsService";
 import { saveAllProfileAnswersService } from "@/services/profileAnswersService";
@@ -32,18 +31,27 @@ export const useProfileQuestions = (): UseProfileQuestionsReturn => {
 
   const storageKey = user?.sub ? `profile_answers_${user.sub}` : null;
 
+  const setStoredAnswers = useCallback(
+    (nextAnswers: ProfileQuestionAnswer[]) => {
+      if (!storageKey || typeof window === "undefined") return;
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(nextAnswers));
+      } catch {
+        // Ignore storage errors to avoid blocking question flow.
+      }
+    },
+    [storageKey],
+  );
+
   const fetchQuestions = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await getProfileService();
       setQuestions(data);
-      if (storageKey) {
-        const saved = await AsyncStorage.getItem(storageKey);
-        if (saved) {
-          const parsed: ProfileQuestionAnswer[] = JSON.parse(saved);
-          setAnswers(parsed);
-        }
+      setAnswers([]);
+      if (storageKey && typeof window !== "undefined") {
+        localStorage.removeItem(storageKey);
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Error desconocido";
@@ -63,11 +71,7 @@ export const useProfileQuestions = (): UseProfileQuestionsReturn => {
     setAnswers((prev) => {
       const updated = prev.filter((a) => a.questionId !== questionId);
       updated.push({ questionId, answer, userId: currentUserId });
-      if (storageKey) {
-        AsyncStorage.setItem(storageKey, JSON.stringify(updated)).catch(
-          () => {},
-        );
-      }
+      setStoredAnswers(updated);
       return updated;
     });
   };
@@ -94,8 +98,8 @@ export const useProfileQuestions = (): UseProfileQuestionsReturn => {
     submitAllAnswers: async () => {
       try {
         await saveAllProfileAnswersService(answers);
-        if (storageKey) {
-          await AsyncStorage.removeItem(storageKey);
+        if (storageKey && typeof window !== "undefined") {
+          localStorage.removeItem(storageKey);
         }
         return {
           success: true,

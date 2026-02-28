@@ -13,6 +13,11 @@ const titilliumWeb = Titillium_Web({
 export const metadata: Metadata = {
   title: "OncoActivate",
   description: "Plataforma de educación oncológica",
+  icons: {
+    icon: "/brand/icon-square.png",
+    shortcut: "/brand/icon-square.png",
+    apple: "/brand/icon-square.png",
+  },
 };
 
 export default function RootLayout({

@@ -87,7 +87,7 @@ export default function SignInPage() {
               Ir al Panel de Administración
             </Button>
             <Button
-              variant="outline"
+              variant="outline_magent"
               className="w-full"
               onClick={() => router.push("/inicio")}
             >

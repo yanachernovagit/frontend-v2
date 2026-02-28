@@ -14,9 +14,10 @@ import ApprovalWhite from "@/public/icons/white/Approval.svg";
 type Props = {
   evaluation: UserEvaluation;
   onPress?: () => void;
+  isSelected?: boolean;
 };
 
-export function EvaluationCard({ evaluation, onPress }: Props) {
+export function EvaluationCard({ evaluation, onPress, isSelected }: Props) {
   const { evaluation: evalData, completed, results } = evaluation;
   const { name, description, type, seconds, logoUrl, imageUrl } = evalData;
   const { formatDisplayNumber } = useCommonUtils();
@@ -35,7 +36,8 @@ export function EvaluationCard({ evaluation, onPress }: Props) {
     <Card
       onClick={onPress}
       className={`
-        rounded-2xl border transition p-4 min-h-[180px]
+        rounded-2xl border-2 transition p-4 min-h-[180px]
+        ${isSelected ? "border-purple" : "border-transparent"}
         ${onPress ? "cursor-pointer hover:shadow-md" : ""}
       `}
     >

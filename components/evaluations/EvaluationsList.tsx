@@ -42,9 +42,7 @@ export function EvaluationsList({
   }, [evaluations, showAll, filter]);
 
   const isPostPlanLocked =
-    filter === "post" &&
-    userPlan &&
-    userPlan.currentWeek <= userPlan.totalWeeks;
+    filter === "post" && userPlan && userPlan.currentWeek > userPlan.totalWeeks;
 
   return (
     <Card className="bg-bg-secondary rounded-xl h-full flex flex-col gap-1 p-2">
@@ -77,24 +75,17 @@ export function EvaluationsList({
       ) : (
         <div className="relative flex-1 min-h-0">
           <div
-            className={`space-y-3 overflow-y-auto h-full py-2 transition-all ${
+            className={`space-y-3 overflow-y-auto h-full py-2 transition-all no-scrollbar ${
               isPostPlanLocked ? "blur-sm pointer-events-none" : ""
             }`}
           >
             {filteredEvaluations.map((evalItem) => (
-              <div
+              <EvaluationCard
                 key={evalItem.evaluation.id}
-                className={`transition-all ring rounded-2xl ${
-                  selectedEvaluationId === evalItem.evaluation.id
-                    ? "ring-purple"
-                    : "ring-transparent"
-                }`}
-              >
-                <EvaluationCard
-                  evaluation={evalItem}
-                  onPress={() => onSelectEvaluation?.(evalItem)}
-                />
-              </div>
+                evaluation={evalItem}
+                onPress={() => onSelectEvaluation?.(evalItem)}
+                isSelected={selectedEvaluationId === evalItem.evaluation.id}
+              />
             ))}
           </div>
           {isPostPlanLocked && (

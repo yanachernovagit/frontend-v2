@@ -18,7 +18,7 @@ export const WelcomeCard = () => {
   }, [refetch]);
 
   const handleCompleteProfile = () => {
-    router.push("/auth/questions");
+    router.push("/preguntas");
   };
 
   return (
