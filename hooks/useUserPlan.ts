@@ -16,7 +16,13 @@ interface UseUserPlanReturn {
   refetch: () => Promise<void>;
 }
 
-export const useUserPlan = (): UseUserPlanReturn => {
+type UseUserPlanOptions = {
+  autoFetch?: boolean;
+};
+
+export const useUserPlan = ({
+  autoFetch = true,
+}: UseUserPlanOptions = {}): UseUserPlanReturn => {
   const [userPlan, setUserPlan] = useState<UserPlan | null>(null);
   const [changedRoutine, setChangedRoutine] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -70,10 +76,11 @@ export const useUserPlan = (): UseUserPlanReturn => {
   };
 
   useEffect(() => {
+    if (!autoFetch) return;
     if (hasFetchedOnMount.current) return;
     hasFetchedOnMount.current = true;
     fetchUserPlan();
-  }, [fetchUserPlan]);
+  }, [autoFetch, fetchUserPlan]);
 
   return {
     userPlan,

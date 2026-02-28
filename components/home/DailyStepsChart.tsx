@@ -83,7 +83,7 @@ export function DailyStepsChart() {
         </p>
       </div>
 
-      <div className="flex-1 min-h-0 w-full relative">
+      <div className="relative h-[240px] w-full">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-bg-secondary/50 z-10">
             <p className="text-sm text-gray-500">Cargando pasos...</p>
@@ -101,10 +101,7 @@ export function DailyStepsChart() {
             </p>
           </div>
         )}
-        <ChartContainer
-          config={chartConfig}
-          className="w-full h-full aspect-auto"
-        >
+        <ChartContainer config={chartConfig} className="h-full w-full">
           <BarChart data={dailyStepsData} margin={{ right: 0, left: 0 }}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis

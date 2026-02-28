@@ -7,7 +7,17 @@ export async function getDailyStepsService(
 ): Promise<UserStep[]> {
   try {
     const response = await authApi.get(ENDPOINTS.STEPS.BY_PERIOD(period));
-    return response.data.data || [];
+    const payload = response.data;
+
+    if (Array.isArray(payload)) {
+      return payload as UserStep[];
+    }
+
+    if (Array.isArray(payload?.data)) {
+      return payload.data as UserStep[];
+    }
+
+    return [];
   } catch {
     throw new Error("No se pudieron obtener tus pasos diarios.");
   }

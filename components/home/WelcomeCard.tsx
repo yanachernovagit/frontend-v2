@@ -1,21 +1,20 @@
 "use client";
 
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect } from "react";
-import { useUserTasks } from "@/hooks/useUserTasks";
 import { useRouter } from "next/navigation";
 import { SkeletonLoader } from "../shared/SkeletonLoader";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import type { UserTasksStatus } from "@/types";
 
-export const WelcomeCard = () => {
+type Props = {
+  userTasks: UserTasksStatus | null;
+  loading: boolean;
+};
+
+export const WelcomeCard = ({ userTasks, loading }: Props) => {
   const { user } = useAuth();
-  const { userTasks, loading, refetch } = useUserTasks();
   const router = useRouter();
-
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
 
   const handleCompleteProfile = () => {
     router.push("/preguntas");
