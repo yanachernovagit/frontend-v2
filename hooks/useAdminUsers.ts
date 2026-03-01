@@ -26,9 +26,9 @@ export function useAdminUsers() {
   const [userDetail, setUserDetail] = useState<AdminUserDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
 
-  const [prescriptions, setPrescriptions] = useState<
-    PrescriptionHistoryItem[]
-  >([]);
+  const [prescriptions, setPrescriptions] = useState<PrescriptionHistoryItem[]>(
+    [],
+  );
   const [prescriptionsLoading, setPrescriptionsLoading] = useState(false);
 
   const fetchUsers = useCallback(async () => {
@@ -38,9 +38,7 @@ export function useAdminUsers() {
       const data = await getAdminUsers();
       setUsers(data);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Error al cargar usuarios",
-      );
+      setError(err instanceof Error ? err.message : "Error al cargar usuarios");
     } finally {
       setLoading(false);
     }
@@ -73,9 +71,7 @@ export function useAdminUsers() {
     setError(null);
     try {
       const updated = await updateAdminUserRole(id, role);
-      setUsers((prev) =>
-        prev.map((user) => (user.id === id ? updated : user)),
-      );
+      setUsers((prev) => prev.map((user) => (user.id === id ? updated : user)));
       return updated;
     } catch (err) {
       setError(
@@ -111,9 +107,7 @@ export function useAdminUsers() {
       await resetAdminUserPassword(id, newPassword);
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Error al resetear contraseña",
+        err instanceof Error ? err.message : "Error al resetear contraseña",
       );
       throw err;
     }
@@ -168,9 +162,7 @@ export function useAdminUsers() {
       const detail = await createAdminUserPlan(id, phase);
       setUserDetail(detail);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Error al crear el plan",
-      );
+      setError(err instanceof Error ? err.message : "Error al crear el plan");
       throw err;
     }
   };
@@ -190,9 +182,7 @@ export function useAdminUsers() {
       setUserDetail(detail);
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Error al actualizar las tareas",
+        err instanceof Error ? err.message : "Error al actualizar las tareas",
       );
       throw err;
     }
@@ -256,9 +246,7 @@ export function useAdminUsers() {
     try {
       const detail = await toggleAdminUserDebug(id, debug);
       setUserDetail(detail);
-      setUsers((prev) =>
-        prev.map((u) => (u.id === id ? { ...u, debug } : u)),
-      );
+      setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, debug } : u)));
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Error al cambiar modo debug",

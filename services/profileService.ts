@@ -1,5 +1,6 @@
 import authApi from "./authApi";
 import { ENDPOINTS } from "@/constants/endpoints";
+import type { UpdateProfileDto } from "@/types";
 
 export async function uploadProfilePicture(
   file: File,
@@ -14,5 +15,15 @@ export async function uploadProfilePicture(
     return response.data;
   } catch {
     throw new Error("No se pudo subir la foto de perfil.");
+  }
+}
+
+export async function updateProfileService(
+  payload: UpdateProfileDto,
+): Promise<void> {
+  try {
+    await authApi.patch(ENDPOINTS.PROFILE.EDIT, payload);
+  } catch {
+    throw new Error("No se pudo actualizar el perfil.");
   }
 }

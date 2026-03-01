@@ -25,7 +25,6 @@ export default function SignUpPage() {
     password: "",
     confirmPassword: "",
     fullName: "",
-    phone: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +63,6 @@ export default function SignUpPage() {
         email: formData.email,
         password: formData.password,
         fullName: formData.fullName,
-        phone: formData.phone,
       });
 
       const session = await signInService({
@@ -152,21 +150,6 @@ export default function SignUpPage() {
                 type="email"
                 placeholder="tu@email.com"
                 value={formData.email}
-                onChange={handleChange}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="phone" className="text-sm font-medium">
-                Teléfono
-              </label>
-              <Input
-                id="phone"
-                name="phone"
-                type="tel"
-                placeholder="+52 123 456 7890"
-                value={formData.phone}
                 onChange={handleChange}
                 required
                 disabled={isLoading}

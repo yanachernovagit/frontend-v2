@@ -27,7 +27,7 @@ export const useProfileQuestions = (): UseProfileQuestionsReturn => {
   const [error, setError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<ProfileQuestionAnswer[]>([]);
 
-  const { user } = useAuth();
+  const { user, refreshSession } = useAuth();
 
   const storageKey = user?.sub ? `profile_answers_${user.sub}` : null;
 
@@ -98,6 +98,7 @@ export const useProfileQuestions = (): UseProfileQuestionsReturn => {
     submitAllAnswers: async () => {
       try {
         await saveAllProfileAnswersService(answers);
+        await refreshSession();
         if (storageKey && typeof window !== "undefined") {
           localStorage.removeItem(storageKey);
         }

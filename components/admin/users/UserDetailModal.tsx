@@ -310,7 +310,8 @@ export function UserDetailModal({
     const pRoutine = parseInt(editProgressRoutine, 10);
     const pExercise = parseInt(editProgressExercise, 10);
 
-    if (!isNaN(week) && week !== user.plan?.currentWeek) data.currentWeek = week;
+    if (!isNaN(week) && week !== user.plan?.currentWeek)
+      data.currentWeek = week;
     if (!isNaN(pRoutine) && pRoutine !== user.plan?.progressRoutine)
       data.progressRoutine = pRoutine;
     if (!isNaN(pExercise) && pExercise !== user.plan?.progressExercise)
@@ -342,10 +343,7 @@ export function UserDetailModal({
     }
   };
 
-  const handleToggleTask = async (
-    key: string,
-    currentValue: boolean,
-  ) => {
+  const handleToggleTask = async (key: string, currentValue: boolean) => {
     setTasksSubmitting(true);
     try {
       await onUpdateTasks(user.id, { [key]: !currentValue });
@@ -389,10 +387,7 @@ export function UserDetailModal({
     setEmailSending(true);
     try {
       await onSendResetEmail(user.id);
-      showFeedback(
-        "success",
-        "Email de recuperacion enviado correctamente.",
-      );
+      showFeedback("success", "Email de recuperacion enviado correctamente.");
     } catch {
       showFeedback("error", "Error al enviar el email de recuperacion.");
     } finally {
@@ -514,9 +509,7 @@ export function UserDetailModal({
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">
-                        Email
-                      </p>
+                      <p className="text-xs text-gray-500 font-medium">Email</p>
                       <p className="text-sm font-semibold text-black">
                         {user.email ?? "-"}
                       </p>
@@ -570,9 +563,7 @@ export function UserDetailModal({
                     <Button
                       size="sm"
                       onClick={handleUpdateRole}
-                      disabled={
-                        roleSubmitting || selectedRole === user.role
-                      }
+                      disabled={roleSubmitting || selectedRole === user.role}
                       className="bg-gradient-to-r from-purple to-magent hover:from-purple/90 hover:to-magent/90 font-semibold"
                     >
                       <Shield className="w-4 h-4 mr-1" />
@@ -851,9 +842,7 @@ export function UserDetailModal({
                       ).map((task) => (
                         <button
                           key={task.key}
-                          onClick={() =>
-                            handleToggleTask(task.key, task.done)
-                          }
+                          onClick={() => handleToggleTask(task.key, task.done)}
                           disabled={tasksSubmitting}
                           className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/60 transition-colors cursor-pointer text-left"
                         >
@@ -990,9 +979,7 @@ export function UserDetailModal({
                       className="bg-gradient-to-r from-purple to-magent hover:from-purple/90 hover:to-magent/90 font-semibold"
                     >
                       <Save className="w-4 h-4 mr-1" />
-                      {planSubmitting
-                        ? "Guardando..."
-                        : "Actualizar plan"}
+                      {planSubmitting ? "Guardando..." : "Actualizar plan"}
                     </Button>
                   </div>
                 )}
@@ -1062,9 +1049,7 @@ export function UserDetailModal({
                           disabled={deleteCacheSubmitting}
                           className="bg-amber-500 hover:bg-amber-600 text-white font-semibold"
                         >
-                          {deleteCacheSubmitting
-                            ? "Limpiando..."
-                            : "Confirmar"}
+                          {deleteCacheSubmitting ? "Limpiando..." : "Confirmar"}
                         </Button>
                         <Button
                           size="sm"
@@ -1125,9 +1110,8 @@ export function UserDetailModal({
                             </div>
                             <p className="text-xs text-gray-500 mt-0.5">
                               Fase:{" "}
-                              {PHASE_LABELS[p.phase as PhaseEnum] ??
-                                p.phase}{" "}
-                              | Etapa:{" "}
+                              {PHASE_LABELS[p.phase as PhaseEnum] ?? p.phase} |
+                              Etapa:{" "}
                               {STAGE_LABELS[p.stage as StageEnum] ?? p.stage}
                             </p>
                           </div>
@@ -1202,15 +1186,11 @@ export function UserDetailModal({
                     <Button
                       size="sm"
                       onClick={handleResetPassword}
-                      disabled={
-                        passwordSubmitting || newPassword.length < 6
-                      }
+                      disabled={passwordSubmitting || newPassword.length < 6}
                       className="bg-gradient-to-r from-purple to-magent hover:from-purple/90 hover:to-magent/90 font-semibold"
                     >
                       <Key className="w-4 h-4 mr-1" />
-                      {passwordSubmitting
-                        ? "Guardando..."
-                        : "Establecer"}
+                      {passwordSubmitting ? "Guardando..." : "Establecer"}
                     </Button>
                   </div>
                 </div>

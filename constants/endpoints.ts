@@ -42,5 +42,6 @@ export const ENDPOINTS = {
   },
   PROFILE: {
     PICTURE: "/api/v1/users/profile/photo",
+    EDIT: "/api/v1/users/profile",
   },
 };

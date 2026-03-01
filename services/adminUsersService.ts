@@ -11,9 +11,7 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
   }
 }
 
-export async function getAdminUserDetail(
-  id: string,
-): Promise<AdminUserDetail> {
+export async function getAdminUserDetail(id: string): Promise<AdminUserDetail> {
   try {
     const response = await authApi.get(ADMIN_ENDPOINTS.USERS.GET(id));
     return response.data;
@@ -92,10 +90,9 @@ export async function createAdminUserPlan(
   phase: number,
 ): Promise<AdminUserDetail> {
   try {
-    const response = await authApi.post(
-      ADMIN_ENDPOINTS.USERS.CREATE_PLAN(id),
-      { phase },
-    );
+    const response = await authApi.post(ADMIN_ENDPOINTS.USERS.CREATE_PLAN(id), {
+      phase,
+    });
     return response.data;
   } catch {
     throw new Error("No se pudo crear el plan del usuario.");
@@ -127,10 +124,9 @@ export async function setAdminUserFatigue(
   level: number,
 ): Promise<AdminUserDetail> {
   try {
-    const response = await authApi.post(
-      ADMIN_ENDPOINTS.USERS.SET_FATIGUE(id),
-      { level },
-    );
+    const response = await authApi.post(ADMIN_ENDPOINTS.USERS.SET_FATIGUE(id), {
+      level,
+    });
     return response.data;
   } catch {
     throw new Error("No se pudo registrar la fatiga.");
@@ -161,9 +157,7 @@ export async function getAdminUserPrescriptions(
   id: string,
 ): Promise<{ prescriptions: PrescriptionHistoryItem[] }> {
   try {
-    const response = await authApi.get(
-      ADMIN_ENDPOINTS.USERS.PRESCRIPTIONS(id),
-    );
+    const response = await authApi.get(ADMIN_ENDPOINTS.USERS.PRESCRIPTIONS(id));
     return response.data;
   } catch {
     throw new Error("No se pudo obtener el historial de prescripciones.");

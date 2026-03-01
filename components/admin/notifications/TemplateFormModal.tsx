@@ -157,12 +157,11 @@ export function TemplateFormModal({
                     <FormControl>
                       <Textarea {...field} rows={4} />
                     </FormControl>
-                    {initialData?.type &&
-                      variableHints[initialData.type] && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          {variableHints[initialData.type]}
-                        </p>
-                      )}
+                    {initialData?.type && variableHints[initialData.type] && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        {variableHints[initialData.type]}
+                      </p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}

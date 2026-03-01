@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { NotificationTemplate, NotificationLog, NotificationStats } from "@/types";
+import {
+  NotificationTemplate,
+  NotificationLog,
+  NotificationStats,
+} from "@/types";
 import {
   getNotificationTemplates,
   updateNotificationTemplate,
@@ -68,9 +72,7 @@ export function useAdminNotifications() {
     setError(null);
     try {
       const updated = await updateNotificationTemplate(id, data);
-      setTemplates((prev) =>
-        prev.map((t) => (t.id === id ? updated : t)),
-      );
+      setTemplates((prev) => prev.map((t) => (t.id === id ? updated : t)));
       return updated;
     } catch (err) {
       setError(
