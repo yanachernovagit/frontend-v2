@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { refreshSessionService } from "@/services/authService";
 
 const TOKEN_KEY = "auth_token";
 const REFRESH_TOKEN_KEY = "refresh_token";
@@ -33,6 +34,7 @@ type DecodedToken = Record<string, unknown> & {
   user_metadata: {
     fullName: string;
     role?: string;
+    profilePictureRef?: string;
   };
 };
 
@@ -96,6 +98,18 @@ export function useAuth() {
     }
   }, []);
 
+  const refreshSession = useCallback(async () => {
+    const storedRefresh = await AuthStorage.getRefresh();
+    if (!storedRefresh) throw new Error("No refresh token available");
+
+    const session = await refreshSessionService(storedRefresh);
+    console.log(session);
+
+    await AuthStorage.set(session.accessToken);
+    await AuthStorage.setRefresh(session.refreshToken);
+    setToken(session.accessToken);
+  }, []);
+
   return {
     token,
     user,
@@ -104,6 +118,7 @@ export function useAuth() {
     loading,
     login,
     logout,
+    refreshSession,
   } as const;
 }
 

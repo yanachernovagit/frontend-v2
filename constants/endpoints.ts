@@ -40,4 +40,7 @@ export const ENDPOINTS = {
     ARM_VOLUME: "/api/v1/evaluation/measure/calculate",
     ARM_VOLUME_VIDEO: "/api/v1/evaluation/measure",
   },
+  PROFILE: {
+    PICTURE: "/api/v1/users/profile/photo",
+  },
 };

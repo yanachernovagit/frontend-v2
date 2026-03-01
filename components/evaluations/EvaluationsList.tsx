@@ -75,7 +75,7 @@ export function EvaluationsList({
   const isPostPlanLocked =
     resolvedFilter === "post" &&
     resolvedUserPlan &&
-    resolvedUserPlan.currentWeek > resolvedUserPlan.totalWeeks;
+    resolvedUserPlan.currentWeek <= resolvedUserPlan.totalWeeks;
 
   return (
     <Card className="bg-bg-secondary rounded-xl h-full flex flex-col gap-1 p-2">
@@ -88,7 +88,7 @@ export function EvaluationsList({
           }}
           className="flex-1"
         >
-          Pre-cirugía
+          Pre Plan
         </Button>
         <Button
           variant={resolvedFilter === "post" ? "default" : "outline_magent"}
@@ -98,7 +98,7 @@ export function EvaluationsList({
           }}
           className="flex-1"
         >
-          Post-cirugía
+          Post Plan
         </Button>
       </div>
       {resolvedLoading ? (
@@ -136,7 +136,7 @@ export function EvaluationsList({
                 </p>
                 <p className="text-sm text-gray-600">
                   Completa tu plan de tratamiento para desbloquear las
-                  evaluaciones post-cirugía
+                  evaluaciones post plan
                 </p>
                 <p className="text-xs text-purple font-semibold mt-3">
                   Semana {resolvedUserPlan?.currentWeek} de{" "}
