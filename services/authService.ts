@@ -126,3 +126,18 @@ export async function updatePasswordWithTokenService(
     throw new Error(message);
   }
 }
+
+export async function refreshSessionService(
+  refreshToken: string,
+): Promise<AuthSession> {
+  try {
+    const response = await api.post<AuthSession>(ENDPOINTS.AUTH.REFRESH, {
+      refreshToken,
+    });
+    if (!response.data?.accessToken)
+      throw new Error("Invalid refresh response");
+    return response.data;
+  } catch {
+    throw new Error("No se pudo refrescar la sesión.");
+  }
+}
