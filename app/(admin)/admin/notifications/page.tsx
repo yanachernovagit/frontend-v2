@@ -10,13 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAdminNotifications } from "@/hooks/useAdminNotifications";
 import { NotificationTemplate, NotificationLog } from "@/types";
-import {
-  RefreshCw,
-  Send,
-  BarChart3,
-  Bell,
-  CalendarDays,
-} from "lucide-react";
+import { RefreshCw, Send, BarChart3, Bell, CalendarDays } from "lucide-react";
 
 type Tab = "templates" | "logs" | "test";
 
@@ -342,7 +336,10 @@ export default function AdminNotificationsPage() {
 
             <div className="space-y-3">
               <div>
-                <label htmlFor="test-user-id" className="text-black-400 text-sm font-semibold block mb-1.5">
+                <label
+                  htmlFor="test-user-id"
+                  className="text-black-400 text-sm font-semibold block mb-1.5"
+                >
                   ID de usuario
                 </label>
                 <Input
@@ -353,7 +350,10 @@ export default function AdminNotificationsPage() {
                 />
               </div>
               <div>
-                <label htmlFor="test-title" className="text-black-400 text-sm font-semibold block mb-1.5">
+                <label
+                  htmlFor="test-title"
+                  className="text-black-400 text-sm font-semibold block mb-1.5"
+                >
                   Titulo
                 </label>
                 <Input
@@ -364,7 +364,10 @@ export default function AdminNotificationsPage() {
                 />
               </div>
               <div>
-                <label htmlFor="test-body" className="text-black-400 text-sm font-semibold block mb-1.5">
+                <label
+                  htmlFor="test-body"
+                  className="text-black-400 text-sm font-semibold block mb-1.5"
+                >
                   Mensaje
                 </label>
                 <Textarea
@@ -396,9 +399,7 @@ export default function AdminNotificationsPage() {
             className="bg-gradient-to-r from-purple to-magent hover:from-purple/90 hover:to-magent/90 shadow-lg hover:shadow-xl transition-all font-semibold"
           >
             <Send className="w-4 h-4 mr-2" />
-            {testSending
-              ? "Enviando..."
-              : "Enviar notificacion de prueba"}
+            {testSending ? "Enviando..." : "Enviar notificacion de prueba"}
           </Button>
         </div>
       )}

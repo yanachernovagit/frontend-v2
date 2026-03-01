@@ -2,14 +2,19 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Check, CheckCircle, Loader2 } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  CheckCircle,
+  Loader2,
+  ThumbsUp,
+} from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 import { Evaluation } from "@/types";
-import { VideoPreview } from "../shared";
 
 type Props = {
   evaluation: Evaluation;
@@ -32,6 +37,43 @@ export function RangeOfMotionEvaluation({
   );
 
   const hasSelectedOption = selectedOptionKey !== null;
+  const movementRangeFeedback = (() => {
+    if (!completedResults) return null;
+
+    const feedbackMessage = {
+      A: "Tu movilidad de hombro está dentro de lo esperado. ¡Muy bien! Te recomendamos seguir realizando tus ejercicios para mantener el movimiento.",
+      B: "Tu movilidad de hombro está disminuida. Te recomendamos comenzar ejercicios de movilidad al menos 3 veces al día para ayudar a recuperarla.",
+      C: "Tu movilidad de hombro está disminuida. Te recomendamos comenzar ejercicios de movilidad al menos 3 veces al día para ayudar a recuperarla.",
+      D: "Tu movilidad de hombro está disminuida. Te recomendamos comenzar ejercicios de movilidad al menos 3 veces al día para ayudar a recuperarla.",
+    } as const;
+
+    const storedValue =
+      completedResults.resultado ??
+      completedResults.respuesta ??
+      Object.values(completedResults)[0];
+
+    if (!storedValue) return null;
+
+    const normalizedStoredValue = String(storedValue).trim();
+    const selectedKey =
+      (normalizedStoredValue in feedbackMessage
+        ? normalizedStoredValue
+        : Object.entries(evaluation.expectedResults ?? {}).find(
+            ([, value]) => value === normalizedStoredValue,
+          )?.[0]) ?? null;
+
+    if (!selectedKey || !(selectedKey in feedbackMessage)) return null;
+
+    const selectedOption = selectedKey as keyof typeof feedbackMessage;
+    const isOptimal = selectedOption === "A";
+
+    return {
+      isOptimal,
+      message: feedbackMessage[selectedOption],
+      selectedLabel:
+        evaluation.expectedResults?.[selectedKey] ?? normalizedStoredValue,
+    };
+  })();
 
   const handleSelectOption = (key: string) => {
     setSelectedOptionKey(key);
@@ -51,23 +93,6 @@ export function RangeOfMotionEvaluation({
     }
   };
 
-  const renderVideoPreview = () => {
-    if (!evaluation.videoUrl) return null;
-
-    return (
-      <div className="mb-6">
-        <div className="w-full h-80 rounded-2xl overflow-hidden border bg-black">
-          <VideoPreview
-            videoUrl={evaluation.videoUrl}
-            allowFullscreen={true}
-            muted={true}
-            className="w-full h-full"
-            loadingBackgroundClassName="bg-purple-400"
-          />
-        </div>
-      </div>
-    );
-  };
   if (completedResults) {
     return (
       <Card className="h-full rounded-2xl border-gray-200 p-4">
@@ -114,22 +139,49 @@ export function RangeOfMotionEvaluation({
             </div>
 
             <div className="grid gap-3">
-              {Object.entries(completedResults).map(([key, value]) => {
+              {Object.entries(completedResults).map(([key, value], index) => {
                 const label =
                   evaluation.expectedResults?.[key] ?? key.replace(/_/g, " ");
+                const cardColor = movementRangeFeedback
+                  ? movementRangeFeedback.isOptimal
+                    ? "border-green-400 bg-green-50"
+                    : "border-yellow-400 bg-yellow-50"
+                  : "border-gray-200 bg-white";
+                const valueColor = movementRangeFeedback
+                  ? movementRangeFeedback.isOptimal
+                    ? "text-green-800"
+                    : "text-yellow-800"
+                  : "text-purple";
 
                 return (
-                  <div key={key} className="rounded-xl border bg-white p-4">
+                  <div
+                    key={key}
+                    className={`rounded-xl border p-4 ${cardColor}`}
+                  >
                     <p className="text-sm font-semibold text-gray-500 capitalize mb-2">
                       {label}
                     </p>
 
                     <div className="flex items-center gap-2">
-                      <Check className="h-5 w-5 text-purple" />
-                      <p className="text-2xl font-bold text-purple">
-                        {String(value)}
+                      <Check className={`h-5 w-5 ${valueColor}`} />
+                      <p className={`text-2xl font-bold ${valueColor}`}>
+                        {movementRangeFeedback?.selectedLabel ?? String(value)}
                       </p>
                     </div>
+                    {movementRangeFeedback && index === 0 ? (
+                      <div
+                        className={`mt-3 flex items-start gap-2 ${valueColor}`}
+                      >
+                        {movementRangeFeedback.isOptimal ? (
+                          <ThumbsUp className="h-4 w-4 mt-0.5 shrink-0" />
+                        ) : (
+                          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                        )}
+                        <p className="text-sm leading-5">
+                          {movementRangeFeedback.message}
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
                 );
               })}

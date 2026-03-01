@@ -7,7 +7,7 @@ export type SignUpDto = {
   email: string;
   password: string;
   fullName: string;
-  phone: string;
+  phone?: string;
 };
 
 export type ChangePasswordDto = {
@@ -34,7 +34,7 @@ export type AuthSession = {
     role: string;
     email: string;
     email_confirmed_at: string;
-    phone: string;
+    phone?: string;
     confirmed_at: string;
     last_sign_in_at: string;
     app_metadata: {

@@ -2,13 +2,15 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { CheckCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, ThumbsUp } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 import { Evaluation } from "@/types";
 import { useTimer } from "@/hooks/useTimer";
+import { useAuth } from "@/hooks/useAuth";
+import { getAgeFromBirthDate, getStsFeedback } from "@/lib/stsEvaluation";
 
 import { VideoPreview } from "../shared";
 import { EvaluationTimer } from "./EvaluationTimer";
@@ -26,6 +28,7 @@ export function TimeEvaluation({
   completedResults,
 }: Props) {
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
+  const { user } = useAuth();
 
   const { remainingSeconds, isTimerFinished, timerStarted, startTimer } =
     useTimer({
@@ -43,6 +46,39 @@ export function TimeEvaluation({
   });
 
   const canSubmit = isTimerFinished && allInputsFilled;
+  const normalizedEvaluationName = evaluation.name
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .trim();
+  const isStsEvaluation = normalizedEvaluationName.includes(
+    "sentarse y levantarse",
+  );
+  const birthDate = (user?.user_metadata as Record<string, unknown>)
+    ?.birthDate as string | undefined;
+  const stsFeedback = (() => {
+    if (!completedResults) return null;
+    if (!isStsEvaluation || !birthDate) return null;
+
+    const age = getAgeFromBirthDate(birthDate);
+    const repetitionsValue =
+      Object.values(completedResults).find((value) => {
+        const parsed =
+          typeof value === "number"
+            ? value
+            : typeof value === "string"
+              ? Number(value)
+              : NaN;
+        return Number.isFinite(parsed);
+      }) ?? null;
+
+    if (repetitionsValue == null) return null;
+
+    const repetitions = Number(repetitionsValue);
+    if (!Number.isFinite(repetitions)) return null;
+
+    return getStsFeedback(repetitions, age);
+  })();
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -97,18 +133,40 @@ export function TimeEvaluation({
             </div>
 
             <div className="grid gap-3">
-              {Object.entries(completedResults).map(([key, value]) => {
+              {Object.entries(completedResults).map(([key, value], index) => {
                 const label =
                   evaluation.expectedResults?.[key] ?? key.replace(/_/g, " ");
+                const feedbackColor = stsFeedback
+                  ? stsFeedback.level === "above"
+                    ? "border-green-400 bg-green-50 text-green-800"
+                    : stsFeedback.level === "within"
+                      ? "border-yellow-400 bg-yellow-50 text-yellow-800"
+                      : "border-red-400 bg-red-50 text-red-800"
+                  : "border-gray-200 bg-white text-purple";
 
                 return (
-                  <div key={key} className="rounded-xl border bg-white p-4">
+                  <div
+                    key={key}
+                    className={`rounded-xl border p-4 ${feedbackColor}`}
+                  >
                     <p className="text-sm font-semibold text-gray-500 capitalize mb-1">
                       {label}
                     </p>
-                    <p className="text-2xl font-bold text-purple">
-                      {String(value)}
-                    </p>
+                    <p className="text-2xl font-bold">{String(value)}</p>
+                    {stsFeedback && index === 0 ? (
+                      <div className="mt-3 flex items-start gap-2">
+                        {stsFeedback.level === "above" ? (
+                          <ThumbsUp className="h-4 w-4 mt-0.5 shrink-0" />
+                        ) : stsFeedback.level === "within" ? (
+                          <CheckCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                        ) : (
+                          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                        )}
+                        <p className="text-sm leading-5">
+                          {stsFeedback.message}
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
                 );
               })}

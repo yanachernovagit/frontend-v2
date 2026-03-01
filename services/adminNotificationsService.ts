@@ -1,6 +1,23 @@
 import authApi from "./authApi";
-import { NotificationTemplate, NotificationLog, NotificationStats } from "@/types";
+import {
+  NotificationTemplate,
+  NotificationLog,
+  NotificationStats,
+} from "@/types";
 import { ADMIN_ENDPOINTS } from "@/constants/adminEndpoints";
+
+function parseNotificationCount(value: unknown): number {
+  if (typeof value === "number") {
+    return value;
+  }
+
+  if (value && typeof value === "object" && "_all" in value) {
+    const all = (value as { _all?: unknown })._all;
+    return typeof all === "number" ? all : 0;
+  }
+
+  return 0;
+}
 
 export async function getNotificationTemplates(): Promise<
   NotificationTemplate[]
@@ -38,7 +55,7 @@ export async function getNotificationStats(): Promise<NotificationStats> {
     const byType: Record<string, number> = {};
     if (Array.isArray(raw.byType)) {
       for (const item of raw.byType) {
-        byType[item.type] = (item._count as any)?._all ?? item._count ?? 0;
+        byType[item.type] = parseNotificationCount(item._count);
       }
     } else if (raw.byType && typeof raw.byType === "object") {
       Object.assign(byType, raw.byType);

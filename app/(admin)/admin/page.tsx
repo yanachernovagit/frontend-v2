@@ -123,8 +123,7 @@ export default function AdminDashboardPage() {
                 {loading ? (
                   <span className="text-sm text-gray-400">...</span>
                 ) : (
-                  stats[section.statKey] !==
-                    undefined && (
+                  stats[section.statKey] !== undefined && (
                     <span
                       className={`text-sm font-medium ${colors.split(" ")[1]}`}
                     >

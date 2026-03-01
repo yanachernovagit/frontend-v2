@@ -10,3 +10,4 @@ export * from "./admin";
 export * from "./user-step";
 export * from "./routine-variation";
 export * from "./notification";
+export * from "./profile";

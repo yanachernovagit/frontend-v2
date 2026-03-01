@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Brain,
   BarChart3,
@@ -30,6 +30,30 @@ import { useAdminAI } from "@/hooks/useAdminAI";
 import { AIConfig } from "@/types";
 
 type EditableConfig = Omit<AIConfig, "provider" | "model">;
+
+const EMPTY_FORM: EditableConfig = {
+  temperature: "",
+  maxBaselinePercent: "",
+  fatigueHighReduction: "",
+  fatigueMediumReduction: "",
+  fatigueLowIncrease: "",
+  setsRange: "",
+  repsRange: "",
+  weightIncrement: "",
+  durationIncrement: "",
+};
+
+const toEditableConfig = (cfg: AIConfig): EditableConfig => ({
+  temperature: cfg.temperature,
+  maxBaselinePercent: cfg.maxBaselinePercent,
+  fatigueHighReduction: cfg.fatigueHighReduction,
+  fatigueMediumReduction: cfg.fatigueMediumReduction,
+  fatigueLowIncrease: cfg.fatigueLowIncrease,
+  setsRange: cfg.setsRange,
+  repsRange: cfg.repsRange,
+  weightIncrement: cfg.weightIncrement,
+  durationIncrement: cfg.durationIncrement,
+});
 
 const configFields: {
   key: keyof EditableConfig;
@@ -120,37 +144,12 @@ export default function AdminAIPage() {
     refetchStats,
   } = useAdminAI();
 
-  const [form, setForm] = useState<EditableConfig>({
-    temperature: "",
-    maxBaselinePercent: "",
-    fatigueHighReduction: "",
-    fatigueMediumReduction: "",
-    fatigueLowIncrease: "",
-    setsRange: "",
-    repsRange: "",
-    weightIncrement: "",
-    durationIncrement: "",
-  });
-
-  // Sync form when config loads
-  useEffect(() => {
-    if (config) {
-      setForm({
-        temperature: config.temperature,
-        maxBaselinePercent: config.maxBaselinePercent,
-        fatigueHighReduction: config.fatigueHighReduction,
-        fatigueMediumReduction: config.fatigueMediumReduction,
-        fatigueLowIncrease: config.fatigueLowIncrease,
-        setsRange: config.setsRange,
-        repsRange: config.repsRange,
-        weightIncrement: config.weightIncrement,
-        durationIncrement: config.durationIncrement,
-      });
-    }
-  }, [config]);
+  const [draft, setDraft] = useState<Partial<EditableConfig>>({});
+  const baseForm = config ? toEditableConfig(config) : EMPTY_FORM;
+  const form: EditableConfig = { ...baseForm, ...draft };
 
   const handleFieldChange = (key: keyof EditableConfig, value: string) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    setDraft((prev) => ({ ...prev, [key]: value }));
   };
 
   const validateForm = (): string | null => {
@@ -198,6 +197,7 @@ export default function AdminAIPage() {
     setValidationError(null);
     try {
       await updateConfig(form);
+      setDraft({});
     } catch {
       // error is handled by the hook
     }
@@ -277,6 +277,7 @@ export default function AdminAIPage() {
           variant="outline_magent"
           size="sm"
           onClick={() => {
+            setDraft({});
             refetchConfig();
             refetchStats();
           }}
@@ -360,7 +361,9 @@ export default function AdminAIPage() {
             </div>
             {config ? (
               <div>
-                <p className="text-lg font-bold text-black">{config.provider}</p>
+                <p className="text-lg font-bold text-black">
+                  {config.provider}
+                </p>
                 <p className="text-sm text-gray-500">{config.model}</p>
               </div>
             ) : (

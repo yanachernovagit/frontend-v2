@@ -20,9 +20,7 @@ export default function AdminError({
         <div className="mx-auto w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
           <AlertTriangle className="w-7 h-7 text-red-500" />
         </div>
-        <h2 className="text-lg font-bold text-black">
-          Algo salio mal
-        </h2>
+        <h2 className="text-lg font-bold text-black">Algo salio mal</h2>
         <p className="text-sm text-gray-500">
           Ocurrio un error inesperado en el panel de administracion. Intenta
           recargar la seccion.

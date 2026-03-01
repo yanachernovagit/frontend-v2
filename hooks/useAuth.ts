@@ -30,7 +30,7 @@ type DecodedToken = Record<string, unknown> & {
   exp?: number;
   iat?: number;
   email: string;
-  phone: string;
+  phone?: string;
   user_metadata: {
     fullName: string;
     role?: string;
@@ -80,6 +80,7 @@ export function useAuth() {
 
   const login = useCallback((tokens: AuthTokens) => {
     setToken(tokens.accessToken);
+    AuthEvents.emit(tokens.accessToken);
     if (typeof window !== "undefined") {
       localStorage.setItem(TOKEN_KEY, tokens.accessToken);
       if (tokens.refreshToken) {
@@ -92,6 +93,7 @@ export function useAuth() {
 
   const logout = useCallback(() => {
     setToken(null);
+    AuthEvents.emit(null);
     if (typeof window !== "undefined") {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(REFRESH_TOKEN_KEY);
@@ -108,6 +110,7 @@ export function useAuth() {
     await AuthStorage.set(session.accessToken);
     await AuthStorage.setRefresh(session.refreshToken);
     setToken(session.accessToken);
+    AuthEvents.emit(session.accessToken);
   }, []);
 
   return {
