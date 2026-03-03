@@ -28,7 +28,7 @@ export function TasksCarousel({ userTasks, loading, refetch }: Props) {
         />
       ),
       disabled: userTasks?.profileCompleted,
-      linkTo: "/profile",
+      linkTo: "/preguntas",
       visible: !userTasks?.profileCompleted,
     },
     {
@@ -43,7 +43,7 @@ export function TasksCarousel({ userTasks, loading, refetch }: Props) {
         />
       ),
       disabled: userTasks?.firstEvaluationCompleted,
-      linkTo: "/evaluation-test",
+      linkTo: "/evaluaciones",
       visible: !userTasks?.firstEvaluationCompleted,
     },
     {
