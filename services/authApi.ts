@@ -14,7 +14,7 @@ if (!baseURL) {
 
 const authApi = axios.create({
   baseURL,
-  timeout: 10000,
+  timeout: 30000,
 });
 
 authApi.interceptors.request.use(async (config) => {

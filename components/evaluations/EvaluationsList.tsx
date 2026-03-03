@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button";
 import { UserEvaluation, UserPlan } from "@/types";
 import { EvaluationCard } from "./EvaluationCard";
 import { SkeletonEvaluationList } from "./SkeletonEvaluationList";
-import { useUserPlan } from "@/hooks/useUserPlan";
-import { useEvaluations } from "@/hooks/useEvaluations";
 
 type FilterType = "pre" | "post";
 
@@ -41,25 +39,9 @@ export function EvaluationsList({
   const [internalFilter, setInternalFilter] = useState<FilterType>("pre");
   const resolvedFilter = filter ?? internalFilter;
 
-  const shouldUseInternalData =
-    evaluations === undefined && loading === undefined;
-  const shouldUseInternalPlan = userPlan === undefined;
-
-  const { userPlan: internalUserPlan } = useUserPlan({
-    autoFetch: shouldUseInternalPlan,
-  });
-  const { evaluations: internalEvaluations, loading: internalLoading } =
-    useEvaluations({
-      autoFetch: shouldUseInternalData,
-    });
-
-  const resolvedUserPlan = shouldUseInternalPlan ? internalUserPlan : userPlan;
-  const resolvedEvaluations = shouldUseInternalData
-    ? internalEvaluations
-    : (evaluations ?? null);
-  const resolvedLoading = shouldUseInternalData
-    ? internalLoading
-    : Boolean(loading);
+  const resolvedEvaluations = evaluations ?? null;
+  const resolvedLoading = Boolean(loading);
+  const resolvedUserPlan = userPlan;
 
   const filteredEvaluations = useMemo(() => {
     if (!resolvedEvaluations) return [];
