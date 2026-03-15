@@ -1,18 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Mail,
-  Phone,
-  Facebook,
-  Instagram,
-  Twitter,
-  Linkedin,
-  Check,
-} from "lucide-react";
+import { Mail, Phone, Check } from "lucide-react";
+import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Contacto() {
   const [emailCopied, setEmailCopied] = useState(false);
@@ -33,25 +27,25 @@ export default function Contacto() {
   const socialLinks = [
     {
       name: "Facebook",
-      icon: Facebook,
-      url: "https://facebook.com/oncoactivate",
+      icon: FaFacebook,
+      url: "https://www.facebook.com/people/Oncoactivate/61583934299286/#",
       color: "hover:text-blue-600",
     },
     {
       name: "Instagram",
-      icon: Instagram,
+      icon: FaInstagram,
       url: "https://instagram.com/oncoactivate",
       color: "hover:text-pink-600",
     },
     {
       name: "Twitter",
-      icon: Twitter,
+      icon: FaXTwitter,
       url: "https://twitter.com/oncoactivate",
       color: "hover:text-sky-500",
     },
     {
       name: "LinkedIn",
-      icon: Linkedin,
+      icon: FaLinkedin,
       url: "https://linkedin.com/company/oncoactivate",
       color: "hover:text-blue-700",
     },
@@ -163,7 +157,12 @@ export default function Contacto() {
                 Regístrate y sé parte de Oncoactívate. Juntos avanzamos hacia
                 una vida más activa.
               </p>
-              <Button className="px-16 py-5 text-xl">Regístrate Ahora</Button>
+              <Link
+                href="/signup"
+                className="bg-magent text-white rounded-full px-16 py-2 text-xl"
+              >
+                Regístrate Ahora
+              </Link>
             </CardContent>
           </Card>
         </div>
