@@ -147,7 +147,7 @@ export default function VolumenBrazoPage() {
       >
         <div className="lg:hidden order-1 p-5">
           <Image
-            src="/img-test/guia-volumen-brazo.jpeg"
+            src="/img-test/a-2.svg"
             alt="Guía de puntos de medición del brazo"
             width={300}
             height={300}
@@ -230,7 +230,7 @@ export default function VolumenBrazoPage() {
 
         <div className="hidden lg:flex flex-col p-5">
           <Image
-            src="/img-test/guia-volumen-brazo.jpeg"
+            src="/img-test/a-2.svg"
             alt="Guía de puntos de medición del brazo"
             width={300}
             height={300}

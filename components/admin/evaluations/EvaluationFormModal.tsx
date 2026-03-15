@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Plus, Trash2 } from "lucide-react";
 
 import {
   Dialog,
@@ -21,22 +22,83 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { Select, SelectItem } from "@/components/ui/select";
 import { Evaluation } from "@/types";
 import { MediaUploadField } from "@/components/admin/media/MediaUploadField";
+import { EvaluationTypeEnum } from "@/constants/enums";
+import {
+  buildExpectedResultsByType,
+  buildMovementExpectedResults,
+  DEFAULT_MEASURE_LABELS,
+  getMovementCount,
+  normalizeMeasureExpectedResults,
+} from "@/components/admin/evaluations/expectedResults";
 
-const evaluationSchema = z.object({
-  name: z.string().min(1, "El nombre es requerido"),
-  description: z.string().min(1, "La descripcion es requerida"),
-  howToDo: z.string().min(1, "Las instrucciones son requeridas"),
-  imageUrl: z.string().url().optional().or(z.literal("")),
-  logoUrl: z.string().url().optional().or(z.literal("")),
-  videoUrl: z.string().url().optional().or(z.literal("")),
-  isTime: z.boolean(),
-  seconds: z.number().min(0).optional(),
-  order: z.number().min(0),
-});
+const evaluationSchema = z
+  .object({
+    name: z.string().min(1, "El nombre es requerido"),
+    description: z.string().min(1, "La descripcion es requerida"),
+    howToDo: z.string().min(1, "Las instrucciones son requeridas"),
+    imageUrl: z.string().url().optional().or(z.literal("")),
+    logoUrl: z.string().url().optional().or(z.literal("")),
+    videoUrl: z.string().url().optional().or(z.literal("")),
+    type: z.nativeEnum(EvaluationTypeEnum),
+    seconds: z.number().min(0).optional(),
+    order: z.number().min(0),
+    timeResults: z.array(z.object({ label: z.string() })),
+    measureLeftLabel: z.string().optional(),
+    measureRightLabel: z.string().optional(),
+    measureDifferenceLabel: z.string().optional(),
+    movementCount: z
+      .string()
+      .min(1, "La cantidad de alternativas es requerida.")
+      .refine(
+        (value) => Number.isFinite(Number(value)) && Number(value) >= 1,
+        "Debe ser mayor o igual a 1.",
+      ),
+  })
+  .superRefine((values, ctx) => {
+    if (values.type === EvaluationTypeEnum.TIME) {
+      const hasAtLeastOne = values.timeResults.some(
+        (item) => item.label.trim().length > 0,
+      );
+
+      if (!hasAtLeastOne) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["timeResults"],
+          message: "Debes agregar al menos un resultado esperado.",
+        });
+      }
+    }
+
+    if (values.type === EvaluationTypeEnum.MEASURE) {
+      if (!values.measureLeftLabel?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["measureLeftLabel"],
+          message: "El texto del brazo izquierdo es requerido.",
+        });
+      }
+
+      if (!values.measureRightLabel?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["measureRightLabel"],
+          message: "El texto del brazo derecho es requerido.",
+        });
+      }
+
+      if (!values.measureDifferenceLabel?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["measureDifferenceLabel"],
+          message: "El texto de la diferencia es requerido.",
+        });
+      }
+    }
+  });
 
 type FormValues = z.infer<typeof evaluationSchema>;
 
@@ -70,14 +132,41 @@ export function EvaluationFormModal({
       imageUrl: "",
       logoUrl: "",
       videoUrl: "",
-      isTime: false,
+      type: EvaluationTypeEnum.MEASURE,
       seconds: 0,
       order: 0,
+      timeResults: [{ label: "" }],
+      measureLeftLabel: DEFAULT_MEASURE_LABELS.leftVolume,
+      measureRightLabel: DEFAULT_MEASURE_LABELS.rightVolume,
+      measureDifferenceLabel: DEFAULT_MEASURE_LABELS.difference,
+      movementCount: "4",
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "timeResults",
   });
 
   useEffect(() => {
     if (initialData) {
+      const initialType =
+        initialData.type ??
+        (initialData.isTime
+          ? EvaluationTypeEnum.TIME
+          : EvaluationTypeEnum.MEASURE);
+
+      const normalizedMeasure = normalizeMeasureExpectedResults(
+        initialData.expectedResults,
+      );
+
+      const timeResults =
+        initialType === EvaluationTypeEnum.TIME
+          ? Object.values(initialData.expectedResults ?? {}).map((label) => ({
+              label,
+            }))
+          : [{ label: "" }];
+
       form.reset({
         name: initialData.name,
         description: initialData.description,
@@ -85,9 +174,14 @@ export function EvaluationFormModal({
         imageUrl: initialData.imageUrl || "",
         logoUrl: initialData.logoUrl || "",
         videoUrl: initialData.videoUrl || "",
-        isTime: initialData.isTime,
+        type: initialType,
         seconds: initialData.seconds || 0,
         order: initialData.order,
+        timeResults: timeResults.length > 0 ? timeResults : [{ label: "" }],
+        measureLeftLabel: normalizedMeasure.leftVolume,
+        measureRightLabel: normalizedMeasure.rightVolume,
+        measureDifferenceLabel: normalizedMeasure.difference,
+        movementCount: String(getMovementCount(initialData.expectedResults)),
       });
     } else {
       form.reset({
@@ -97,24 +191,55 @@ export function EvaluationFormModal({
         imageUrl: "",
         logoUrl: "",
         videoUrl: "",
-        isTime: false,
+        type: EvaluationTypeEnum.MEASURE,
         seconds: 0,
         order: 0,
+        timeResults: [{ label: "" }],
+        measureLeftLabel: DEFAULT_MEASURE_LABELS.leftVolume,
+        measureRightLabel: DEFAULT_MEASURE_LABELS.rightVolume,
+        measureDifferenceLabel: DEFAULT_MEASURE_LABELS.difference,
+        movementCount: "4",
       });
     }
   }, [initialData, form, open]);
 
   const handleSubmit = async (values: FormValues) => {
+    const expectedResults = buildExpectedResultsByType({
+      type: values.type,
+      timeLabels: values.timeResults.map((item) => item.label),
+      measureLabels: {
+        leftVolume:
+          values.measureLeftLabel?.trim() || DEFAULT_MEASURE_LABELS.leftVolume,
+        rightVolume:
+          values.measureRightLabel?.trim() ||
+          DEFAULT_MEASURE_LABELS.rightVolume,
+        difference:
+          values.measureDifferenceLabel?.trim() ||
+          DEFAULT_MEASURE_LABELS.difference,
+      },
+      movementCount: Number(values.movementCount),
+    });
+
     await onSubmit({
-      ...values,
+      name: values.name,
+      description: values.description,
+      howToDo: values.howToDo,
       imageUrl: normalizeUrl(values.imageUrl),
       logoUrl: normalizeUrl(values.logoUrl),
       videoUrl: normalizeUrl(values.videoUrl),
-      seconds: values.isTime ? (values.seconds ?? 0) : undefined,
+      type: values.type,
+      isTime: values.type === EvaluationTypeEnum.TIME,
+      seconds:
+        values.type === EvaluationTypeEnum.TIME
+          ? (values.seconds ?? 0)
+          : undefined,
+      order: values.order,
+      expectedResults,
     });
   };
 
-  const isTimeEnabled = form.watch("isTime");
+  const selectedType = form.watch("type");
+  const movementCount = Number(form.watch("movementCount") || 1);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -146,12 +271,12 @@ export function EvaluationFormModal({
                   Información básica
                 </h3>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="col-span-2">
                       <FormLabel className="text-black-400 text-sm font-semibold">
                         Nombre
                       </FormLabel>
@@ -189,6 +314,35 @@ export function EvaluationFormModal({
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-black-400 text-sm font-semibold">
+                      Tipo de evaluación
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectItem value={EvaluationTypeEnum.TIME}>
+                          Tiempo
+                        </SelectItem>
+                        <SelectItem value={EvaluationTypeEnum.MEASURE}>
+                          Medición
+                        </SelectItem>
+                        <SelectItem value={EvaluationTypeEnum.MOVEMENT_RANGE}>
+                          Rango de movimiento
+                        </SelectItem>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
@@ -340,34 +494,17 @@ export function EvaluationFormModal({
               <div className="flex items-center gap-2.5 pb-1 relative z-10">
                 <div className="w-1 h-5 bg-gradient-to-b from-purple via-magent to-purple rounded-full shadow-sm" />
                 <h3 className="text-xs font-bold text-black uppercase tracking-widest">
-                  Configuración de tiempo
+                  Resultados esperados
                 </h3>
               </div>
-              <div className="flex items-start gap-6">
-                <FormField
-                  control={form.control}
-                  name="isTime"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center gap-3 space-y-0 p-3.5 border-2 border-gray-100 rounded-xl hover:border-purple/20 transition-colors">
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormLabel className="!mt-0 cursor-pointer text-black-400 text-sm font-semibold">
-                        Es evaluación de tiempo
-                      </FormLabel>
-                    </FormItem>
-                  )}
-                />
 
-                {isTimeEnabled && (
+              {selectedType === EvaluationTypeEnum.TIME && (
+                <>
                   <FormField
                     control={form.control}
                     name="seconds"
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem>
                         <FormLabel className="text-black-400 text-sm font-semibold">
                           Duración en segundos
                         </FormLabel>
@@ -385,8 +522,170 @@ export function EvaluationFormModal({
                       </FormItem>
                     )}
                   />
-                )}
-              </div>
+
+                  <div className="space-y-3">
+                    <p className="text-sm font-semibold text-black-400">
+                      Campos de resultado
+                    </p>
+                    {fields.map((item, index) => (
+                      <div key={item.id} className="flex items-center gap-2">
+                        <FormField
+                          control={form.control}
+                          name={`timeResults.${index}.label`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ej: Número de flexiones"
+                                  className="border-2 border-gray-100 focus:border-purple transition-colors"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline_magent"
+                          size="icon"
+                          onClick={() => remove(index)}
+                          disabled={fields.length <= 1}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+
+                    <Button
+                      type="button"
+                      variant="outline_magent"
+                      onClick={() => append({ label: "" })}
+                      className="w-fit"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Agregar resultado
+                    </Button>
+
+                    <FormField
+                      control={form.control}
+                      name="timeResults"
+                      render={() => (
+                        <FormItem>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </>
+              )}
+
+              {selectedType === EvaluationTypeEnum.MEASURE && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="measureLeftLabel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black-400 text-sm font-semibold">
+                          Brazo izquierdo
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            className="border-2 border-gray-100 focus:border-purple transition-colors"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="measureRightLabel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black-400 text-sm font-semibold">
+                          Brazo derecho
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            className="border-2 border-gray-100 focus:border-purple transition-colors"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="measureDifferenceLabel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black-400 text-sm font-semibold">
+                          Diferencia
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            className="border-2 border-gray-100 focus:border-purple transition-colors"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
+
+              {selectedType === EvaluationTypeEnum.MOVEMENT_RANGE && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="movementCount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black-400 text-sm font-semibold">
+                          Cantidad de alternativas
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={1}
+                            {...field}
+                            onChange={(event) =>
+                              field.onChange(event.target.value)
+                            }
+                            className="border-2 border-gray-100 focus:border-purple transition-colors"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="rounded-xl border border-purple/20 bg-white p-4">
+                    <p className="text-sm font-semibold text-black-400 mb-2">
+                      Vista previa generada automáticamente
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {Object.entries(
+                        buildMovementExpectedResults(movementCount),
+                      ).map(([, value]) => (
+                        <div
+                          key={value}
+                          className="text-sm border border-gray-200 rounded-md px-3 py-2"
+                        >
+                          <span className="text-black-400">{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="flex justify-end gap-3 pt-5 border-t border-purple/15 bg-gradient-to-br from-purple/4 to-magent/6 -mb-6 -mx-6 px-6 pb-6 rounded-b-xl relative overflow-hidden">
