@@ -1,12 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useEffect } from "react";
 
 import type { UserPlan } from "@/types";
-import Image from "next/image";
 import { ExerciseCard } from "./ExerciseCard";
 import { CongratsPanel } from "./CongratsPanel";
+import { DailyFeelingForm } from "./DailyFeelingForm";
 
 type Props = {
   userPlan?: UserPlan | null;
@@ -31,9 +31,9 @@ export default function ExerciseContainer({
   viewNextRoutine,
   onExerciseChange,
 }: Props) {
-  const router = useRouter();
-
+  const [showFeelingForm, setShowFeelingForm] = useState(false);
   const routines = userPlan?.routines ?? [];
+  const orderedRoutines = [...routines].sort((a, b) => a.order - b.order);
   const progressRoutineIndex = userPlan?.progressRoutine ?? 0;
   const progressExerciseIndex = userPlan?.progressExercise ?? 0;
 
@@ -58,7 +58,7 @@ export default function ExerciseContainer({
     ? exerciseIndex!
     : progressExerciseIndex;
 
-  const currentRoutine = routines[selectedRoutineIndex];
+  const currentRoutine = orderedRoutines[selectedRoutineIndex];
   const currentExercise = currentRoutine?.exercises?.[selectedExerciseIndex];
 
   const isPlanCompleted = !!userPlan?.completedToday;
@@ -93,19 +93,39 @@ export default function ExerciseContainer({
       : "info";
 
   const completedRoutineTitle = changedRoutine
-    ? routines.find((routine) => routine.order === progressRoutineIndex)?.title
+    ? orderedRoutines[Math.max(progressRoutineIndex - 1, 0)]?.title
     : undefined;
 
   const handleCompleteExercise = async () => {
     if (updatingProgress) return;
+    const isLastRoutine = progressRoutineIndex === orderedRoutines.length - 1;
+    const currentRoutineExercises =
+      orderedRoutines[progressRoutineIndex]?.exercises ?? [];
+    const isLastExercise =
+      progressExerciseIndex === currentRoutineExercises.length - 1;
+    const shouldShowFeelingAfterComplete = isLastRoutine && isLastExercise;
+
     await updatePlanProgress();
+
+    if (shouldShowFeelingAfterComplete) {
+      setShowFeelingForm(true);
+    }
   };
 
   const handleViewNextRoutine = async () => {
     viewNextRoutine();
   };
+
+  if (showFeelingForm && !loading && !changedRoutine) {
+    return (
+      <div className="flex-1 w-full h-full">
+        <DailyFeelingForm />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex-1 w-full">
+    <div className="flex-1 w-full flex flex-col gap-3">
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="animate-spin h-8 w-8 rounded-full border-4 border-purple border-t-transparent" />

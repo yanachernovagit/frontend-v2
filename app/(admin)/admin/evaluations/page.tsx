@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Clock, Edit, Play, ImageIcon } from "lucide-react";
+import { Clock, Edit, Play, ImageIcon, Move } from "lucide-react";
 
 import { DataTable } from "@/components/admin/DataTable";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAdminEvaluations } from "@/hooks/useAdminEvaluations";
 import { Evaluation } from "@/types";
+import { EvaluationTypeEnum } from "@/constants/enums";
 
 function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return "-";
@@ -41,26 +42,40 @@ export default function AdminEvaluationsPage() {
     { key: "order", label: "Orden" },
     { key: "name", label: "Nombre" },
     {
-      key: "isTime",
+      key: "type",
       label: "Tipo",
-      render: (item: Evaluation) =>
-        item.isTime ? (
+      render: (item: Evaluation) => {
+        if (item.type === EvaluationTypeEnum.TIME) {
+          return (
+            <Badge className="bg-purple/10 text-purple border border-purple/20 font-semibold">
+              <Clock className="w-3 h-3 mr-1" />
+              Tiempo
+            </Badge>
+          );
+        }
+
+        if (item.type === EvaluationTypeEnum.MOVEMENT_RANGE) {
+          return (
+            <Badge className="bg-blue/10 text-blue border border-blue/20 font-semibold">
+              <Move className="w-3 h-3 mr-1" />
+              Rango movimiento
+            </Badge>
+          );
+        }
+
+        return (
           <Badge className="bg-purple/10 text-purple border border-purple/20 font-semibold">
-            <Clock className="w-3 h-3 mr-1" />
-            Tiempo
-          </Badge>
-        ) : (
-          <Badge className="bg-magent/10 text-magent border border-magent/20 font-semibold">
             <Edit className="w-3 h-3 mr-1" />
             Medición
           </Badge>
-        ),
+        );
+      },
     },
     {
       key: "seconds",
       label: "Duración",
       render: (item: Evaluation) =>
-        item.isTime && item.seconds
+        item.type === EvaluationTypeEnum.TIME && item.seconds
           ? `${Math.floor(item.seconds / 60)}:${String(
               item.seconds % 60,
             ).padStart(2, "0")}`

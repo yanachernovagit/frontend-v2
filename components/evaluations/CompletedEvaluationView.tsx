@@ -139,15 +139,14 @@ export function CompletedEvaluationView({
     } as const;
 
     const normalizedStoredValue = String(storedValue).trim();
-    const selectedKey =
-      (normalizedStoredValue in feedbackMessage
-        ? normalizedStoredValue
-        : Object.entries(evaluation.expectedResults).find(
-            ([, value]) => value === normalizedStoredValue,
-          )?.[0]) ?? null;
+    const selectedLabel =
+      Object.entries(evaluation.expectedResults).find(
+        ([key, value]) =>
+          key === normalizedStoredValue || value === normalizedStoredValue,
+      )?.[1] ?? normalizedStoredValue;
 
-    if (!selectedKey || !(selectedKey in feedbackMessage)) return null;
-    const selectedOption = selectedKey as keyof typeof feedbackMessage;
+    if (!(selectedLabel in feedbackMessage)) return null;
+    const selectedOption = selectedLabel as keyof typeof feedbackMessage;
 
     return {
       isOptimal: selectedOption === "A",

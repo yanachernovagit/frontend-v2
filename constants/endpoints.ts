@@ -27,6 +27,7 @@ export const ENDPOINTS = {
     GET: "/api/v1/plan",
     UPDATE_EXERCISE: "/api/v1/plan/progress",
     UPDATE_PHASE: "/api/v1/plan/phase",
+    FATIGUE: "/api/v1/plan/fatigue",
   },
   USER_TASKS: {
     GET: "/api/v1/users/tasks",
