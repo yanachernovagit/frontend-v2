@@ -22,7 +22,7 @@ export type RoutineVariationRoutine = {
 export type RoutineVariation = {
   id: string;
   phase: number;
-  stage: number;
+  availableWeeks: number[];
   name: string;
   createdAt?: string;
   updatedAt?: string;
@@ -44,7 +44,7 @@ export type CreateRoutineVariationRoutine = {
 
 export type CreateRoutineVariationPayload = {
   phase: number;
-  stage: number;
+  availableWeeks: number[];
   name: string;
   routines: CreateRoutineVariationRoutine[];
 };
