@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectItem } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { PHASE_OPTIONS, STAGE_OPTIONS } from "@/constants/enums";
+import { PHASE_OPTIONS } from "@/constants/enums";
 import {
   RoutineVariation,
   RoutineCatalog,
@@ -46,12 +46,15 @@ const routineEntrySchema = z.object({
 const routineVariationSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
   phase: z.coerce.number().min(0),
-  stage: z.coerce.number().min(0),
+  availableWeeks: z
+    .array(z.coerce.number().int().min(1, "La semana debe ser mayor a 0"))
+    .min(1, "Agrega al menos una semana disponible"),
   routines: z.array(routineEntrySchema),
 });
 
 type FormValues = z.infer<typeof routineVariationSchema>;
 type FormInputValues = z.input<typeof routineVariationSchema>;
+const AVAILABLE_WEEKS_OPTIONS = Array.from({ length: 9 }, (_, i) => i + 1);
 
 interface RoutineVariationFormModalProps {
   open: boolean;
@@ -188,7 +191,7 @@ export function RoutineVariationFormModal({
     defaultValues: {
       name: "",
       phase: 0,
-      stage: 0,
+      availableWeeks: [],
       routines: [],
     },
   });
@@ -207,7 +210,7 @@ export function RoutineVariationFormModal({
       form.reset({
         name: initialData.name,
         phase: initialData.phase,
-        stage: initialData.stage,
+        availableWeeks: initialData.availableWeeks ?? [],
         routines: initialData.routines.map((r) => ({
           routineCatalogId: r.routineCatalogId,
           order: r.order,
@@ -219,7 +222,7 @@ export function RoutineVariationFormModal({
       });
       setActiveRoutineIndex(initialData.routines.length > 0 ? 0 : null);
     } else {
-      form.reset({ name: "", phase: 0, stage: 0, routines: [] });
+      form.reset({ name: "", phase: 0, availableWeeks: [], routines: [] });
       setActiveRoutineIndex(null);
     }
   }, [initialData, form, open]);
@@ -249,10 +252,25 @@ export function RoutineVariationFormModal({
   };
 
   const watchedRoutines = form.watch("routines");
+  const watchedAvailableWeeks = (form.watch("availableWeeks") ??
+    []) as number[];
   const totalExercises = watchedRoutines.reduce(
     (sum, r) => sum + (r.exercises?.length ?? 0),
     0,
   );
+
+  const handleToggleWeek = (week: number) => {
+    const currentWeeks = (form.getValues("availableWeeks") ?? []) as number[];
+    const nextWeeks = currentWeeks.includes(week)
+      ? currentWeeks.filter((currentWeek) => currentWeek !== week)
+      : [...currentWeeks, week];
+
+    form.setValue(
+      "availableWeeks",
+      nextWeeks.sort((a, b) => a - b),
+      { shouldDirty: true, shouldValidate: true },
+    );
+  };
 
   const activeRoutineCatalog =
     activeRoutineIndex !== null
@@ -302,7 +320,7 @@ export function RoutineVariationFormModal({
           >
             {/* Info básica */}
             <div className="px-6 pt-4 pb-3 shrink-0">
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -352,31 +370,48 @@ export function RoutineVariationFormModal({
                     </FormItem>
                   )}
                 />
+              </div>
+              <div className="mt-4">
                 <FormField
                   control={form.control}
-                  name="stage"
-                  render={({ field }) => (
+                  name="availableWeeks"
+                  render={() => (
                     <FormItem>
                       <FormLabel className="text-black-400 text-sm font-semibold">
-                        Etapa
+                        Semanas disponibles
                       </FormLabel>
+                      <div className="space-y-2">
+                        <p className="text-xs text-gray-500">
+                          Haz click para agregar o quitar semanas
+                        </p>
+                        <div className="grid grid-cols-9 gap-2 rounded-md border border-gray-100 bg-gray-50/40 p-2">
+                          {AVAILABLE_WEEKS_OPTIONS.map((week) => {
+                            const isSelected =
+                              watchedAvailableWeeks.includes(week);
+                            return (
+                              <button
+                                key={week}
+                                type="button"
+                                onClick={() => handleToggleWeek(week)}
+                                className={`h-9 rounded-md border text-xs font-semibold transition-colors ${
+                                  isSelected
+                                    ? "border-magent/40 bg-magent/12 text-magent"
+                                    : "border-gray-200 bg-white text-gray-500 hover:border-purple/30 hover:text-purple"
+                                }`}
+                                aria-pressed={isSelected}
+                              >
+                                Semana {week}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
                       <FormControl>
-                        <Select
-                          value={String(field.value)}
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          }
-                          className="border-2 border-gray-100 focus:border-purple transition-colors"
-                        >
-                          {STAGE_OPTIONS.map((stage) => (
-                            <SelectItem
-                              key={stage.value}
-                              value={String(stage.value)}
-                            >
-                              {stage.label}
-                            </SelectItem>
-                          ))}
-                        </Select>
+                        <input
+                          type="hidden"
+                          value={watchedAvailableWeeks.join(",")}
+                          readOnly
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

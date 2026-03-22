@@ -23,12 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  PhaseEnum,
-  PHASE_LABELS,
-  StageEnum,
-  STAGE_LABELS,
-} from "@/constants/enums";
+import { PhaseEnum, PHASE_LABELS } from "@/constants/enums";
 import { RoutineVariation } from "@/types";
 
 interface RoutineVariationsTableProps {
@@ -53,8 +48,13 @@ function getPhaseLabel(phase: number): string {
   return PHASE_LABELS[phase as PhaseEnum] ?? `Fase ${phase}`;
 }
 
-function getStageLabel(stage: number): string {
-  return STAGE_LABELS[stage as StageEnum] ?? `Etapa ${stage}`;
+function formatAvailableWeeks(availableWeeks: number[]): string {
+  if (!availableWeeks || availableWeeks.length === 0) return "-";
+  return availableWeeks
+    .slice()
+    .sort((a, b) => a - b)
+    .map((week) => `S${week}`)
+    .join(" | ");
 }
 
 function getExerciseCount(item: RoutineVariation): number {
@@ -136,7 +136,7 @@ export function RoutineVariationsTable({
                 Fase
               </TableHead>
               <TableHead className="font-bold text-black h-14 text-sm uppercase tracking-wide">
-                Etapa
+                Semanas disponibles
               </TableHead>
               <TableHead className="font-bold text-black h-14 text-sm uppercase tracking-wide">
                 Contenido
@@ -209,7 +209,7 @@ export function RoutineVariationsTable({
                       </TableCell>
                       <TableCell className="py-4">
                         <Badge className="bg-magent/10 text-magent border border-magent/20 font-semibold">
-                          {getStageLabel(item.stage)}
+                          {formatAvailableWeeks(item.availableWeeks)}
                         </Badge>
                       </TableCell>
                       <TableCell className="py-4 text-sm text-gray-600">
