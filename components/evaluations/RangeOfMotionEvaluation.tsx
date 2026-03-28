@@ -32,43 +32,108 @@ export function RangeOfMotionEvaluation({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const expectedResultEntries = Object.entries(
-    evaluation.expectedResults ?? {},
-  );
+  const expectedResultEntries = (() => {
+    const entries = Object.entries(evaluation.expectedResults ?? {});
+    const seenLabels = new Set<string>();
+    const normalized = new Map<string, string>();
+
+    const pushIfNew = (key: string, value: string) => {
+      const label = String(value ?? "").trim();
+      if (!label) return;
+      const signature = label.toLowerCase();
+      if (seenLabels.has(signature)) return;
+      seenLabels.add(signature);
+      normalized.set(key, label);
+    };
+
+    const levelEntries = entries
+      .filter(([key]) => /^nivel_\d+$/i.test(key))
+      .sort(
+        ([a], [b]) =>
+          Number(a.replace(/^\D+/g, "")) - Number(b.replace(/^\D+/g, "")),
+      );
+    levelEntries.forEach(([key, value]) => pushIfNew(key, value));
+
+    const noneEntry = entries.find(([key]) => key.toLowerCase() === "ninguna");
+    if (noneEntry) {
+      pushIfNew(noneEntry[0], noneEntry[1]);
+    }
+
+    entries
+      .filter(
+        ([key]) =>
+          !/^nivel_\d+$/i.test(key) && key.toLowerCase() !== "ninguna",
+      )
+      .forEach(([key, value]) => pushIfNew(key, value));
+
+    return Array.from(normalized.entries());
+  })();
 
   const hasSelectedOption = selectedOptionKey !== null;
-  const movementRangeFeedback = (() => {
+  const normalizeText = (value: unknown) =>
+    String(value ?? "")
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .toLowerCase()
+      .trim();
+
+  const movementCompletedEntry = (() => {
     if (!completedResults) return null;
 
-    const feedbackMessage = {
-      A: "Tu movilidad de hombro está dentro de lo esperado. ¡Muy bien! Te recomendamos seguir realizando tus ejercicios para mantener el movimiento.",
-      B: "Tu movilidad de hombro está disminuida. Te recomendamos comenzar ejercicios de movilidad al menos 3 veces al día para ayudar a recuperarla.",
-      C: "Tu movilidad de hombro está disminuida. Te recomendamos comenzar ejercicios de movilidad al menos 3 veces al día para ayudar a recuperarla.",
-      D: "Tu movilidad de hombro está disminuida. Te recomendamos comenzar ejercicios de movilidad al menos 3 veces al día para ayudar a recuperarla.",
-    } as const;
+    if (completedResults.resultado !== undefined) {
+      return ["resultado", completedResults.resultado] as const;
+    }
 
-    const storedValue =
-      completedResults.resultado ??
-      completedResults.respuesta ??
-      Object.values(completedResults)[0];
+    if (completedResults.respuesta !== undefined) {
+      return ["respuesta", completedResults.respuesta] as const;
+    }
 
+    const first = Object.entries(completedResults)[0];
+    return first ? ([first[0], first[1]] as const) : null;
+  })();
+
+  const movementRangeFeedback = (() => {
+    if (!completedResults) return null;
+    const storedValue = movementCompletedEntry?.[1];
     if (!storedValue) return null;
 
-    const normalizedStoredValue = String(storedValue).trim();
+    const rules = (evaluation.feedbackRules ?? {}) as Record<string, unknown>;
+    const valueFeedback =
+      rules.valueFeedback && typeof rules.valueFeedback === "object"
+        ? (rules.valueFeedback as Record<
+            string,
+            { level?: string; message?: string }
+          >)
+        : null;
+    if (!valueFeedback) return null;
+
+    const value = String(storedValue).trim();
+    const normalizedValue = normalizeText(value);
+
     const selectedLabel =
       Object.entries(evaluation.expectedResults ?? {}).find(
-        ([key, value]) =>
-          key === normalizedStoredValue || value === normalizedStoredValue,
-      )?.[1] ?? normalizedStoredValue;
+        ([key, expectedValue]) =>
+          normalizeText(key) === normalizedValue ||
+          normalizeText(expectedValue) === normalizedValue,
+      )?.[1] ?? value;
 
-    if (!(selectedLabel in feedbackMessage)) return null;
+    const selectedFeedback =
+      valueFeedback[value] ??
+      valueFeedback[selectedLabel] ??
+      Object.entries(valueFeedback).find(
+        ([key]) => normalizeText(key) === normalizedValue,
+      )?.[1] ??
+      Object.entries(valueFeedback).find(
+        ([key]) => normalizeText(key) === normalizeText(selectedLabel),
+      )?.[1];
 
-    const selectedOption = selectedLabel as keyof typeof feedbackMessage;
-    const isOptimal = selectedOption === "A";
+    if (!selectedFeedback?.message) return null;
+    const normalizedLevel = normalizeText(selectedFeedback.level);
+    const isOptimal = normalizedLevel === "a";
 
     return {
       isOptimal,
-      message: feedbackMessage[selectedOption],
+      message: selectedFeedback.message,
       selectedLabel,
     };
   })();
@@ -85,7 +150,7 @@ export function RangeOfMotionEvaluation({
 
     setIsSubmitting(true);
     try {
-      await onComplete({ respuesta: selectedLabel });
+      await onComplete({ resultado: selectedLabel });
     } finally {
       setIsSubmitting(false);
     }
@@ -137,7 +202,8 @@ export function RangeOfMotionEvaluation({
             </div>
 
             <div className="grid gap-3">
-              {Object.entries(completedResults).map(([key, value], index) => {
+              {(movementCompletedEntry ? [movementCompletedEntry] : []).map(
+                ([key, value]) => {
                 const label =
                   evaluation.expectedResults?.[key] ?? key.replace(/_/g, " ");
                 const cardColor = movementRangeFeedback
@@ -166,7 +232,7 @@ export function RangeOfMotionEvaluation({
                         {movementRangeFeedback?.selectedLabel ?? String(value)}
                       </p>
                     </div>
-                    {movementRangeFeedback && index === 0 ? (
+                    {movementRangeFeedback ? (
                       <div
                         className={`mt-3 flex items-start gap-2 ${valueColor}`}
                       >
@@ -182,7 +248,8 @@ export function RangeOfMotionEvaluation({
                     ) : null}
                   </div>
                 );
-              })}
+              },
+              )}
             </div>
           </div>
         </CardContent>

@@ -3,21 +3,38 @@ type StsPercentiles = {
   p75: number;
 };
 
-const STS_TABLE: {
+type StsAgeRange = {
   minAge: number;
   maxAge: number;
-  percentiles: StsPercentiles;
-}[] = [
-  { minAge: 18, maxAge: 29, percentiles: { p25: 17, p75: 24 } },
-  { minAge: 30, maxAge: 39, percentiles: { p25: 18, p75: 23 } },
-  { minAge: 40, maxAge: 49, percentiles: { p25: 15, p75: 20 } },
-  { minAge: 50, maxAge: 59, percentiles: { p25: 14, p75: 20 } },
-  { minAge: 60, maxAge: 69, percentiles: { p25: 12, p75: 19 } },
-  { minAge: 70, maxAge: 80, percentiles: { p25: 11, p75: 17 } },
-];
+  p25: number;
+  p75: number;
+};
+
+type StsMessages = {
+  above?: string;
+  below?: string;
+  within?: string;
+};
+
+const DEFAULT_STS_MESSAGES: Required<StsMessages> = {
+  below:
+    "Tu resultado está por debajo de lo esperado para tu edad. Se recomienda iniciar entrenamiento de fuerza y resistencia de extremidades inferiores ¡Comencemos!",
+  above: "Tu resultado está sobre lo esperado para tu edad. ¡Continúa así!",
+  within:
+    "Tu resultado está dentro de lo esperado para tu edad. ¡Buen trabajo! Mantén tu nivel de actividad física.",
+};
 
 export function getAgeFromBirthDate(birthDate: string): number {
-  const birth = new Date(birthDate);
+  const normalized = birthDate.trim();
+  const ddmmyyyy = normalized.match(/^(\d{2})[/-](\d{2})[/-](\d{4})$/);
+  const birth = ddmmyyyy
+    ? new Date(
+        Number(ddmmyyyy[3]),
+        Number(ddmmyyyy[2]) - 1,
+        Number(ddmmyyyy[1]),
+      )
+    : new Date(normalized);
+  if (Number.isNaN(birth.getTime())) return NaN;
   const today = new Date();
   let age = today.getFullYear() - birth.getFullYear();
   const hasHadBirthdayThisYear =
@@ -31,29 +48,37 @@ export function getAgeFromBirthDate(birthDate: string): number {
 export function getStsFeedback(
   repetitions: number,
   age: number,
+  options?: {
+    ageRanges?: StsAgeRange[] | null;
+    stsMessages?: StsMessages | null;
+  },
 ): { message: string; level: "below" | "within" | "above" } | null {
-  const row = STS_TABLE.find((r) => age >= r.minAge && age <= r.maxAge);
+  const ageRanges = options?.ageRanges ?? [];
+  if (!Array.isArray(ageRanges) || ageRanges.length === 0) return null;
+
+  const row = ageRanges.find((r) => age >= r.minAge && age <= r.maxAge);
   if (!row) return null;
 
-  const { p25, p75 } = row.percentiles;
+  const { p25, p75 } = row;
+  const messages = {
+    ...DEFAULT_STS_MESSAGES,
+    ...(options?.stsMessages ?? {}),
+  };
 
   if (repetitions <= p25) {
     return {
       level: "below",
-      message:
-        "Tu resultado está por debajo de lo esperado para tu edad. Se recomienda iniciar entrenamiento de fuerza y resistencia de extremidades inferiores ¡Comencemos!",
+      message: messages.below,
     };
   }
   if (repetitions >= p75) {
     return {
       level: "above",
-      message:
-        "Tu resultado está sobre lo esperado para tu edad. ¡Continúa así!",
+      message: messages.above,
     };
   }
   return {
     level: "within",
-    message:
-      "Tu resultado está dentro de lo esperado para tu edad. ¡Buen trabajo! Mantén tu nivel de actividad física.",
+    message: messages.within,
   };
 }
