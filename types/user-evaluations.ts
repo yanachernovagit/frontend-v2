@@ -17,9 +17,53 @@ export interface Evaluation {
   seconds: number;
   order: number;
   expectedResults: Record<string, string>;
+  feedbackRules?:
+    | TimeFeedbackRules
+    | MeasureFeedbackRules
+    | MovementFeedbackRules;
   createdAt: string;
   updatedAt: string;
 }
+
+export type StsAgeRange = {
+  minAge: number;
+  maxAge: number;
+  p25: number;
+  p75: number;
+};
+
+export type StsMessages = {
+  below: string;
+  within: string;
+  above: string;
+};
+
+export type TimeFeedbackRules = {
+  metricKey: string;
+  ageRanges: StsAgeRange[];
+  stsMessages: StsMessages;
+};
+
+export type MeasureFeedbackRange = {
+  min: number;
+  max?: number;
+  level: string;
+  message: string;
+};
+
+export type MeasureFeedbackRules = {
+  metricKey: string;
+  ranges: MeasureFeedbackRange[];
+};
+
+export type MovementFeedbackValue = {
+  level: string;
+  message: string;
+};
+
+export type MovementFeedbackRules = {
+  valueFeedback: Record<string, MovementFeedbackValue>;
+};
 
 export interface UserEvaluation {
   evaluation: Evaluation;
