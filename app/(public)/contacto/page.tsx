@@ -46,7 +46,7 @@ export default function Contacto() {
     {
       name: "LinkedIn",
       icon: FaLinkedin,
-      url: "https://linkedin.com/company/oncoactivate",
+      url: "https://www.linkedin.com/in/oncoactivate",
       color: "hover:text-blue-700",
     },
   ];

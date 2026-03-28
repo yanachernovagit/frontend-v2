@@ -78,11 +78,8 @@ const communities: Community[] = [
     socials: [
       {
         platform: "Instagram",
-        label: "Fuerza Rosa Chile",
-      },
-      {
-        platform: "Facebook",
-        label: "Fuerza Rosa Chile",
+        label: "@fuerza_rosa_ong",
+        url: "https://www.instagram.com/fuerza_rosa_ong?igsh=dGQ4b2RqMmI2ZXZn",
       },
     ],
   },
@@ -174,7 +171,13 @@ const communities: Community[] = [
     name: "Somos Fabulosas",
     description:
       "Grupo de mujeres con cáncer de mama que buscan apoyo y contención.",
-    socials: [],
+    socials: [
+      {
+        platform: "Instagram",
+        label: "@somos_fabulosas",
+        url: "https://www.instagram.com/somos_fabulosas?igsh=OTk3ampsangxeGxl",
+      },
+    ],
   },
   {
     name: "Fundación Mama con Cáncer",
