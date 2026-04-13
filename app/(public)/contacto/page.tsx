@@ -1,9 +1,15 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, Check } from "lucide-react";
-import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
+import {
+  Check,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Mail,
+  Phone,
+  Twitter,
+} from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,25 +33,25 @@ export default function Contacto() {
   const socialLinks = [
     {
       name: "Facebook",
-      icon: FaFacebook,
+      icon: Facebook,
       url: "https://www.facebook.com/people/Oncoactivate/61583934299286/#",
       color: "hover:text-blue-600",
     },
     {
       name: "Instagram",
-      icon: FaInstagram,
+      icon: Instagram,
       url: "https://instagram.com/oncoactivate",
       color: "hover:text-pink-600",
     },
     {
       name: "Twitter",
-      icon: FaXTwitter,
+      icon: Twitter,
       url: "https://twitter.com/oncoactivate",
       color: "hover:text-sky-500",
     },
     {
       name: "LinkedIn",
-      icon: FaLinkedin,
+      icon: Linkedin,
       url: "https://www.linkedin.com/in/oncoactivate",
       color: "hover:text-blue-700",
     },

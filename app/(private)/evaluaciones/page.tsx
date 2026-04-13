@@ -51,6 +51,19 @@ export default function EvaluationsPage() {
       ? (evaluations?.pre_plan ?? [])
       : (evaluations?.post_plan ?? []);
 
+  const displayCompletedResults =
+    completedResults ??
+    (selectedEvaluation?.completed && selectedEvaluation.results
+      ? {
+          id: `${selectedEvaluation.evaluation.id}-${selectedPhaseFilter}`,
+          userId: "",
+          evaluationId: selectedEvaluation.evaluation.id,
+          doneAt: selectedEvaluation.doneAt ?? new Date().toISOString(),
+          results: selectedEvaluation.results,
+          feedback: selectedEvaluation.feedback ?? null,
+        }
+      : null);
+
   const allCurrentPhaseCompleted =
     currentPhaseEvaluations.length > 0 &&
     currentPhaseEvaluations.every((item) => item.completed);
@@ -79,9 +92,9 @@ export default function EvaluationsPage() {
           </div>
         ) : null}
         <div className="flex-1 min-h-0">
-          {completedResults && selectedEvaluation ? (
+          {displayCompletedResults && selectedEvaluation ? (
             <CompletedEvaluationView
-              results={completedResults}
+              results={displayCompletedResults}
               evaluation={selectedEvaluation?.evaluation}
             />
           ) : selectedEvaluation ? (
@@ -92,20 +105,20 @@ export default function EvaluationsPage() {
                   key={selectedEvaluation.evaluation.id}
                   evaluation={selectedEvaluation.evaluation}
                   onComplete={handleCompleteEvaluation}
-                  completedResults={selectedEvaluation.results}
+                  completedResults={null}
                 />
               ) : selectedEvaluation.evaluation.type ===
                 EvaluationTypeEnum.MOVEMENT_RANGE ? (
                 <RangeOfMotionEvaluation
                   evaluation={selectedEvaluation.evaluation}
                   onComplete={handleCompleteEvaluation}
-                  completedResults={selectedEvaluation.results}
+                  completedResults={null}
                 />
               ) : (
                 <ArmMeasurementEvaluation
                   evaluation={selectedEvaluation.evaluation}
                   onComplete={handleCompleteEvaluation}
-                  completedResults={selectedEvaluation.results}
+                  completedResults={null}
                 />
               )}
             </div>

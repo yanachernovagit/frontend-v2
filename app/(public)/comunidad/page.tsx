@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, HeartHandshake } from "lucide-react";
-import { FaFacebook, FaInstagram } from "react-icons/fa";
+import { Facebook, Globe, HeartHandshake, Instagram } from "lucide-react";
 import Image from "next/image";
 
 type Social = {
@@ -299,9 +298,9 @@ export default function ComunidadPage() {
                         className="flex items-center gap-2"
                       >
                         {social.platform === "Instagram" ? (
-                          <FaInstagram className="w-4 h-4 text-magent" />
+                          <Instagram className="w-4 h-4 text-magent" />
                         ) : (
-                          <FaFacebook className="w-4 h-4 text-magent" />
+                          <Facebook className="w-4 h-4 text-magent" />
                         )}
                         {social.url ? (
                           <a

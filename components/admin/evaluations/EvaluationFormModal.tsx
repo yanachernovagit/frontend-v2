@@ -26,9 +26,10 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectItem } from "@/components/ui/select";
 import {
   Evaluation,
+  GenericTimeFeedbackRules,
   MeasureFeedbackRules,
   MovementFeedbackRules,
-  TimeFeedbackRules,
+  StsTimeFeedbackRules,
 } from "@/types";
 import { MediaUploadField } from "@/components/admin/media/MediaUploadField";
 import { EvaluationTypeEnum } from "@/constants/enums";
@@ -54,6 +55,13 @@ const DEFAULT_STS_MESSAGES = {
     "Tu resultado está por debajo de lo esperado para tu edad. Se recomienda iniciar entrenamiento de fuerza y resistencia de extremidades inferiores ¡Comencemos!",
   within:
     "Tu resultado está dentro de lo esperado para tu edad. ¡Buen trabajo! Mantén tu nivel de actividad física.",
+};
+
+const EMPTY_TIME_FEEDBACK_RANGE = {
+  min: 0,
+  max: null,
+  level: "",
+  message: "",
 };
 
 const DEFAULT_MEASURE_FEEDBACK_RANGES = [
@@ -93,6 +101,15 @@ const evaluationSchema = z
     seconds: z.number().min(0).optional(),
     order: z.number().min(0),
     timeResults: z.array(z.object({ label: z.string() })),
+    timeMetricKey: z.string(),
+    timeRanges: z.array(
+      z.object({
+        min: z.number(),
+        max: z.number().nullable(),
+        level: z.string(),
+        message: z.string(),
+      }),
+    ),
     measureLeftLabel: z.string().optional(),
     measureRightLabel: z.string().optional(),
     measureDifferenceLabel: z.string().optional(),
@@ -162,6 +179,51 @@ const evaluationSchema = z
               code: z.ZodIssueCode.custom,
               path: ["stsAgeRanges", index, "p75"],
               message: "El percentil 75 debe ser mayor o igual al 25.",
+            });
+          }
+        });
+      } else if (
+        values.timeMetricKey.trim().length > 0 ||
+        values.timeRanges.length > 0
+      ) {
+        if (!values.timeMetricKey.trim()) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["timeMetricKey"],
+            message: "La métrica es requerida.",
+          });
+        }
+
+        if (values.timeRanges.length === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["timeRanges"],
+            message: "Debes agregar al menos un rango.",
+          });
+        }
+
+        values.timeRanges.forEach((range, index) => {
+          if (range.max !== null && range.min > range.max) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["timeRanges", index, "max"],
+              message: "El máximo debe ser mayor o igual al mínimo.",
+            });
+          }
+
+          if (!range.level.trim()) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["timeRanges", index, "level"],
+              message: "El nivel es requerido.",
+            });
+          }
+
+          if (!range.message.trim()) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["timeRanges", index, "message"],
+              message: "El mensaje es requerido.",
             });
           }
         });
@@ -300,14 +362,29 @@ function buildMovementExpectedResults(
   return expectedResults;
 }
 
-function getTimeFeedbackRules(
+function getStsTimeFeedbackRules(
   rules?: Evaluation["feedbackRules"],
-): TimeFeedbackRules | null {
+): StsTimeFeedbackRules | null {
   if (!rules || !("ageRanges" in rules) || !("stsMessages" in rules)) {
     return null;
   }
 
-  return rules as TimeFeedbackRules;
+  return rules as StsTimeFeedbackRules;
+}
+
+function getGenericTimeFeedbackRules(
+  rules?: Evaluation["feedbackRules"],
+): GenericTimeFeedbackRules | null {
+  if (
+    !rules ||
+    !("metricKey" in rules) ||
+    !("ranges" in rules) ||
+    "ageRanges" in rules
+  ) {
+    return null;
+  }
+
+  return rules as GenericTimeFeedbackRules;
 }
 
 function getMeasureFeedbackRules(
@@ -384,6 +461,8 @@ export function EvaluationFormModal({
       seconds: 0,
       order: 0,
       timeResults: [{ label: "" }],
+      timeMetricKey: "",
+      timeRanges: [],
       measureLeftLabel: DEFAULT_MEASURE_LABELS.leftVolume,
       measureRightLabel: DEFAULT_MEASURE_LABELS.rightVolume,
       measureDifferenceLabel: DEFAULT_MEASURE_LABELS.difference,
@@ -407,6 +486,15 @@ export function EvaluationFormModal({
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "timeResults",
+  });
+
+  const {
+    fields: timeRangeFields,
+    append: appendTimeRange,
+    remove: removeTimeRange,
+  } = useFieldArray({
+    control: form.control,
+    name: "timeRanges",
   });
 
   const {
@@ -455,7 +543,12 @@ export function EvaluationFormModal({
             }))
           : [{ label: "" }];
 
-      const timeFeedback = getTimeFeedbackRules(initialData.feedbackRules);
+      const stsTimeFeedback = getStsTimeFeedbackRules(
+        initialData.feedbackRules,
+      );
+      const genericTimeFeedback = getGenericTimeFeedbackRules(
+        initialData.feedbackRules,
+      );
       const measureFeedback = getMeasureFeedbackRules(
         initialData.feedbackRules,
       );
@@ -463,6 +556,21 @@ export function EvaluationFormModal({
         initialData.expectedResults,
         initialData.feedbackRules,
       );
+      const genericTimeRanges =
+        genericTimeFeedback?.ranges?.map((item) => ({
+          min: item.min,
+          max: item.max ?? null,
+          level: item.level,
+          message: item.message,
+        })) ?? [];
+      const stsAgeRanges = stsTimeFeedback?.ageRanges ?? [];
+      const measureRanges =
+        measureFeedback?.ranges?.map((item) => ({
+          min: item.min,
+          max: item.max ?? null,
+          level: item.level,
+          message: item.message,
+        })) ?? [];
 
       form.reset({
         name: initialData.name,
@@ -475,28 +583,22 @@ export function EvaluationFormModal({
         seconds: initialData.seconds || 0,
         order: initialData.order,
         timeResults: timeResults.length > 0 ? timeResults : [{ label: "" }],
+        timeMetricKey: genericTimeFeedback?.metricKey ?? "",
+        timeRanges: genericTimeRanges,
         measureLeftLabel: normalizedMeasure.leftVolume,
         measureRightLabel: normalizedMeasure.rightVolume,
         measureDifferenceLabel: normalizedMeasure.difference,
-        stsMetricKey: timeFeedback?.metricKey || "count",
-        stsAgeRanges:
-          timeFeedback?.ageRanges?.length > 0
-            ? timeFeedback.ageRanges
-            : DEFAULT_STS_AGE_RANGES,
+        stsMetricKey: stsTimeFeedback?.metricKey || "count",
+        stsAgeRanges: stsAgeRanges.length > 0 ? stsAgeRanges : DEFAULT_STS_AGE_RANGES,
         stsMessageAbove:
-          timeFeedback?.stsMessages?.above || DEFAULT_STS_MESSAGES.above,
+          stsTimeFeedback?.stsMessages?.above || DEFAULT_STS_MESSAGES.above,
         stsMessageWithin:
-          timeFeedback?.stsMessages?.within || DEFAULT_STS_MESSAGES.within,
+          stsTimeFeedback?.stsMessages?.within || DEFAULT_STS_MESSAGES.within,
         stsMessageBelow:
-          timeFeedback?.stsMessages?.below || DEFAULT_STS_MESSAGES.below,
+          stsTimeFeedback?.stsMessages?.below || DEFAULT_STS_MESSAGES.below,
         measureRanges:
-          measureFeedback?.ranges?.length > 0
-            ? measureFeedback.ranges.map((item) => ({
-                min: item.min,
-                max: item.max ?? null,
-                level: item.level,
-                message: item.message,
-              }))
+          measureRanges.length > 0
+            ? measureRanges
             : DEFAULT_MEASURE_FEEDBACK_RANGES,
         movementOptions: movementFormDefaults.movementOptions,
         movementNoneLabel: movementFormDefaults.movementNoneLabel,
@@ -514,6 +616,8 @@ export function EvaluationFormModal({
         seconds: 0,
         order: 0,
         timeResults: [{ label: "" }],
+        timeMetricKey: "",
+        timeRanges: [],
         measureLeftLabel: DEFAULT_MEASURE_LABELS.leftVolume,
         measureRightLabel: DEFAULT_MEASURE_LABELS.rightVolume,
         measureDifferenceLabel: DEFAULT_MEASURE_LABELS.difference,
@@ -579,6 +683,29 @@ export function EvaluationFormModal({
           within: values.stsMessageWithin.trim(),
         },
       };
+    } else if (values.type === EvaluationTypeEnum.TIME) {
+      const metricKey = values.timeMetricKey.trim();
+      const ranges = values.timeRanges
+        .map((item) => ({
+          min: item.min,
+          max: item.max ?? undefined,
+          level: item.level.trim(),
+          message: item.message.trim(),
+        }))
+        .filter(
+          (item) =>
+            item.level.length > 0 ||
+            item.message.length > 0 ||
+            item.min !== 0 ||
+            item.max !== undefined,
+        );
+
+      if (metricKey && ranges.length > 0) {
+        feedbackRules = {
+          metricKey,
+          ranges,
+        };
+      }
     }
 
     if (values.type === EvaluationTypeEnum.MEASURE) {
@@ -1168,10 +1295,168 @@ export function EvaluationFormModal({
               {selectedType === EvaluationTypeEnum.TIME && (
                 <>
                   {!isStsByName ? (
-                    <p className="text-sm text-black-400">
-                      El editor de percentiles está disponible solo para la
-                      evaluación STS (sentarse y levantarse).
-                    </p>
+                    <div className="space-y-4">
+                      <p className="text-sm text-black-400">
+                        Configura la métrica y los rangos para mostrar feedback
+                        en cualquier test de tiempo.
+                      </p>
+
+                      <FormField
+                        control={form.control}
+                        name="timeMetricKey"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-black-400 text-sm font-semibold">
+                              Métrica a evaluar
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="Ej: steps, count, stops"
+                                className="border-2 border-gray-100 focus:border-purple transition-colors"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="space-y-3">
+                        <p className="text-sm font-semibold text-black-400">
+                          Rangos de feedback
+                        </p>
+
+                        {timeRangeFields.map((item, index) => (
+                          <div
+                            key={item.id}
+                            className="grid grid-cols-1 md:grid-cols-4 gap-2 rounded-lg border border-purple/20 p-3 bg-white"
+                          >
+                            <FormField
+                              control={form.control}
+                              name={`timeRanges.${index}.min`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs text-black-400 font-semibold">
+                                    Min
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      {...field}
+                                      onChange={(event) =>
+                                        field.onChange(
+                                          Number(event.target.value),
+                                        )
+                                      }
+                                      className="border-2 border-gray-100 focus:border-purple transition-colors"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name={`timeRanges.${index}.max`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs text-black-400 font-semibold">
+                                    Max (opcional)
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      value={field.value ?? ""}
+                                      onChange={(event) => {
+                                        const next = event.target.value;
+                                        field.onChange(
+                                          next === "" ? null : Number(next),
+                                        );
+                                      }}
+                                      className="border-2 border-gray-100 focus:border-purple transition-colors"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name={`timeRanges.${index}.level`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs text-black-400 font-semibold">
+                                    Nivel
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      placeholder="Ej: normalidad, bajo"
+                                      className="border-2 border-gray-100 focus:border-purple transition-colors"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name={`timeRanges.${index}.message`}
+                              render={({ field }) => (
+                                <FormItem className="md:col-span-4">
+                                  <FormLabel className="text-xs text-black-400 font-semibold">
+                                    Mensaje
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      className="border-2 border-gray-100 focus:border-purple transition-colors"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <div className="md:col-span-4 flex justify-end">
+                              <Button
+                                type="button"
+                                variant="outline_magent"
+                                size="icon"
+                                onClick={() => removeTimeRange(index)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+
+                        <Button
+                          type="button"
+                          variant="outline_magent"
+                          onClick={() =>
+                            appendTimeRange({ ...EMPTY_TIME_FEEDBACK_RANGE })
+                          }
+                          className="w-fit"
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Agregar rango
+                        </Button>
+
+                        <FormField
+                          control={form.control}
+                          name="timeRanges"
+                          render={() => (
+                            <FormItem>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
                   ) : (
                     <div className="space-y-4">
                       <FormField

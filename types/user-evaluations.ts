@@ -25,6 +25,14 @@ export interface Evaluation {
   updatedAt: string;
 }
 
+export type EvaluationFeedbackRuleType = "range" | "value" | "default";
+
+export type EvaluationFeedback = {
+  level: string;
+  message: string;
+  ruleType: EvaluationFeedbackRuleType;
+};
+
 export type StsAgeRange = {
   minAge: number;
   maxAge: number;
@@ -38,31 +46,43 @@ export type StsMessages = {
   above: string;
 };
 
-export type TimeFeedbackRules = {
-  metricKey: string;
-  ageRanges: StsAgeRange[];
-  stsMessages: StsMessages;
-};
-
-export type MeasureFeedbackRange = {
+export type RangeFeedbackRule = {
   min: number;
   max?: number;
   level: string;
   message: string;
 };
 
-export type MeasureFeedbackRules = {
-  metricKey: string;
-  ranges: MeasureFeedbackRange[];
-};
-
-export type MovementFeedbackValue = {
+export type FeedbackValue = {
   level: string;
   message: string;
 };
 
+export type StsTimeFeedbackRules = {
+  metricKey: string;
+  ageRanges: StsAgeRange[];
+  stsMessages: StsMessages;
+};
+
+export type GenericTimeFeedbackRules = {
+  metricKey: string;
+  ranges: RangeFeedbackRule[];
+  defaultFeedback?: FeedbackValue;
+};
+
+export type TimeFeedbackRules =
+  | StsTimeFeedbackRules
+  | GenericTimeFeedbackRules;
+
+export type MeasureFeedbackRules = {
+  metricKey: string;
+  ranges: RangeFeedbackRule[];
+  defaultFeedback?: FeedbackValue;
+};
+
 export type MovementFeedbackRules = {
-  valueFeedback: Record<string, MovementFeedbackValue>;
+  valueFeedback: Record<string, FeedbackValue>;
+  defaultFeedback?: FeedbackValue;
 };
 
 export interface UserEvaluation {
@@ -71,6 +91,7 @@ export interface UserEvaluation {
   doneAt: string | null;
   results: Record<string, unknown> | null;
   progressPoint: ProgressPointEnum;
+  feedback?: EvaluationFeedback | null;
 }
 
 export interface CompletedUserEvaluation {
@@ -79,6 +100,7 @@ export interface CompletedUserEvaluation {
   evaluationId: string;
   doneAt: string;
   results: Record<string, unknown>;
+  feedback?: EvaluationFeedback | null;
 }
 
 export interface GroupedUserEvaluations {
