@@ -1,19 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Clock, Edit, Play, ImageIcon } from "lucide-react";
+import Image from "next/image";
+import { Clock, Edit, Play, ImageIcon, Move } from "lucide-react";
 
 import { DataTable } from "@/components/admin/DataTable";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { EvaluationFormModal } from "@/components/admin/evaluations/EvaluationFormModal";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAdminEvaluations } from "@/hooks/useAdminEvaluations";
 import { Evaluation } from "@/types";
+import { EvaluationTypeEnum } from "@/constants/enums";
 
 function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return "-";
@@ -29,6 +27,7 @@ export default function AdminEvaluationsPage() {
   const {
     evaluations,
     loading,
+    error,
     createEvaluation,
     updateEvaluation,
     deleteEvaluation,
@@ -45,26 +44,40 @@ export default function AdminEvaluationsPage() {
     { key: "order", label: "Orden" },
     { key: "name", label: "Nombre" },
     {
-      key: "isTime",
+      key: "type",
       label: "Tipo",
-      render: (item: Evaluation) =>
-        item.isTime ? (
+      render: (item: Evaluation) => {
+        if (item.type === EvaluationTypeEnum.TIME) {
+          return (
+            <Badge className="bg-purple/10 text-purple border border-purple/20 font-semibold">
+              <Clock className="w-3 h-3 mr-1" />
+              Tiempo
+            </Badge>
+          );
+        }
+
+        if (item.type === EvaluationTypeEnum.MOVEMENT_RANGE) {
+          return (
+            <Badge className="bg-blue/10 text-blue border border-blue/20 font-semibold">
+              <Move className="w-3 h-3 mr-1" />
+              Rango movimiento
+            </Badge>
+          );
+        }
+
+        return (
           <Badge className="bg-purple/10 text-purple border border-purple/20 font-semibold">
-            <Clock className="w-3 h-3 mr-1" />
-            Tiempo
-          </Badge>
-        ) : (
-          <Badge className="bg-magent/10 text-magent border border-magent/20 font-semibold">
             <Edit className="w-3 h-3 mr-1" />
             Medición
           </Badge>
-        ),
+        );
+      },
     },
     {
       key: "seconds",
       label: "Duración",
       render: (item: Evaluation) =>
-        item.isTime && item.seconds
+        item.type === EvaluationTypeEnum.TIME && item.seconds
           ? `${Math.floor(item.seconds / 60)}:${String(
               item.seconds % 60,
             ).padStart(2, "0")}`
@@ -80,9 +93,12 @@ export default function AdminEvaluationsPage() {
             onClick={() => setPreviewImage(item.imageUrl!)}
             className="w-16 h-12 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all"
           >
-            <img
+            <Image
               src={item.imageUrl}
               alt={`Imagen de ${item.name}`}
+              width={64}
+              height={48}
+              unoptimized
               className="w-full h-full object-cover"
             />
           </button>
@@ -102,9 +118,12 @@ export default function AdminEvaluationsPage() {
             onClick={() => setPreviewImage(item.logoUrl!)}
             className="w-12 h-12 rounded-lg overflow-hidden hover:ring-2 hover:ring-green-500 transition-all"
           >
-            <img
+            <Image
               src={item.logoUrl}
               alt={`Logo de ${item.name}`}
+              width={48}
+              height={48}
+              unoptimized
               className="w-full h-full object-cover"
             />
           </button>
@@ -206,6 +225,7 @@ export default function AdminEvaluationsPage() {
         searchKey="name"
         title="Evaluaciones"
         isLoading={loading}
+        error={error}
       />
 
       <EvaluationFormModal
@@ -230,9 +250,12 @@ export default function AdminEvaluationsPage() {
         <DialogContent className="max-w-3xl p-2">
           <DialogTitle className="sr-only">Preview de imagen</DialogTitle>
           {previewImage && (
-            <img
+            <Image
               src={previewImage}
               alt="Preview"
+              width={1400}
+              height={900}
+              unoptimized
               className="w-full h-auto rounded-lg"
             />
           )}

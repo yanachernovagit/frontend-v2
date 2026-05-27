@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { UserPlan } from "@/types";
 import {
   getUserPlanService,
@@ -7,7 +7,7 @@ import {
 
 interface UseUserPlanReturn {
   userPlan: UserPlan | null;
-  updatePlanProgress: () => void;
+  updatePlanProgress: () => Promise<void>;
   changedRoutine: boolean;
   viewNextRoutine: () => void;
   loading: boolean;
@@ -16,21 +16,26 @@ interface UseUserPlanReturn {
   refetch: () => Promise<void>;
 }
 
-export const useUserPlan = (userId?: string): UseUserPlanReturn => {
+type UseUserPlanOptions = {
+  autoFetch?: boolean;
+};
+
+export const useUserPlan = ({
+  autoFetch = true,
+}: UseUserPlanOptions = {}): UseUserPlanReturn => {
   const [userPlan, setUserPlan] = useState<UserPlan | null>(null);
   const [changedRoutine, setChangedRoutine] = useState(false);
   const [loading, setLoading] = useState(false);
   const [updatingProgress, setUpdatingProgress] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasFetchedOnMount = useRef(false);
 
   const fetchUserPlan = useCallback(async () => {
-    if (!userId) return;
-
     setLoading(true);
     setError(null);
 
     try {
-      const plan = await getUserPlanService(userId);
+      const plan = await getUserPlanService();
       setUserPlan(plan);
     } catch (err) {
       const errorMessage =
@@ -39,13 +44,12 @@ export const useUserPlan = (userId?: string): UseUserPlanReturn => {
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, []);
 
   const updatePlanProgress = async () => {
-    if (!userId) return;
     setUpdatingProgress(true);
     try {
-      const plan = await updateUserPlanProgressService(userId);
+      const plan = await updateUserPlanProgressService();
       if (plan.progressRoutine !== userPlan?.progressRoutine) {
         setChangedRoutine(true);
       }
@@ -72,10 +76,11 @@ export const useUserPlan = (userId?: string): UseUserPlanReturn => {
   };
 
   useEffect(() => {
-    if (userId) {
-      fetchUserPlan();
-    }
-  }, [userId, fetchUserPlan]);
+    if (!autoFetch) return;
+    if (hasFetchedOnMount.current) return;
+    hasFetchedOnMount.current = true;
+    fetchUserPlan();
+  }, [autoFetch, fetchUserPlan]);
 
   return {
     userPlan,

@@ -1,9 +1,6 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
-import { Task } from "@/types";
-import { useUserTasks } from "@/hooks/useUserTasks";
-import { useEffect } from "react";
+import { Task, UserTasksStatus } from "@/types";
 import { SkeletonTaskList } from "./SkeletonTaskList";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
@@ -11,14 +8,13 @@ import Image from "next/image";
 import { TaskCard } from "./TaskCard";
 import { Card } from "../ui/card";
 
-export function TasksCarousel() {
-  const { user } = useAuth();
-  const { userTasks, loading, refetch } = useUserTasks(user?.sub);
+type Props = {
+  userTasks: UserTasksStatus | null;
+  loading: boolean;
+  refetch: () => Promise<void>;
+};
 
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
-
+export function TasksCarousel({ userTasks, loading, refetch }: Props) {
   const tasks: Task[] = [
     {
       title: "Completar mi perfil",
@@ -32,7 +28,7 @@ export function TasksCarousel() {
         />
       ),
       disabled: userTasks?.profileCompleted,
-      linkTo: "/profile",
+      linkTo: "/preguntas",
       visible: !userTasks?.profileCompleted,
     },
     {
@@ -47,7 +43,7 @@ export function TasksCarousel() {
         />
       ),
       disabled: userTasks?.firstEvaluationCompleted,
-      linkTo: "/evaluation-test",
+      linkTo: "/evaluaciones",
       visible: !userTasks?.firstEvaluationCompleted,
     },
     {
@@ -83,7 +79,9 @@ export function TasksCarousel() {
               No se pudieron cargar tus tareas
             </p>
             <Button
-              onClick={refetch}
+              onClick={() => {
+                void refetch();
+              }}
               className="bg-magent px-7 py-3 rounded-full mt-2 hover:bg-magent/90"
             >
               <span className="text-white font-semibold text-base">

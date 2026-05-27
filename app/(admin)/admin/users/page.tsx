@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { DataTable } from "@/components/admin/DataTable";
-import { UserFormModal } from "@/components/admin/users/UserFormModal";
+import { UserDetailModal } from "@/components/admin/users/UserDetailModal";
 import { Badge } from "@/components/ui/badge";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { AdminUser } from "@/types";
@@ -32,11 +32,33 @@ function formatDateTime(dateString: string | null | undefined): string {
 }
 
 export default function AdminUsersPage() {
-  const { users, loading, updateUserRole } = useAdminUsers();
+  const {
+    users,
+    loading,
+    error,
+    updateUserRole,
+    userDetail,
+    detailLoading,
+    fetchUserDetail,
+    clearUserDetail,
+    updateUserPlan,
+    resetPassword,
+    sendResetEmail,
+    resetPlan,
+    deletePrescriptionCache,
+    refetch,
+    // New actions
+    createPlan,
+    updateTasks,
+    setFatigue,
+    updatePlanDetails,
+    toggleDebug,
+    prescriptions,
+    prescriptionsLoading,
+    fetchPrescriptions,
+  } = useAdminUsers();
 
-  const [formOpen, setFormOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<AdminUser | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const columns = [
     { key: "email", label: "Email" },
@@ -44,16 +66,24 @@ export default function AdminUsersPage() {
     {
       key: "role",
       label: "Rol",
-      render: (item: AdminUser) =>
-        item.role === USER_ROLES.ADMIN ? (
-          <Badge className="bg-purple/10 text-purple border border-purple/20 font-semibold">
-            Admin
-          </Badge>
-        ) : (
-          <Badge className="bg-gray-200 text-gray-500 border border-gray-300 font-semibold">
-            Usuario
-          </Badge>
-        ),
+      render: (item: AdminUser) => (
+        <div className="flex items-center gap-1.5">
+          {item.role === USER_ROLES.ADMIN ? (
+            <Badge className="bg-purple/10 text-purple border border-purple/20 font-semibold">
+              Admin
+            </Badge>
+          ) : (
+            <Badge className="bg-gray-200 text-gray-500 border border-gray-300 font-semibold">
+              Usuario
+            </Badge>
+          )}
+          {item.debug && (
+            <Badge className="bg-amber-100 text-amber-700 border border-amber-300 font-semibold text-[10px] px-1.5 py-0">
+              DEBUG
+            </Badge>
+          )}
+        </div>
+      ),
     },
     {
       key: "createdAt",
@@ -66,7 +96,7 @@ export default function AdminUsersPage() {
     },
     {
       key: "lastSignInAt",
-      label: "Último acceso",
+      label: "Ultimo acceso",
       render: (item: AdminUser) => (
         <span className="text-sm text-gray-600">
           {formatDateTime(item.lastSignInAt)}
@@ -75,20 +105,24 @@ export default function AdminUsersPage() {
     },
   ];
 
-  const handleEdit = (item: AdminUser) => {
-    setSelectedItem(item);
-    setFormOpen(true);
+  const handleEdit = async (item: AdminUser) => {
+    setDetailOpen(true);
+    await fetchUserDetail(item.id);
   };
 
-  const handleFormSubmit = async (data: { role: string }) => {
-    if (!selectedItem) return;
-    setIsSubmitting(true);
-    try {
-      await updateUserRole(selectedItem.id, data.role);
-      setFormOpen(false);
-    } finally {
-      setIsSubmitting(false);
+  const handleDetailClose = (open: boolean) => {
+    setDetailOpen(open);
+    if (!open) {
+      clearUserDetail();
+      // Refresh the list in case something changed
+      refetch();
     }
+  };
+
+  const handleUpdateRole = async (id: string, role: string) => {
+    await updateUserRole(id, role);
+    // Also refresh detail
+    await fetchUserDetail(id);
   };
 
   return (
@@ -100,14 +134,28 @@ export default function AdminUsersPage() {
         searchKey="email"
         title="Usuarios"
         isLoading={loading}
+        error={error}
       />
 
-      <UserFormModal
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        onSubmit={handleFormSubmit}
-        initialData={selectedItem}
-        isLoading={isSubmitting}
+      <UserDetailModal
+        open={detailOpen}
+        onOpenChange={handleDetailClose}
+        user={userDetail}
+        loading={detailLoading}
+        onUpdateRole={handleUpdateRole}
+        onUpdatePlan={updateUserPlan}
+        onResetPassword={resetPassword}
+        onSendResetEmail={sendResetEmail}
+        onResetPlan={resetPlan}
+        onDeletePrescriptionCache={deletePrescriptionCache}
+        onCreatePlan={createPlan}
+        onUpdateTasks={updateTasks}
+        onSetFatigue={setFatigue}
+        onUpdatePlanDetails={updatePlanDetails}
+        onToggleDebug={toggleDebug}
+        prescriptions={prescriptions}
+        prescriptionsLoading={prescriptionsLoading}
+        onFetchPrescriptions={fetchPrescriptions}
       />
     </>
   );

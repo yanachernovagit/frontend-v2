@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signUpService } from "@/services/authService";
+import { signInService, signUpService } from "@/services/authService";
 import { useAuth } from "@/hooks/useAuth";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,13 +19,12 @@ import {
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
     fullName: "",
-    phone: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -63,12 +63,21 @@ export default function SignUpPage() {
         email: formData.email,
         password: formData.password,
         fullName: formData.fullName,
-        phone: formData.phone,
       });
 
-      router.push("/signin?registered=true");
-    } catch (err: any) {
-      setError(err.message || "Error al registrarse");
+      const session = await signInService({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      login({
+        accessToken: session.accessToken,
+        refreshToken: session.refreshToken,
+      });
+
+      router.push("/preguntas");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al registrarse");
     } finally {
       setIsLoading(false);
     }
@@ -76,9 +85,13 @@ export default function SignUpPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple via-purple/98 to-magent/90 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple/18 rounded-full blur-3xl pointer-events-none animate-pulse-slow" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-magent/15 rounded-full blur-3xl pointer-events-none animate-pulse-slow" />
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-blue via-purple to-magent relative overflow-hidden">
+        <Image
+          src="/brand/element-onocoactivate.svg"
+          alt=""
+          fill
+          className="absolute inset-0 object-cover z-0 pointer-events-none"
+        />
         <div className="text-center relative z-10">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-white border-r-transparent"></div>
           <p className="mt-4 text-white font-semibold">Verificando sesión...</p>
@@ -88,27 +101,32 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple via-purple/98 to-magent/90 p-4 relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple/18 rounded-full blur-3xl pointer-events-none animate-pulse-slow" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-magent/15 rounded-full blur-3xl pointer-events-none animate-pulse-slow" />
-      <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-blue/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-blue via-purple to-magent p-4 relative overflow-hidden">
+      <Image
+        src="/brand/element-onocoactivate.svg"
+        alt=""
+        fill
+        className="absolute inset-0 object-cover z-0 pointer-events-none"
+      />
 
-      <Card className="w-full max-w-md bg-white/95 backdrop-blur-xl shadow-[0_20px_70px_-15px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.5)] border border-white/40 relative z-10">
+      <Card className="w-full max-w-md relative z-10">
+        <div className="h-1 flex">
+          <div className="flex-1 bg-blue"></div>
+          <div className="flex-1 bg-magent"></div>
+          <div className="flex-1 bg-purple"></div>
+        </div>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-purple to-magent bg-clip-text text-transparent">
+          <CardTitle className="text-2xl font-bold text-center">
             Crear Cuenta
-          </CardTitle>{" "}
-          <CardDescription className="text-center text-black-400">
+          </CardTitle>
+          <CardDescription className="text-center">
             Completa el formulario para registrarte
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label
-                htmlFor="fullName"
-                className="text-sm font-semibold text-black"
-              >
+              <label htmlFor="fullName" className="text-sm font-medium">
                 Nombre completo
               </label>
               <Input
@@ -120,14 +138,10 @@ export default function SignUpPage() {
                 onChange={handleChange}
                 required
                 disabled={isLoading}
-                className="border-purple/20 focus:border-purple focus:ring-purple/20"
               />
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="email"
-                className="text-sm font-semibold text-black"
-              >
+              <label htmlFor="email" className="text-sm font-medium">
                 Correo electrónico
               </label>
               <Input
@@ -139,33 +153,10 @@ export default function SignUpPage() {
                 onChange={handleChange}
                 required
                 disabled={isLoading}
-                className="border-purple/20 focus:border-purple focus:ring-purple/20"
               />
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="phone"
-                className="text-sm font-semibold text-black"
-              >
-                Teléfono
-              </label>
-              <Input
-                id="phone"
-                name="phone"
-                type="tel"
-                placeholder="+52 123 456 7890"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-                disabled={isLoading}
-                className="border-purple/20 focus:border-purple focus:ring-purple/20"
-              />
-            </div>
-            <div className="space-y-2">
-              <label
-                htmlFor="password"
-                className="text-sm font-semibold text-black"
-              >
+              <label htmlFor="password" className="text-sm font-medium">
                 Contraseña
               </label>
               <Input
@@ -177,14 +168,10 @@ export default function SignUpPage() {
                 onChange={handleChange}
                 required
                 disabled={isLoading}
-                className="border-purple/20 focus:border-purple focus:ring-purple/20"
               />
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="confirmPassword"
-                className="text-sm font-semibold text-black"
-              >
+              <label htmlFor="confirmPassword" className="text-sm font-medium">
                 Confirmar contraseña
               </label>
               <Input
@@ -196,29 +183,24 @@ export default function SignUpPage() {
                 onChange={handleChange}
                 required
                 disabled={isLoading}
-                className="border-purple/20 focus:border-purple focus:ring-purple/20"
               />
             </div>
             {error && (
-              <div className="bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-3 rounded-xl text-sm font-medium">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
                 {error}
               </div>
             )}
-            <Button
-              type="submit"
-              className="w-full bg-gradient-to-r from-purple to-magent hover:from-purple/90 hover:to-magent/90 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-300"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Registrando..." : "Registrarse"}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
-          <div className="text-sm text-center text-black-400">
+          <div className="text-sm text-center text-gray-600">
             ¿Ya tienes una cuenta?{" "}
             <Link
               href="/signin"
-              className="text-purple hover:text-magent font-semibold transition-colors"
+              className="text-blue hover:underline font-medium"
             >
               Inicia sesión
             </Link>

@@ -42,6 +42,29 @@ interface DataTableProps<T> {
   searchKey?: keyof T;
   title: string;
   isLoading?: boolean;
+  error?: string | null;
+}
+
+function normalizeSortValue(value: unknown) {
+  if (value === null || value === undefined) return null;
+  if (typeof value === "number") return value;
+  if (typeof value === "boolean") return value ? 1 : 0;
+  if (value instanceof Date) return value.getTime();
+
+  const stringValue = String(value).trim();
+  if (!stringValue) return "";
+
+  const numericValue = Number(stringValue);
+  if (!Number.isNaN(numericValue) && stringValue === String(numericValue)) {
+    return numericValue;
+  }
+
+  const timestamp = Date.parse(stringValue);
+  if (!Number.isNaN(timestamp)) {
+    return timestamp;
+  }
+
+  return stringValue.toLowerCase();
 }
 
 function SkeletonRow({
@@ -79,6 +102,7 @@ export function DataTable<T extends { id: string }>({
   searchKey,
   title,
   isLoading = false,
+  error,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -113,17 +137,14 @@ export function DataTable<T extends { id: string }>({
 
     if (sortKey && sortDirection) {
       result = [...result].sort((a, b) => {
-        const aValue = a[sortKey as keyof T];
-        const bValue = b[sortKey as keyof T];
+        const aValue = normalizeSortValue(a[sortKey as keyof T]);
+        const bValue = normalizeSortValue(b[sortKey as keyof T]);
 
         if (aValue === null || aValue === undefined) return 1;
         if (bValue === null || bValue === undefined) return -1;
 
-        const aString = String(aValue).toLowerCase();
-        const bString = String(bValue).toLowerCase();
-
-        if (aString < bString) return sortDirection === "asc" ? -1 : 1;
-        if (aString > bString) return sortDirection === "asc" ? 1 : -1;
+        if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
         return 0;
       });
     }
@@ -132,29 +153,27 @@ export function DataTable<T extends { id: string }>({
   }, [data, searchKey, search, sortKey, sortDirection]);
 
   const totalPages = Math.ceil(filteredAndSortedData.length / itemsPerPage);
+  const safePage =
+    totalPages === 0 ? 1 : Math.min(Math.max(page, 1), totalPages);
+
   const paginatedData = filteredAndSortedData.slice(
-    (page - 1) * itemsPerPage,
-    page * itemsPerPage,
+    (safePage - 1) * itemsPerPage,
+    safePage * itemsPerPage,
   );
   const hasActions = Boolean(onEdit || onDelete);
 
   return (
     <div className="space-y-7">
-      <div className="flex items-center justify-between flex-wrap gap-5 p-7 rounded-2xl bg-gradient-to-br from-white via-purple/5 to-magent/8 border border-purple/20 shadow-[0_8px_24px_0_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.6)_inset] hover:shadow-[0_12px_32px_0_rgba(0,0,0,0.15),0_0_0_1px_rgba(255,255,255,0.7)_inset] transition-all duration-500 relative overflow-hidden">
+      <div className="flex items-center justify-between flex-wrap gap-5 p-7 rounded-2xl bg-gradient-to-br from-white via-purple/5 to-magent/8 border border-purple/20  transition-all duration-500 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-magent/12 to-transparent rounded-full blur-3xl pointer-events-none" />
-        <div className="space-y-3 relative z-10">
-          <h1 className="text-3xl font-bold text-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+        <div className="flex items-center gap-3 relative z-10">
+          <h1 className="text-3xl font-bold text-black tracking-tight">
             {title}
           </h1>
-          <div className="flex items-center gap-3">
-            <div className="h-1 w-12 bg-gradient-to-r from-purple via-magent to-purple rounded-full shadow-[0_2px_8px_rgba(120,63,208,0.4)]" />
-            <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple/15 to-magent/15 border border-purple/30 shadow-[0_2px_8px_0_rgba(0,0,0,0.08)]">
-              <p className="text-xs text-purple font-bold uppercase tracking-wider">
-                {filteredAndSortedData.length}{" "}
-                {filteredAndSortedData.length === 1 ? "registro" : "registros"}
-              </p>
-            </div>
-          </div>
+          <span className="px-3 py-1 rounded-lg bg-purple/10 text-xs text-purple font-bold uppercase tracking-wider">
+            {filteredAndSortedData.length}{" "}
+            {filteredAndSortedData.length === 1 ? "registro" : "registros"}
+          </span>
         </div>
         {onCreate && (
           <Button
@@ -179,6 +198,12 @@ export function DataTable<T extends { id: string }>({
             }}
             className="pl-12 pr-4 border border-purple/20 focus:border-purple focus:ring-2 focus:ring-purple/15 rounded-xl h-12 font-medium bg-white shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] focus:shadow-[0_4px_16px_0_rgba(120,63,208,0.15)] transition-all"
           />
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+          {error}
         </div>
       )}
 
@@ -313,11 +338,14 @@ export function DataTable<T extends { id: string }>({
           <div className="px-4 py-2.5 rounded-xl bg-white border border-purple/20 shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] relative z-10">
             <span className="text-sm text-black-400 font-semibold">
               <span className="text-purple font-bold">
-                {(page - 1) * itemsPerPage + 1}
+                {(safePage - 1) * itemsPerPage + 1}
               </span>
               {" - "}
               <span className="text-purple font-bold">
-                {Math.min(page * itemsPerPage, filteredAndSortedData.length)}
+                {Math.min(
+                  safePage * itemsPerPage,
+                  filteredAndSortedData.length,
+                )}
               </span>
               {" de "}
               <span className="text-black font-bold">
@@ -330,20 +358,20 @@ export function DataTable<T extends { id: string }>({
               variant="outline_magent"
               size="sm"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
+              disabled={safePage === 1}
               className="transition-all shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_0_rgba(235,68,156,0.2)] font-semibold"
             >
               <ChevronLeft className="w-4 h-4 mr-1" />
               Anterior
             </Button>
             <div className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple to-magent text-white font-bold text-sm shadow-[0_4px_12px_0_rgba(120,63,208,0.3)] min-w-[80px] text-center border border-white/20">
-              {page} / {totalPages}
+              {safePage} / {totalPages}
             </div>
             <Button
               variant="outline_magent"
               size="sm"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
+              disabled={safePage === totalPages}
               className="transition-all shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_0_rgba(235,68,156,0.2)] font-semibold"
             >
               Siguiente

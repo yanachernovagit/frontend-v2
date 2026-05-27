@@ -52,6 +52,16 @@ export function Header() {
             Educación
           </Link>
           <Link
+            href="/test-de-evaluaciones"
+            className={`relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-magent after:transition-all after:duration-300 ${
+              pathname === "/volumen-brazo"
+                ? "after:w-full"
+                : "after:w-0 hover:after:w-full"
+            }`}
+          >
+            Evaluaciones
+          </Link>
+          <Link
             href="/contacto"
             className={`relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-magent after:transition-all after:duration-300 ${
               pathname === "/contacto"
@@ -60,6 +70,16 @@ export function Header() {
             }`}
           >
             Contacto
+          </Link>
+          <Link
+            href="/comunidad"
+            className={`relative text-white transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-magent after:transition-all after:duration-300 ${
+              pathname === "/comunidad"
+                ? "after:w-full"
+                : "after:w-0 hover:after:w-full"
+            }`}
+          >
+            Comunidad
           </Link>
         </nav>
 
@@ -129,6 +149,17 @@ export function Header() {
             Educación
           </Link>
           <Link
+            href="/test-de-evaluaciones"
+            onClick={toggleMenu}
+            className={`text-xl transition-colors ${
+              pathname === "/volumen-brazo"
+                ? "text-magent"
+                : "text-white hover:text-magent"
+            }`}
+          >
+            Volumen de brazo
+          </Link>
+          <Link
             href="/contacto"
             onClick={toggleMenu}
             className={`text-xl transition-colors ${
@@ -138,6 +169,17 @@ export function Header() {
             }`}
           >
             Contacto
+          </Link>
+          <Link
+            href="/comunidad"
+            onClick={toggleMenu}
+            className={`text-xl transition-colors ${
+              pathname === "/comunidad"
+                ? "text-magent"
+                : "text-white hover:text-magent"
+            }`}
+          >
+            Comunidad
           </Link>
 
           <div className="flex flex-col items-center gap-4 mt-8">

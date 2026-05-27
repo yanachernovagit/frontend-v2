@@ -1,26 +1,37 @@
 "use client";
 
 import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Timer, Edit } from "lucide-react";
+
 import { UserEvaluation } from "@/types";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { EvaluationTypeEnum } from "@/constants/enums";
 import { useCommonUtils } from "@/hooks/useCommonUtils";
-import { Clock, Edit } from "lucide-react";
+
+import ApprovalWhite from "@/public/icons/white/Approval.svg";
 
 type Props = {
   evaluation: UserEvaluation;
   onPress?: () => void;
-  hideInstructions?: boolean;
+  isSelected?: boolean;
+  hideResults?: boolean;
 };
 
 export function EvaluationCard({
   evaluation,
   onPress,
-  hideInstructions = false,
+  isSelected,
+  hideResults = false,
 }: Props) {
   const { evaluation: evalData, completed, results } = evaluation;
-  const { name, description, isTime, seconds, logoUrl } = evalData;
+  const { name, description, type, seconds, logoUrl, imageUrl } = evalData;
   const { formatDisplayNumber } = useCommonUtils();
+
+  const isTimeType = type === EvaluationTypeEnum.TIME;
+  const isMeasureType = type === EvaluationTypeEnum.MEASURE;
+  const isMovementRangeType = type === EvaluationTypeEnum.MOVEMENT_RANGE;
+  const isCompactCompleted = completed && hideResults;
 
   const formatTime = () => {
     const minutes = Math.floor(seconds / 60);
@@ -31,102 +42,135 @@ export function EvaluationCard({
   return (
     <Card
       onClick={onPress}
-      className="rounded-xl p-4 bg-white border border-gray-200 cursor-pointer transition-all hover:shadow-lg hover:border-purple/30"
+      className={`
+        rounded-2xl border-2 transition p-4 ${isCompactCompleted ? "min-h-[120px]" : "min-h-[180px]"}
+        ${isSelected ? "border-purple" : "border-transparent"}
+        ${onPress ? "cursor-pointer hover:shadow-md" : ""}
+      `}
     >
-      <div className="flex items-start gap-3">
-        <div className="w-12 h-12 bg-purple/10 rounded-xl flex items-center justify-center shrink-0">
-          <Image
-            src={logoUrl}
-            alt={name}
-            width={32}
-            height={32}
-            className="object-contain"
-          />
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start gap-2 mb-1">
-            <h3 className="text-base font-bold text-gray-900 flex-1 leading-tight">
-              {name}
-            </h3>
-            {completed && (
-              <div className="flex items-center gap-1 text-magent">
-                <Image
-                  src="/icons/magent/Task-magent.svg"
-                  alt="Completada"
-                  width={20}
-                  height={20}
-                  className="shrink-0"
-                />
-                Completado
-              </div>
+      <CardContent
+        className={`flex flex-col justify-between gap-3 p-0 ${
+          isCompactCompleted ? "min-h-[88px]" : "min-h-[148px]"
+        }`}
+      >
+        <div className="flex items-center h-14">
+          <div className="shrink-0 w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden">
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={name}
+                width={56}
+                height={56}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <Image
+                src={logoUrl}
+                alt={name}
+                width={36}
+                height={36}
+                className="w-[65%] h-[65%]"
+              />
             )}
           </div>
 
-          {!hideInstructions && (
-            <>
-              <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-                {description}
-              </p>
+          <div className="flex-1 mx-4 overflow-hidden">
+            <h3 className="text-xl font-bold text-gray-900 truncate">{name}</h3>
+            <p className="text-sm text-gray-500 truncate">{description}</p>
+          </div>
 
-              <div className="flex items-center gap-3 mb-2">
-                {isTime ? (
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-purple" />
-                    <span className="text-xs text-gray-700 font-medium">
-                      {formatTime()}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1.5">
-                    <Edit className="w-3.5 h-3.5 text-purple" />
-                    <span className="text-xs text-gray-700 font-medium">
-                      Requiere medidas
-                    </span>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-
-          {completed && results && Object.entries(results).length > 0 && (
-            <div className="mt-3 pt-3 border-t border-gray-100">
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(results).map(([key, value]) => {
-                  const label =
-                    evalData.expectedResults[key] || key.replace(/_/g, " ");
-                  const unit = isTime ? "" : "ml";
-                  const formattedValue = isTime
-                    ? value
-                    : formatDisplayNumber(Number(value));
-
-                  return (
-                    <div
-                      key={key}
-                      className="bg-purple/10 rounded-lg px-3 py-1.5 border border-purple-400"
-                    >
-                      <div className="text-[10px] text-purple-600 font-medium uppercase tracking-wide mb-0.5">
-                        {label}
-                      </div>
-                      <div className="text-sm font-bold text-purple">
-                        {formattedValue} {unit}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+          {!completed && (
+            <Button size="sm" className="rounded-full bg-purple px-4">
+              Realizar
+            </Button>
           )}
         </div>
 
         {!completed && (
-          <div className="self-start">
-            <Badge className="bg-purple text-white hover:bg-purple/90 text-xs px-2.5 py-1">
-              Realizar
-            </Badge>
+          <div className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-100 px-4 py-2">
+            {isTimeType ? (
+              <>
+                <Timer className="h-4 w-4 text-purple" />
+                <span className="text-gray-700">Duración: {formatTime()}</span>
+              </>
+            ) : isMovementRangeType ? (
+              <>
+                <Edit className="h-4 w-4 text-purple" />
+                <span className="text-gray-700">Selecciona una opción</span>
+              </>
+            ) : (
+              <>
+                <Edit className="h-4 w-4 text-purple" />
+                <span className="text-gray-700">Requiere medidas</span>
+              </>
+            )}
           </div>
         )}
-      </div>
+
+        {completed && (
+          <div className="flex items-center justify-center gap-2 rounded-xl border-2 border-purple bg-purple px-4 py-2">
+            <Image src={ApprovalWhite} alt={name} width={20} height={20} />
+            <span className="font-bold text-white">Completado</span>
+          </div>
+        )}
+
+        {completed && results && !hideResults && (
+          <div className="pt-3 border-t border-gray-200">
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(results).map(([key, value]) => {
+                const label =
+                  evalData.expectedResults[key] || key.replace(/_/g, " ");
+                const unit = isMeasureType ? "ml" : "";
+
+                const formattedValue = isMeasureType
+                  ? formatDisplayNumber(Number(value))
+                  : String(value);
+
+                return (
+                  <div
+                    key={key}
+                    className="w-[48%] rounded-xl border border-gray-200 bg-white p-3"
+                  >
+                    <p className="text-sm text-gray-500 capitalize">{label}</p>
+
+                    <div className="mt-1 flex items-baseline">
+                      <span className="text-xl font-bold text-purple">
+                        {formattedValue}
+                      </span>
+                      {unit && (
+                        <span className="ml-1 text-sm font-semibold text-purple">
+                          {unit}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {completed && !results && (
+          <div className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-100 px-4 py-2">
+            {isTimeType ? (
+              <>
+                <Timer className="h-4 w-4 text-purple" />
+                <span className="text-gray-700">Duración: {formatTime()}</span>
+              </>
+            ) : isMovementRangeType ? (
+              <>
+                <Edit className="h-4 w-4 text-purple" />
+                <span className="text-gray-700">Selecciona una opción</span>
+              </>
+            ) : (
+              <>
+                <Edit className="h-4 w-4 text-purple" />
+                <span className="text-gray-700">Requiere medidas</span>
+              </>
+            )}
+          </div>
+        )}
+      </CardContent>
     </Card>
   );
 }

@@ -156,9 +156,7 @@ export default function AdminMediaPage() {
       setRenameOpen(false);
     } catch (err) {
       setActionError(
-        err instanceof Error
-          ? err.message
-          : "No se pudo renombrar el archivo.",
+        err instanceof Error ? err.message : "No se pudo renombrar el archivo.",
       );
     } finally {
       setIsSubmitting(false);
@@ -173,9 +171,7 @@ export default function AdminMediaPage() {
       setDeleteOpen(false);
     } catch (err) {
       setActionError(
-        err instanceof Error
-          ? err.message
-          : "No se pudo eliminar el archivo.",
+        err instanceof Error ? err.message : "No se pudo eliminar el archivo.",
       );
     } finally {
       setIsSubmitting(false);

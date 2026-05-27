@@ -7,7 +7,7 @@ import type {
   CompleteEvaluationDto,
   GroupedUserEvaluations,
 } from "@/types";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface UseUserPlanReturn {
   evaluations: GroupedUserEvaluations | null;
@@ -19,22 +19,28 @@ interface UseUserPlanReturn {
   refetch: () => Promise<void>;
 }
 
-export const useEvaluations = (userId?: string): UseUserPlanReturn => {
+type UseEvaluationsOptions = {
+  autoFetch?: boolean;
+};
+
+export const useEvaluations = ({
+  autoFetch = true,
+}: UseEvaluationsOptions = {}): UseUserPlanReturn => {
   const [evaluations, setEvaluations] = useState<GroupedUserEvaluations | null>(
     null,
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
   const fetchEvaluations = useCallback(async () => {
-    if (!userId) return;
-
-    setLoading(true);
+    if (!hasFetched.current) setLoading(true);
     setError(null);
 
     try {
-      const _evaluations = await getUserEvaluationsService(userId);
+      const _evaluations = await getUserEvaluationsService();
       setEvaluations(_evaluations);
+      hasFetched.current = true;
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Error desconocido";
@@ -42,18 +48,18 @@ export const useEvaluations = (userId?: string): UseUserPlanReturn => {
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
-    if (userId) {
-      fetchEvaluations();
-    }
-  }, [userId, fetchEvaluations]);
+    if (!autoFetch) return;
+    fetchEvaluations();
+  }, [autoFetch, fetchEvaluations]);
 
   const completeEvaluation = useCallback(
     async (data: CompleteEvaluationDto): Promise<CompletedUserEvaluation> => {
       try {
         setError(null);
+        setLoading(true);
         const result = await completeUserEvaluationService(data);
         await fetchEvaluations();
         return result;
@@ -62,6 +68,8 @@ export const useEvaluations = (userId?: string): UseUserPlanReturn => {
           err instanceof Error ? err.message : "Error desconocido";
         setError(errorMessage);
         throw err instanceof Error ? err : new Error(errorMessage);
+      } finally {
+        setLoading(false);
       }
     },
     [fetchEvaluations],

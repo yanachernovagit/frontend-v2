@@ -23,6 +23,7 @@ export type AdminUser = {
   email: string | null;
   fullName: string | null;
   role: string;
+  debug: boolean;
   createdAt?: string | null;
   lastSignInAt?: string | null;
 };
@@ -62,4 +63,61 @@ export type MediaRenameResponse = {
 export type MediaDeleteResponse = {
   key: string;
   deleted: boolean;
+};
+
+export type AIConfig = {
+  provider: string;
+  model: string;
+  temperature: string;
+  maxBaselinePercent: string;
+  fatigueHighReduction: string;
+  fatigueMediumReduction: string;
+  fatigueLowIncrease: string;
+  setsRange: string;
+  repsRange: string;
+  weightIncrement: string;
+  durationIncrement: string;
+};
+
+export type AIStats = {
+  total: number;
+  today: number;
+  bySource: Record<string, number>;
+  last7Days: Array<{ date: string; count: number; source: string }>;
+};
+
+export type AdminUserDetail = AdminUser & {
+  plan: {
+    id: string;
+    phase: number;
+    stage: number;
+    currentWeek: number;
+    totalWeeks: number;
+    completedToday: boolean;
+    progressRoutine: number;
+    progressExercise: number;
+  } | null;
+  tasks: {
+    profileCompleted: boolean;
+    firstEvaluationCompleted: boolean;
+    secondEvaluationCompleted: boolean;
+    dailyPlanCompleted: boolean;
+  } | null;
+  latestFatigue: {
+    level: number;
+    date: string;
+  } | null;
+  profileAnswers: Array<{
+    questionTitle: string;
+    answer: string;
+  }>;
+};
+
+export type PrescriptionHistoryItem = {
+  id: string;
+  date: string;
+  phase: number;
+  stage: number;
+  source: string;
+  createdAt: string;
 };

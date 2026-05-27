@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Brain,
   ClipboardCheck,
   Dumbbell,
   HelpCircle,
@@ -13,6 +14,8 @@ import {
   Users,
   Home,
   Image as ImageIcon,
+  Shuffle,
+  Bell,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -21,9 +24,12 @@ const menuItems = [
   { icon: ClipboardCheck, label: "Evaluaciones", href: "/admin/evaluations" },
   { icon: Dumbbell, label: "Ejercicios", href: "/admin/exercises" },
   { icon: ListChecks, label: "Rutinas", href: "/admin/routines" },
+  { icon: Shuffle, label: "Variaciones", href: "/admin/routine-variations" },
   { icon: HelpCircle, label: "Preguntas", href: "/admin/questions" },
   { icon: Users, label: "Usuarios", href: "/admin/users" },
   { icon: ImageIcon, label: "Multimedia", href: "/admin/media" },
+  { icon: Bell, label: "Notificaciones", href: "/admin/notifications" },
+  { icon: Brain, label: "IA", href: "/admin/ai" },
 ];
 
 export function AdminSidebar() {

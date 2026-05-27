@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useCommonUtils } from "@/hooks/useCommonUtils";
@@ -60,6 +61,17 @@ export function ArmVolumeInput({
         <p className="text-base text-gray-600">
           Ingresa las medidas en centímetros para cada punto
         </p>
+      </div>
+
+      <div className="mb-6 flex justify-center">
+        <Image
+          src="/img-test/a-2.svg"
+          alt="Guía de puntos de medición del brazo"
+          width={1200}
+          height={600}
+          className="w-full h-auto"
+          priority
+        />
       </div>
 
       {/* Left Arm */}

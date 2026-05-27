@@ -1,39 +1,35 @@
-import { UserPlan } from "@/types";
+import { ChangePlanPhaseDto, UserPlan, UserPlanProgress } from "@/types";
 import authApi from "./authApi";
 import { ENDPOINTS } from "@/constants/endpoints";
 
-export async function getUserPlanService(userId: string): Promise<UserPlan> {
+export async function getUserPlanService(): Promise<UserPlan> {
   try {
-    const response = await authApi.get(ENDPOINTS.USER_PLAN.GET(userId));
+    const response = await authApi.get(ENDPOINTS.USER_PLAN.GET);
     return response.data;
   } catch {
     throw new Error("No se pudo obtener tu plan de ejercicios.");
   }
 }
 
-export async function updateUserPlanProgressService(
-  userId: string,
-): Promise<UserPlan> {
+export async function updateUserPlanProgressService(): Promise<UserPlanProgress> {
   try {
-    const response = await authApi.post(
-      ENDPOINTS.USER_PLAN.UPDATE_EXERCISE(userId),
-    );
+    const response = await authApi.post(ENDPOINTS.USER_PLAN.UPDATE_EXERCISE);
     return response.data;
   } catch {
     throw new Error("No se pudo actualizar tu progreso en el plan.");
   }
 }
 
-export async function getCurrentExcerciseService(
-  userId: string,
-): Promise<boolean> {
+export async function changePlanPhaseService(
+  data: ChangePlanPhaseDto,
+): Promise<UserPlan> {
   try {
-    const response = await authApi.get(
-      ENDPOINTS.USER_EXERCISE.CURRENT_BY_USER(userId),
+    const response = await authApi.patch(
+      ENDPOINTS.USER_PLAN.UPDATE_PHASE,
+      data,
     );
-    return response.data.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error("No se pudo obtener tu ejercicio actual.");
+    return response.data;
+  } catch {
+    throw new Error("No se pudo actualizar la fase del plan.");
   }
 }

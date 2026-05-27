@@ -3,59 +3,87 @@
 import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
-import { useEvaluations } from "@/hooks/useEvaluations";
-import { UserEvaluation } from "@/types";
+import { UserEvaluation, UserPlan } from "@/types";
 import { EvaluationCard } from "./EvaluationCard";
 import { SkeletonEvaluationList } from "./SkeletonEvaluationList";
 
 type FilterType = "pre" | "post";
 
 type Props = {
-  hideInstructions?: boolean;
+  evaluations?: {
+    pre_plan: UserEvaluation[];
+    post_plan: UserEvaluation[];
+  } | null;
+  loading?: boolean;
   showAll?: boolean;
+  hideInstructions?: boolean;
+  hideResults?: boolean;
+  userPlan?: UserPlan | null;
+  filter?: FilterType;
+  onFilterChange?: (filter: FilterType) => void;
   onSelectEvaluation?: (evaluation: UserEvaluation) => void;
   selectedEvaluationId?: string;
 };
 
 export function EvaluationsList({
-  hideInstructions = false,
+  evaluations,
+  loading,
   showAll = false,
+  hideResults = false,
+  userPlan,
+  filter,
+  onFilterChange,
   onSelectEvaluation,
   selectedEvaluationId,
 }: Props) {
-  const { user } = useAuth();
-  const { evaluations, loading } = useEvaluations(user?.sub);
-  const [filter, setFilter] = useState<FilterType>("pre");
+  const [internalFilter, setInternalFilter] = useState<FilterType>("pre");
+  const resolvedFilter = filter ?? internalFilter;
+
+  const resolvedEvaluations = evaluations ?? null;
+  const resolvedLoading = Boolean(loading);
+  const resolvedUserPlan = userPlan;
 
   const filteredEvaluations = useMemo(() => {
-    if (!evaluations) return [];
+    if (!resolvedEvaluations) return [];
 
     const allEvaluations =
-      filter === "pre" ? evaluations.pre_plan : evaluations.post_plan;
+      resolvedFilter === "pre"
+        ? resolvedEvaluations.pre_plan
+        : resolvedEvaluations.post_plan;
 
     return showAll ? allEvaluations : allEvaluations.filter((e) => e.completed);
-  }, [evaluations, showAll, filter]);
+  }, [resolvedEvaluations, showAll, resolvedFilter]);
+
+  const isPostPlanLocked =
+    resolvedFilter === "post" &&
+    resolvedUserPlan &&
+    resolvedUserPlan.currentWeek <= resolvedUserPlan.totalWeeks;
 
   return (
-    <Card className="bg-bg-secondary rounded-xl h-full flex flex-col gap-1 pt-0">
-      <div className="flex gap-2 pt-2 px-2">
+    <Card className="bg-bg-secondary rounded-xl h-full flex flex-col gap-1 p-2">
+      <div className="flex gap-2">
         <Button
-          variant={filter === "pre" ? "default" : "outline_magent"}
-          onClick={() => setFilter("pre")}
+          variant={resolvedFilter === "pre" ? "default" : "outline_magent"}
+          onClick={() => {
+            setInternalFilter("pre");
+            onFilterChange?.("pre");
+          }}
           className="flex-1"
         >
-          Pre-cirugía
+          Pre Plan
         </Button>
         <Button
-          variant={filter === "post" ? "default" : "outline_magent"}
-          onClick={() => setFilter("post")}
+          variant={resolvedFilter === "post" ? "default" : "outline_magent"}
+          onClick={() => {
+            setInternalFilter("post");
+            onFilterChange?.("post");
+          }}
           className="flex-1"
         >
-          Post-cirugía
+          Post Plan
         </Button>
       </div>
-      {loading ? (
+      {resolvedLoading ? (
         <SkeletonEvaluationList count={3} />
       ) : filteredEvaluations.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
@@ -66,23 +94,39 @@ export function EvaluationsList({
           </p>
         </div>
       ) : (
-        <div className="space-y-3 overflow-y-auto flex-1 min-h-0 p-2">
-          {filteredEvaluations.map((evalItem) => (
-            <div
-              key={evalItem.evaluation.id}
-              className={`transition-all ${
-                selectedEvaluationId === evalItem.evaluation.id
-                  ? "ring-1 ring-purple rounded-xl"
-                  : ""
-              }`}
-            >
+        <div className="relative flex-1 min-h-0">
+          <div
+            className={`space-y-3 overflow-y-auto h-full py-2 transition-all no-scrollbar ${
+              isPostPlanLocked ? "blur-sm pointer-events-none" : ""
+            }`}
+          >
+            {filteredEvaluations.map((evalItem) => (
               <EvaluationCard
+                key={evalItem.evaluation.id}
                 evaluation={evalItem}
-                hideInstructions={hideInstructions}
                 onPress={() => onSelectEvaluation?.(evalItem)}
+                isSelected={selectedEvaluationId === evalItem.evaluation.id}
+                hideResults={hideResults}
               />
+            ))}
+          </div>
+          {isPostPlanLocked && (
+            <div className="absolute inset-0 flex items-center justify-center bg-bg-secondary/30">
+              <div className="bg-white rounded-2xl p-6 shadow-lg max-w-sm mx-4 text-center">
+                <p className="text-lg font-bold text-gray-900 mb-2">
+                  Evaluaciones bloqueadas
+                </p>
+                <p className="text-sm text-gray-600">
+                  Completa tu plan de tratamiento para desbloquear las
+                  evaluaciones post plan
+                </p>
+                <p className="text-xs text-purple font-semibold mt-3">
+                  Semana {resolvedUserPlan?.currentWeek} de{" "}
+                  {resolvedUserPlan?.totalWeeks}
+                </p>
+              </div>
             </div>
-          ))}
+          )}
         </div>
       )}
     </Card>

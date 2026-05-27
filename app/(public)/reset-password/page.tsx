@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { requestResetPasswordService } from "@/services/authService";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -51,10 +52,16 @@ export default function ResetPasswordPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-          <p className="mt-4 text-gray-600">Verificando sesión...</p>
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-blue via-purple to-magent relative overflow-hidden">
+        <Image
+          src="/brand/element-onocoactivate.svg"
+          alt=""
+          fill
+          className="absolute inset-0 object-cover z-0 pointer-events-none"
+        />
+        <div className="text-center relative z-10">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-white border-r-transparent"></div>
+          <p className="mt-4 text-white font-semibold">Verificando sesión...</p>
         </div>
       </div>
     );
@@ -62,8 +69,14 @@ export default function ResetPasswordPage() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-blue via-purple to-magent relative overflow-hidden p-4">
+        <Image
+          src="/brand/element-onocoactivate.svg"
+          alt=""
+          fill
+          className="absolute inset-0 object-cover z-0 pointer-events-none"
+        />
+        <Card className="w-full max-w-md relative z-10">
           <div className="h-1 flex">
             <div className="flex-1 bg-blue"></div>
             <div className="flex-1 bg-magent"></div>
@@ -111,8 +124,14 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-blue via-purple to-magent relative overflow-hidden p-4">
+      <Image
+        src="/brand/element-onocoactivate.svg"
+        alt=""
+        fill
+        className="absolute inset-0 object-cover z-0 pointer-events-none"
+      />
+      <Card className="w-full max-w-md relative z-10">
         <div className="h-1 flex">
           <div className="flex-1 bg-blue"></div>
           <div className="flex-1 bg-magent"></div>

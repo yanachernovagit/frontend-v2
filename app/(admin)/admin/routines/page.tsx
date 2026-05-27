@@ -1,16 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 
 import { DataTable } from "@/components/admin/DataTable";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { RoutineFormModal } from "@/components/admin/routines/RoutineFormModal";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAdminRoutines } from "@/hooks/useAdminRoutines";
 import { RoutineCatalog } from "@/types";
 
@@ -25,8 +22,14 @@ function formatDate(dateString: string | null | undefined): string {
 }
 
 export default function AdminRoutinesPage() {
-  const { routines, loading, createRoutine, updateRoutine, deleteRoutine } =
-    useAdminRoutines();
+  const {
+    routines,
+    loading,
+    error,
+    createRoutine,
+    updateRoutine,
+    deleteRoutine,
+  } = useAdminRoutines();
 
   const [formOpen, setFormOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -47,9 +50,12 @@ export default function AdminRoutinesPage() {
             onClick={() => setPreviewImage(item.iconUrl!)}
             className="w-12 h-12 rounded-lg overflow-hidden hover:ring-2 hover:ring-purple transition-all bg-white border border-gray-200"
           >
-            <img
+            <Image
               src={item.iconUrl}
               alt={`Icono de ${item.title}`}
+              width={48}
+              height={48}
+              unoptimized
               className="w-full h-full object-contain p-1"
             />
           </button>
@@ -121,6 +127,7 @@ export default function AdminRoutinesPage() {
         searchKey="title"
         title="Rutinas"
         isLoading={loading}
+        error={error}
       />
 
       <RoutineFormModal
@@ -145,9 +152,12 @@ export default function AdminRoutinesPage() {
         <DialogContent className="max-w-md p-4">
           <DialogTitle className="sr-only">Preview de icono</DialogTitle>
           {previewImage && (
-            <img
+            <Image
               src={previewImage}
               alt="Preview"
+              width={1200}
+              height={1200}
+              unoptimized
               className="w-full h-auto rounded-lg"
             />
           )}

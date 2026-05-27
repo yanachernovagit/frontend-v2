@@ -30,3 +30,20 @@ export interface UserPlan {
   completedToday: boolean;
   routines: Routine[];
 }
+
+export interface UserPlanProgress {
+  id: string;
+  userId: string;
+  phase: number;
+  stage: number;
+  progressRoutine: number;
+  progressExercise: number;
+  totalWeeks: number;
+  currentWeek: number;
+  completedToday: boolean;
+}
+
+export type ChangePlanPhaseDto = {
+  phase: number;
+  surgeryDate: string;
+};

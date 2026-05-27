@@ -10,14 +10,18 @@ import {
   AuthSession,
 } from "@/types/auth";
 
-export async function signInService(
-  data: SignInDto,
-): Promise<AuthSession> {
+type HttpError = {
+  response?: {
+    status?: number;
+  };
+};
+
+export async function signInService(data: SignInDto): Promise<AuthSession> {
   try {
     const response = await api.post(ENDPOINTS.AUTH.SIGNIN, data);
     return response.data;
-  } catch (error: any) {
-    const status = error?.response?.status;
+  } catch (error: unknown) {
+    const status = (error as HttpError)?.response?.status;
     let message = "No se pudo iniciar sesión.";
 
     if (status === 400) {
@@ -40,8 +44,8 @@ export async function signUpService(data: SignUpDto): Promise<void> {
   try {
     const response = await api.post(ENDPOINTS.AUTH.SIGNUP, data);
     return response.data;
-  } catch (error: any) {
-    const status = error?.response?.status;
+  } catch (error: unknown) {
+    const status = (error as HttpError)?.response?.status;
     let message = "Ocurrió un error al registrarse.";
 
     if (status === 409) {
@@ -61,8 +65,8 @@ export async function changePasswordService(
   try {
     const response = await authApi.post(ENDPOINTS.AUTH.CHANGE_PASSWORD, data);
     return response.data;
-  } catch (error: any) {
-    const status = error?.response?.status;
+  } catch (error: unknown) {
+    const status = (error as HttpError)?.response?.status;
     let message = "No se pudo cambiar la contraseña.";
 
     if (status === 400) {
@@ -88,8 +92,8 @@ export async function requestResetPasswordService(
       data,
     );
     return response.data;
-  } catch (error: any) {
-    const status = error?.response?.status;
+  } catch (error: unknown) {
+    const status = (error as HttpError)?.response?.status;
     let message = "No se pudo enviar el correo de recuperación.";
 
     if (status === 404) {
@@ -109,8 +113,8 @@ export async function updatePasswordWithTokenService(
 ): Promise<void> {
   try {
     await api.post(ENDPOINTS.AUTH.UPDATE_PASSWORD, data);
-  } catch (error: any) {
-    const status = error?.response?.status;
+  } catch (error: unknown) {
+    const status = (error as HttpError)?.response?.status;
     let message = "No se pudo actualizar la contraseña.";
 
     if (status === 400) {
@@ -120,5 +124,20 @@ export async function updatePasswordWithTokenService(
     }
 
     throw new Error(message);
+  }
+}
+
+export async function refreshSessionService(
+  refreshToken: string,
+): Promise<AuthSession> {
+  try {
+    const response = await api.post<AuthSession>(ENDPOINTS.AUTH.REFRESH, {
+      refreshToken,
+    });
+    if (!response.data?.accessToken)
+      throw new Error("Invalid refresh response");
+    return response.data;
+  } catch {
+    throw new Error("No se pudo refrescar la sesión.");
   }
 }

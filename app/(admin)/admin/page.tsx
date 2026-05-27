@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import {
+  Brain,
   ClipboardCheck,
   Dumbbell,
   HelpCircle,
   ListChecks,
+  Shuffle,
   Users,
   ArrowRight,
+  Bell,
 } from "lucide-react";
 import { useAdminStats } from "@/hooks/useAdminStats";
 
@@ -37,6 +40,14 @@ const sections = [
     statKey: "routines" as const,
   },
   {
+    title: "Variaciones",
+    description: "Gestiona variaciones de rutinas por fase y etapa.",
+    href: "/admin/routine-variations",
+    icon: Shuffle,
+    color: "blue",
+    statKey: "routineVariations" as const,
+  },
+  {
     title: "Preguntas",
     description: "Configura el perfil con preguntas y dependencias.",
     href: "/admin/questions",
@@ -51,6 +62,22 @@ const sections = [
     icon: Users,
     color: "magent",
     statKey: "users" as const,
+  },
+  {
+    title: "Notificaciones",
+    description: "Gestiona plantillas y revisa el historial de envios.",
+    href: "/admin/notifications",
+    icon: Bell,
+    color: "purple",
+    statKey: "notifications" as const,
+  },
+  {
+    title: "IA",
+    description: "Configura la prescripción con inteligencia artificial.",
+    href: "/admin/ai",
+    icon: Brain,
+    color: "magent",
+    statKey: "prescriptions" as const,
   },
 ];
 
@@ -96,24 +123,19 @@ export default function AdminDashboardPage() {
                 {loading ? (
                   <span className="text-sm text-gray-400">...</span>
                 ) : (
-                  <span className={`text-sm font-medium ${colors.split(" ")[1]}`}>
-                    {stats[section.statKey]}
-                  </span>
+                  stats[section.statKey] !== undefined && (
+                    <span
+                      className={`text-sm font-medium ${colors.split(" ")[1]}`}
+                    >
+                      {stats[section.statKey]}
+                    </span>
+                  )
                 )}
               </div>
               <p className="text-sm text-gray-500">{section.description}</p>
             </Link>
           );
         })}
-      </div>
-
-      {/* Welcome Card */}
-      <div className="p-6 bg-purple/5 border border-purple/10 rounded-xl">
-        <h2 className="font-semibold mb-2">Bienvenido al Panel de Administración</h2>
-        <p className="text-sm text-gray-600">
-          Desde aquí puedes gestionar todo el contenido de la plataforma.
-          Selecciona una sección para comenzar.
-        </p>
       </div>
     </div>
   );
