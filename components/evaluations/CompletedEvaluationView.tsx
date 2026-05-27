@@ -31,6 +31,20 @@ type BackendFeedback = {
   ruleType: "range" | "value" | "default";
 };
 
+type FeedbackRuleCandidate = {
+  level?: string;
+  message?: string;
+  min?: unknown;
+  max?: unknown;
+};
+
+type ClientFeedbackRules = {
+  metricKey?: string;
+  ranges?: FeedbackRuleCandidate[];
+  valueFeedback?: Record<string, FeedbackRuleCandidate>;
+  defaultFeedback?: FeedbackRuleCandidate;
+};
+
 type FeedbackStyle = {
   border: string;
   bg: string;
@@ -134,7 +148,7 @@ export function CompletedEvaluationView({
       };
     }
 
-    const rules = rulesRaw as Record<string, any> | null;
+    const rules = rulesRaw as ClientFeedbackRules | null;
     if (!rules || typeof rules !== "object") return null;
 
     if (isMovementRangeType) {
@@ -192,7 +206,7 @@ export function CompletedEvaluationView({
         typeof metricRaw === "number" ? metricRaw : Number(metricRaw);
       if (!Number.isFinite(metric)) return null;
 
-      const hit = rules.ranges.find((r: any) => {
+      const hit = rules.ranges.find((r) => {
         const minOk = r.min == null || metric >= Number(r.min);
         const maxOk = r.max == null || metric <= Number(r.max);
         return minOk && maxOk;

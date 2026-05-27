@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import NextImage from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Image as ImageIcon, X, AlertCircle, Check } from "lucide-react";
@@ -40,7 +41,7 @@ export function ImageUploader({
     setIsValidating(true);
     setError(null);
 
-    const img = new Image();
+    const img = new window.Image();
     img.onload = () => {
       setIsValid(true);
       setIsValidating(false);
@@ -117,12 +118,15 @@ export function ImageUploader({
 
       <div className="relative group">
         {value && isValid ? (
-          <div className="relative border-2 border-purple/15 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+          <div className="relative h-56 border-2 border-purple/15 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-purple/5 to-magent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <img
+            <NextImage
               src={value}
               alt="Preview"
-              className="w-full h-56 object-cover relative z-10"
+              fill
+              unoptimized
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover relative z-10"
               onError={() => {
                 setIsValid(false);
                 setError("Error al cargar la imagen");

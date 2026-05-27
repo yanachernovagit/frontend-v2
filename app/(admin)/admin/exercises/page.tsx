@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Play, ImageIcon } from "lucide-react";
@@ -22,8 +23,14 @@ function formatDate(dateString: string | null | undefined): string {
 }
 
 export default function AdminExercisesPage() {
-  const { exercises, loading, createExercise, updateExercise, deleteExercise } =
-    useAdminExercises();
+  const {
+    exercises,
+    loading,
+    error,
+    createExercise,
+    updateExercise,
+    deleteExercise,
+  } = useAdminExercises();
 
   const [formOpen, setFormOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -75,9 +82,12 @@ export default function AdminExercisesPage() {
             onClick={() => setPreviewImage(item.videoCoverUrl!)}
             className="w-16 h-12 rounded-lg overflow-hidden hover:ring-2 hover:ring-magent transition-all"
           >
-            <img
+            <Image
               src={item.videoCoverUrl}
               alt={`Portada de ${item.name}`}
+              width={64}
+              height={48}
+              unoptimized
               className="w-full h-full object-cover"
             />
           </button>
@@ -149,6 +159,7 @@ export default function AdminExercisesPage() {
         searchKey="name"
         title="Ejercicios"
         isLoading={loading}
+        error={error}
       />
 
       <ExerciseFormModal
@@ -173,9 +184,12 @@ export default function AdminExercisesPage() {
         <DialogContent className="max-w-3xl p-2">
           <DialogTitle className="sr-only">Preview de imagen</DialogTitle>
           {previewImage && (
-            <img
+            <Image
               src={previewImage}
               alt="Preview"
+              width={1400}
+              height={900}
+              unoptimized
               className="w-full h-auto rounded-lg"
             />
           )}

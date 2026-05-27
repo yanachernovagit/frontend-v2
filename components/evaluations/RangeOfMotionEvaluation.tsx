@@ -61,8 +61,7 @@ export function RangeOfMotionEvaluation({
 
     entries
       .filter(
-        ([key]) =>
-          !/^nivel_\d+$/i.test(key) && key.toLowerCase() !== "ninguna",
+        ([key]) => !/^nivel_\d+$/i.test(key) && key.toLowerCase() !== "ninguna",
       )
       .forEach(([key, value]) => pushIfNew(key, value));
 
@@ -204,51 +203,52 @@ export function RangeOfMotionEvaluation({
             <div className="grid gap-3">
               {(movementCompletedEntry ? [movementCompletedEntry] : []).map(
                 ([key, value]) => {
-                const label =
-                  evaluation.expectedResults?.[key] ?? key.replace(/_/g, " ");
-                const cardColor = movementRangeFeedback
-                  ? movementRangeFeedback.isOptimal
-                    ? "border-green-400 bg-green-50"
-                    : "border-yellow-400 bg-yellow-50"
-                  : "border-gray-200 bg-white";
-                const valueColor = movementRangeFeedback
-                  ? movementRangeFeedback.isOptimal
-                    ? "text-green-800"
-                    : "text-yellow-800"
-                  : "text-purple";
+                  const label =
+                    evaluation.expectedResults?.[key] ?? key.replace(/_/g, " ");
+                  const cardColor = movementRangeFeedback
+                    ? movementRangeFeedback.isOptimal
+                      ? "border-green-400 bg-green-50"
+                      : "border-yellow-400 bg-yellow-50"
+                    : "border-gray-200 bg-white";
+                  const valueColor = movementRangeFeedback
+                    ? movementRangeFeedback.isOptimal
+                      ? "text-green-800"
+                      : "text-yellow-800"
+                    : "text-purple";
 
-                return (
-                  <div
-                    key={key}
-                    className={`rounded-xl border p-4 ${cardColor}`}
-                  >
-                    <p className="text-sm font-semibold text-gray-500 capitalize mb-2">
-                      {label}
-                    </p>
-
-                    <div className="flex items-center gap-2">
-                      <Check className={`h-5 w-5 ${valueColor}`} />
-                      <p className={`text-2xl font-bold ${valueColor}`}>
-                        {movementRangeFeedback?.selectedLabel ?? String(value)}
+                  return (
+                    <div
+                      key={key}
+                      className={`rounded-xl border p-4 ${cardColor}`}
+                    >
+                      <p className="text-sm font-semibold text-gray-500 capitalize mb-2">
+                        {label}
                       </p>
-                    </div>
-                    {movementRangeFeedback ? (
-                      <div
-                        className={`mt-3 flex items-start gap-2 ${valueColor}`}
-                      >
-                        {movementRangeFeedback.isOptimal ? (
-                          <ThumbsUp className="h-4 w-4 mt-0.5 shrink-0" />
-                        ) : (
-                          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-                        )}
-                        <p className="text-sm leading-5">
-                          {movementRangeFeedback.message}
+
+                      <div className="flex items-center gap-2">
+                        <Check className={`h-5 w-5 ${valueColor}`} />
+                        <p className={`text-2xl font-bold ${valueColor}`}>
+                          {movementRangeFeedback?.selectedLabel ??
+                            String(value)}
                         </p>
                       </div>
-                    ) : null}
-                  </div>
-                );
-              },
+                      {movementRangeFeedback ? (
+                        <div
+                          className={`mt-3 flex items-start gap-2 ${valueColor}`}
+                        >
+                          {movementRangeFeedback.isOptimal ? (
+                            <ThumbsUp className="h-4 w-4 mt-0.5 shrink-0" />
+                          ) : (
+                            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                          )}
+                          <p className="text-sm leading-5">
+                            {movementRangeFeedback.message}
+                          </p>
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                },
               )}
             </div>
           </div>

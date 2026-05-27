@@ -35,6 +35,7 @@ export default function AdminUsersPage() {
   const {
     users,
     loading,
+    error,
     updateUserRole,
     userDetail,
     detailLoading,
@@ -133,6 +134,7 @@ export default function AdminUsersPage() {
         searchKey="email"
         title="Usuarios"
         isLoading={loading}
+        error={error}
       />
 
       <UserDetailModal

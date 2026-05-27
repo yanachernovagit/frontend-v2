@@ -43,16 +43,19 @@ const EMPTY_FORM: EditableConfig = {
   durationIncrement: "",
 };
 
-const toEditableConfig = (cfg: AIConfig): EditableConfig => ({
-  temperature: cfg.temperature,
-  maxBaselinePercent: cfg.maxBaselinePercent,
-  fatigueHighReduction: cfg.fatigueHighReduction,
-  fatigueMediumReduction: cfg.fatigueMediumReduction,
-  fatigueLowIncrease: cfg.fatigueLowIncrease,
-  setsRange: cfg.setsRange,
-  repsRange: cfg.repsRange,
-  weightIncrement: cfg.weightIncrement,
-  durationIncrement: cfg.durationIncrement,
+const toFormValue = (value: unknown) =>
+  value === null || value === undefined ? "" : String(value);
+
+const toEditableConfig = (cfg: Partial<AIConfig>): EditableConfig => ({
+  temperature: toFormValue(cfg.temperature),
+  maxBaselinePercent: toFormValue(cfg.maxBaselinePercent),
+  fatigueHighReduction: toFormValue(cfg.fatigueHighReduction),
+  fatigueMediumReduction: toFormValue(cfg.fatigueMediumReduction),
+  fatigueLowIncrease: toFormValue(cfg.fatigueLowIncrease),
+  setsRange: toFormValue(cfg.setsRange),
+  repsRange: toFormValue(cfg.repsRange),
+  weightIncrement: toFormValue(cfg.weightIncrement),
+  durationIncrement: toFormValue(cfg.durationIncrement),
 });
 
 const configFields: {
@@ -309,7 +312,7 @@ export default function AdminAIPage() {
                 Total prescripciones
               </span>
             </div>
-            <p className="text-3xl font-bold text-black">{stats.total}</p>
+            <p className="text-3xl font-bold text-black">{stats.total ?? 0}</p>
           </div>
 
           <div className="p-5 rounded-2xl bg-gradient-to-br from-white via-purple/5 to-magent/8 border border-purple/20">
@@ -321,7 +324,7 @@ export default function AdminAIPage() {
                 Hoy
               </span>
             </div>
-            <p className="text-3xl font-bold text-black">{stats.today}</p>
+            <p className="text-3xl font-bold text-black">{stats.today ?? 0}</p>
           </div>
 
           <div className="p-5 rounded-2xl bg-gradient-to-br from-white via-purple/5 to-magent/8 border border-purple/20">
@@ -362,9 +365,9 @@ export default function AdminAIPage() {
             {config ? (
               <div>
                 <p className="text-lg font-bold text-black">
-                  {config.provider}
+                  {config.provider || "-"}
                 </p>
-                <p className="text-sm text-gray-500">{config.model}</p>
+                <p className="text-sm text-gray-500">{config.model || "-"}</p>
               </div>
             ) : (
               <p className="text-sm text-gray-400">Cargando...</p>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Plus, Trash2 } from "lucide-react";
@@ -589,7 +589,8 @@ export function EvaluationFormModal({
         measureRightLabel: normalizedMeasure.rightVolume,
         measureDifferenceLabel: normalizedMeasure.difference,
         stsMetricKey: stsTimeFeedback?.metricKey || "count",
-        stsAgeRanges: stsAgeRanges.length > 0 ? stsAgeRanges : DEFAULT_STS_AGE_RANGES,
+        stsAgeRanges:
+          stsAgeRanges.length > 0 ? stsAgeRanges : DEFAULT_STS_AGE_RANGES,
         stsMessageAbove:
           stsTimeFeedback?.stsMessages?.above || DEFAULT_STS_MESSAGES.above,
         stsMessageWithin:
@@ -762,8 +763,14 @@ export function EvaluationFormModal({
     });
   };
 
-  const selectedType = form.watch("type");
-  const watchedName = form.watch("name");
+  const selectedType = useWatch({
+    control: form.control,
+    name: "type",
+  });
+  const watchedName = useWatch({
+    control: form.control,
+    name: "name",
+  });
   const isStsByName = isStsEvaluationName(watchedName);
 
   return (

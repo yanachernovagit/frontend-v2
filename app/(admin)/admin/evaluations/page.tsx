@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Clock, Edit, Play, ImageIcon, Move } from "lucide-react";
 
 import { DataTable } from "@/components/admin/DataTable";
@@ -26,6 +27,7 @@ export default function AdminEvaluationsPage() {
   const {
     evaluations,
     loading,
+    error,
     createEvaluation,
     updateEvaluation,
     deleteEvaluation,
@@ -91,9 +93,12 @@ export default function AdminEvaluationsPage() {
             onClick={() => setPreviewImage(item.imageUrl!)}
             className="w-16 h-12 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all"
           >
-            <img
+            <Image
               src={item.imageUrl}
               alt={`Imagen de ${item.name}`}
+              width={64}
+              height={48}
+              unoptimized
               className="w-full h-full object-cover"
             />
           </button>
@@ -113,9 +118,12 @@ export default function AdminEvaluationsPage() {
             onClick={() => setPreviewImage(item.logoUrl!)}
             className="w-12 h-12 rounded-lg overflow-hidden hover:ring-2 hover:ring-green-500 transition-all"
           >
-            <img
+            <Image
               src={item.logoUrl}
               alt={`Logo de ${item.name}`}
+              width={48}
+              height={48}
+              unoptimized
               className="w-full h-full object-cover"
             />
           </button>
@@ -217,6 +225,7 @@ export default function AdminEvaluationsPage() {
         searchKey="name"
         title="Evaluaciones"
         isLoading={loading}
+        error={error}
       />
 
       <EvaluationFormModal
@@ -241,9 +250,12 @@ export default function AdminEvaluationsPage() {
         <DialogContent className="max-w-3xl p-2">
           <DialogTitle className="sr-only">Preview de imagen</DialogTitle>
           {previewImage && (
-            <img
+            <Image
               src={previewImage}
               alt="Preview"
+              width={1400}
+              height={900}
+              unoptimized
               className="w-full h-auto rounded-lg"
             />
           )}

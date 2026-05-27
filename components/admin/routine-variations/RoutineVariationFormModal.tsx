@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Plus, Trash2, Dumbbell, ListChecks, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 import {
   Dialog,
@@ -220,10 +221,8 @@ export function RoutineVariationFormModal({
           })),
         })),
       });
-      setActiveRoutineIndex(initialData.routines.length > 0 ? 0 : null);
     } else {
       form.reset({ name: "", phase: 0, availableWeeks: [], routines: [] });
-      setActiveRoutineIndex(null);
     }
   }, [initialData, form, open]);
 
@@ -251,9 +250,24 @@ export function RoutineVariationFormModal({
     }
   };
 
-  const watchedRoutines = form.watch("routines");
-  const watchedAvailableWeeks = (form.watch("availableWeeks") ??
-    []) as number[];
+  const watchedRoutines =
+    useWatch({
+      control: form.control,
+      name: "routines",
+    }) ?? [];
+  const watchedAvailableWeeks =
+    useWatch({
+      control: form.control,
+      name: "availableWeeks",
+    }) ?? [];
+  const resolvedActiveRoutineIndex =
+    activeRoutineIndex !== null &&
+    activeRoutineIndex >= 0 &&
+    activeRoutineIndex < routineFields.length
+      ? activeRoutineIndex
+      : routineFields.length > 0
+        ? 0
+        : null;
   const totalExercises = watchedRoutines.reduce(
     (sum, r) => sum + (r.exercises?.length ?? 0),
     0,
@@ -272,13 +286,14 @@ export function RoutineVariationFormModal({
     );
   };
 
+  const activeRoutineCatalogId =
+    resolvedActiveRoutineIndex !== null
+      ? (watchedRoutines[resolvedActiveRoutineIndex]?.routineCatalogId ?? "")
+      : "";
+
   const activeRoutineCatalog =
-    activeRoutineIndex !== null
-      ? routineCatalogs.find(
-          (rc) =>
-            rc.id ===
-            form.watch(`routines.${activeRoutineIndex}.routineCatalogId`),
-        )
+    resolvedActiveRoutineIndex !== null
+      ? routineCatalogs.find((rc) => rc.id === activeRoutineCatalogId)
       : null;
 
   return (
@@ -450,15 +465,14 @@ export function RoutineVariationFormModal({
                   )}
 
                   {routineFields.map((routineField, rIndex) => {
-                    const routineId = form.watch(
-                      `routines.${rIndex}.routineCatalogId`,
-                    );
+                    const routineId =
+                      watchedRoutines[rIndex]?.routineCatalogId ?? "";
                     const catalog = routineCatalogs.find(
                       (rc) => rc.id === routineId,
                     );
                     const exerciseCount =
                       watchedRoutines[rIndex]?.exercises?.length ?? 0;
-                    const isActive = activeRoutineIndex === rIndex;
+                    const isActive = resolvedActiveRoutineIndex === rIndex;
 
                     return (
                       <div
@@ -478,10 +492,13 @@ export function RoutineVariationFormModal({
                           }`}
                         >
                           {catalog?.iconUrl ? (
-                            <img
+                            <Image
                               src={catalog.iconUrl}
                               alt=""
+                              width={16}
+                              height={16}
                               className="w-4 h-4 object-contain"
+                              unoptimized
                             />
                           ) : (
                             <span className="text-xs font-bold">
@@ -527,14 +544,14 @@ export function RoutineVariationFormModal({
 
               {/* Right panel - Ejercicios */}
               <div className="flex-1 flex flex-col min-h-0 pl-4">
-                {activeRoutineIndex !== null &&
-                activeRoutineIndex < routineFields.length ? (
+                {resolvedActiveRoutineIndex !== null &&
+                resolvedActiveRoutineIndex < routineFields.length ? (
                   <>
                     {/* Routine config */}
                     <div className="flex items-center gap-3 py-3 shrink-0">
                       <FormField
                         control={form.control}
-                        name={`routines.${activeRoutineIndex}.routineCatalogId`}
+                        name={`routines.${resolvedActiveRoutineIndex}.routineCatalogId`}
                         render={({ field }) => (
                           <FormItem className="flex-1 space-y-0">
                             <FormLabel className="text-[10px] text-gray-400 uppercase font-semibold">
@@ -562,7 +579,7 @@ export function RoutineVariationFormModal({
                       />
                       <FormField
                         control={form.control}
-                        name={`routines.${activeRoutineIndex}.order`}
+                        name={`routines.${resolvedActiveRoutineIndex}.order`}
                         render={({ field }) => (
                           <FormItem className="w-20 space-y-0">
                             <FormLabel className="text-[10px] text-gray-400 uppercase font-semibold">
@@ -608,8 +625,8 @@ export function RoutineVariationFormModal({
                     {/* Exercises list */}
                     <div className="flex-1 min-h-0 pt-2">
                       <ExercisesPanel
-                        key={`exercises-${activeRoutineIndex}`}
-                        routineIndex={activeRoutineIndex}
+                        key={`exercises-${resolvedActiveRoutineIndex}`}
+                        routineIndex={resolvedActiveRoutineIndex}
                         control={form.control}
                         exerciseCatalogs={exerciseCatalogs}
                       />

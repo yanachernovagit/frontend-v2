@@ -1,8 +1,3 @@
-type StsPercentiles = {
-  p25: number;
-  p75: number;
-};
-
 type StsAgeRange = {
   minAge: number;
   maxAge: number;

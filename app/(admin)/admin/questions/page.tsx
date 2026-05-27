@@ -21,8 +21,14 @@ function formatDate(dateString: string | null | undefined): string {
 }
 
 export default function AdminQuestionsPage() {
-  const { questions, loading, createQuestion, updateQuestion, deleteQuestion } =
-    useAdminQuestions();
+  const {
+    questions,
+    loading,
+    error,
+    createQuestion,
+    updateQuestion,
+    deleteQuestion,
+  } = useAdminQuestions();
 
   const [formOpen, setFormOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -148,6 +154,7 @@ export default function AdminQuestionsPage() {
         searchKey="title"
         title="Preguntas"
         isLoading={loading}
+        error={error}
       />
 
       <QuestionFormModal

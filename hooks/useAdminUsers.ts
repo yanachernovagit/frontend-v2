@@ -51,6 +51,8 @@ export function useAdminUsers() {
   const fetchUserDetail = async (id: string) => {
     setDetailLoading(true);
     setError(null);
+    setUserDetail(null);
+    setPrescriptions([]);
     try {
       const data = await getAdminUserDetail(id);
       setUserDetail(data);
@@ -226,6 +228,7 @@ export function useAdminUsers() {
 
   const fetchPrescriptions = async (id: string) => {
     setPrescriptionsLoading(true);
+    setPrescriptions([]);
     try {
       const data = await getAdminUserPrescriptions(id);
       setPrescriptions(data.prescriptions);

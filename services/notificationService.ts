@@ -62,7 +62,7 @@ export async function removePushTokenBackground(
   pushToken: string,
   accessToken: string,
 ): Promise<void> {
-  const baseURL = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL;
   await api.delete(`${ENDPOINTS.NOTIFICATIONS.REMOVE_TOKEN}`, {
     baseURL,
     data: { token: pushToken },

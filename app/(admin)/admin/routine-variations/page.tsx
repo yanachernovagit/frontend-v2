@@ -14,6 +14,7 @@ export default function AdminRoutineVariationsPage() {
   const {
     variations,
     loading,
+    error,
     createVariation,
     updateVariation,
     deleteVariation,
@@ -71,6 +72,12 @@ export default function AdminRoutineVariationsPage() {
 
   return (
     <>
+      {error && (
+        <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+          {error}
+        </div>
+      )}
+
       <RoutineVariationsTable
         data={variations}
         onEdit={handleEdit}

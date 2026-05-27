@@ -1,4 +1,4 @@
-import { ChangePlanPhaseDto, UserPlan } from "@/types";
+import { ChangePlanPhaseDto, UserPlan, UserPlanProgress } from "@/types";
 import authApi from "./authApi";
 import { ENDPOINTS } from "@/constants/endpoints";
 
@@ -11,7 +11,7 @@ export async function getUserPlanService(): Promise<UserPlan> {
   }
 }
 
-export async function updateUserPlanProgressService(): Promise<UserPlan> {
+export async function updateUserPlanProgressService(): Promise<UserPlanProgress> {
   try {
     const response = await authApi.post(ENDPOINTS.USER_PLAN.UPDATE_EXERCISE);
     return response.data;

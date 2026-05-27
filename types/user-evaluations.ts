@@ -70,9 +70,7 @@ export type GenericTimeFeedbackRules = {
   defaultFeedback?: FeedbackValue;
 };
 
-export type TimeFeedbackRules =
-  | StsTimeFeedbackRules
-  | GenericTimeFeedbackRules;
+export type TimeFeedbackRules = StsTimeFeedbackRules | GenericTimeFeedbackRules;
 
 export type MeasureFeedbackRules = {
   metricKey: string;
