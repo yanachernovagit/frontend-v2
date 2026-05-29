@@ -21,7 +21,7 @@ export async function createAdminEvaluation(
     );
     return response.data;
   } catch {
-    throw new Error("No se pudo crear la evaluacion.");
+    throw new Error("No se pudo crear la evaluación.");
   }
 }
 
@@ -36,7 +36,7 @@ export async function updateAdminEvaluation(
     );
     return response.data;
   } catch {
-    throw new Error("No se pudo actualizar la evaluacion.");
+    throw new Error("No se pudo actualizar la evaluación.");
   }
 }
 
@@ -44,6 +44,6 @@ export async function deleteAdminEvaluation(id: string): Promise<void> {
   try {
     await authApi.delete(ADMIN_ENDPOINTS.EVALUATIONS.DELETE(id));
   } catch {
-    throw new Error("No se pudo eliminar la evaluacion.");
+    throw new Error("No se pudo eliminar la evaluación.");
   }
 }

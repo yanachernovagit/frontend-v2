@@ -97,7 +97,7 @@ export function PlanWeekProgress() {
       await refetch();
       setIsModalVisible(false);
       setFeedbackType("success");
-      setFeedback("Fase actualizada. Tu plan ahora esta en post cirugia.");
+      setFeedback("Fase actualizada. Tu plan ahora está en postcirugía.");
     } catch {
       setFeedbackType("error");
       setFeedback("No se pudo actualizar la fase. Intentalo nuevamente.");
@@ -177,7 +177,7 @@ export function PlanWeekProgress() {
           <div className="flex items-start gap-2">
             <Info className="mt-0.5 h-4.5 w-4.5 text-purple" />
             <p className="flex-1 text-sm leading-5 text-white">
-              Ya terminaste tu plan. Completa la segunda evaluacion para ver tu
+              Ya terminaste tu plan. Completa la segunda evaluación para ver tu
               progreso.
             </p>
           </div>

@@ -33,7 +33,7 @@ export function TasksCarousel({ userTasks, loading, refetch }: Props) {
     },
     {
       title: "Primer test",
-      description: "Evaluación diagnóstico de tu condición física",
+      description: "Evaluación diagnóstica de tu condición física",
       icon: (
         <Image
           src="/icons/white/Favorites-shield.svg"

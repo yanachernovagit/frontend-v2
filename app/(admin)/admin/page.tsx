@@ -25,7 +25,7 @@ const sections = [
   },
   {
     title: "Ejercicios",
-    description: "Gestiona catalogo de ejercicios y videos.",
+    description: "Gestiona el catálogo de ejercicios y videos.",
     href: "/admin/exercises",
     icon: Dumbbell,
     color: "magent",

@@ -746,7 +746,7 @@ export function UserDetailModal({
                                       : "bg-gray-200 text-gray-500 border border-gray-300 hover:bg-gray-300"
                                   }`}
                                 >
-                                  {user.plan.completedToday ? "Si" : "No"}{" "}
+                                  {user.plan.completedToday ? "Sí" : "No"}{" "}
                                   <span className="text-[10px] opacity-60">
                                     (click para cambiar)
                                   </span>
@@ -856,12 +856,12 @@ export function UserDetailModal({
                               },
                               {
                                 key: "firstEvaluationCompleted",
-                                label: "1a evaluacion",
+                                label: "1.ª evaluación",
                                 done: user.tasks.firstEvaluationCompleted,
                               },
                               {
                                 key: "secondEvaluationCompleted",
-                                label: "2a evaluacion",
+                                label: "2.ª evaluación",
                                 done: user.tasks.secondEvaluationCompleted,
                               },
                               {

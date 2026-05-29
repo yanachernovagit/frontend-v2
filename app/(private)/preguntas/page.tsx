@@ -98,7 +98,7 @@ export default function QuestionsPage() {
           </h1>
 
           <p className="w-full max-w-2xl text-center text-lg text-white/95 md:text-xl">
-            Te tomara solo unos minutos y nos ayudara a adaptar mejor tu plan.
+            Te tomará solo unos minutos y nos ayudará a adaptar mejor tu plan.
           </p>
 
           <Button

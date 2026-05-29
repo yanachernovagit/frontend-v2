@@ -70,7 +70,7 @@ export function EvaluationsList({
           }}
           className="flex-1"
         >
-          Pre Plan
+          Antes del plan
         </Button>
         <Button
           variant={resolvedFilter === "post" ? "default" : "outline_magent"}
@@ -80,7 +80,7 @@ export function EvaluationsList({
           }}
           className="flex-1"
         >
-          Post Plan
+          Después del plan
         </Button>
       </div>
       {resolvedLoading ? (
@@ -118,7 +118,7 @@ export function EvaluationsList({
                 </p>
                 <p className="text-sm text-gray-600">
                   Completa tu plan de tratamiento para desbloquear las
-                  evaluaciones post plan
+                  evaluaciones después del plan
                 </p>
                 <p className="text-xs text-purple font-semibold mt-3">
                   Semana {resolvedUserPlan?.currentWeek} de{" "}

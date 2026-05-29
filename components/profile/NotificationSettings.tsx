@@ -23,12 +23,12 @@ const TOGGLE_OPTIONS = [
   {
     key: "inactivityReminder",
     label: "Recordatorio de inactividad",
-    description: "Aviso cuando llevas varios dias sin ejercitarte",
+    description: "Aviso cuando llevas varios días sin ejercitarte",
   },
   {
     key: "streakNotifications",
     label: "Notificaciones de racha",
-    description: "Celebra tus rachas de dias consecutivos",
+    description: "Celebra tus rachas de días consecutivos",
   },
 ] as const;
 
