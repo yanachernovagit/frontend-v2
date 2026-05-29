@@ -196,7 +196,7 @@ export function RangeOfMotionEvaluation({
             <div className="flex items-center gap-2 mb-4">
               <CheckCircle className="h-6 w-6 text-emerald-500" />
               <h3 className="text-xl font-bold text-gray-900">
-                Respuesta Seleccionada
+                Respuesta seleccionada
               </h3>
             </div>
 

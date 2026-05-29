@@ -158,11 +158,11 @@ export default function AdminAIPage() {
   const validateForm = (): string | null => {
     const temp = parseFloat(form.temperature);
     if (isNaN(temp) || temp < 0 || temp > 2) {
-      return "La temperatura debe ser un numero entre 0 y 2.";
+      return "La temperatura debe ser un número entre 0 y 2.";
     }
     const maxBaseline = parseInt(form.maxBaselinePercent);
     if (isNaN(maxBaseline) || maxBaseline < 100 || maxBaseline > 300) {
-      return "El maximo sobre baseline debe estar entre 100 y 300.";
+      return "El máximo sobre baseline debe estar entre 100 y 300.";
     }
     const rangePattern = /^\d+-\d+$/;
     const rangeFields: { key: keyof EditableConfig; label: string }[] = [
@@ -179,7 +179,7 @@ export default function AdminAIPage() {
     }
     const weight = parseInt(form.weightIncrement);
     if (isNaN(weight) || weight < 0) {
-      return "El incremento de peso debe ser un numero positivo.";
+      return "El incremento de peso debe ser un número positivo.";
     }
     const duration = parseInt(form.durationIncrement);
     if (isNaN(duration) || duration < 0) {

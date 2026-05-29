@@ -141,7 +141,7 @@ export function QuestionRenderer({
           onBlur={() => onAnswered?.(question.id)}
           inputMode="decimal"
           className="min-h-[52px] w-full rounded-xl border-2 border-gray-200 bg-white p-4 text-base text-gray-900 outline-none focus:border-magent"
-          placeholder="Ingresa un numero"
+          placeholder="Ingresa un número"
         />
       ) : null}
     </div>

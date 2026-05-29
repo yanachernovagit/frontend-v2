@@ -67,7 +67,7 @@ export function PersonalInfo() {
       <div className="mb-4 flex items-center gap-2">
         <PlusCircle className="h-[22px] w-[22px] text-[#F72585]" />
         <h2 className="text-base font-semibold text-gray-800">
-          Informacion Personal
+          Información personal
         </h2>
       </div>
 

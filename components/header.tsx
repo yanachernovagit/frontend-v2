@@ -22,7 +22,7 @@ export function Header() {
           >
             <Image
               src={"/brand/imagotype-landing.png"}
-              alt="Logo Oncoactive"
+              alt="Logo OncoActivate"
               fill
               className="object-contain"
             />

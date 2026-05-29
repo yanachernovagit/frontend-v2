@@ -37,7 +37,7 @@ export default function QuestionsPage() {
           <div className="mx-auto flex h-full w-full max-w-3xl flex-col items-center justify-between">
             <Image
               src="/brand/imagotype-white.png"
-              alt="Oncoactive"
+              alt="OncoActivate"
               width={220}
               height={68}
               className="h-16 w-auto"
@@ -47,11 +47,11 @@ export default function QuestionsPage() {
             <div className="flex w-full max-w-2xl flex-col items-center">
               <Image src={ConfettiIcon} alt="Confetti" width={96} height={96} />
               <h1 className="mb-2 mt-8 w-full text-center text-3xl font-bold text-white md:text-4xl">
-                Perfil completado con exito
+                Perfil completado con éxito
               </h1>
               <p className="mb-2 w-full text-center text-base text-white/95 md:text-lg">
-                Ya registramos tu informacion de perfil. Con esto podremos
-                personalizar mejor tu experiencia en Oncoactive.
+                Ya registramos tu información de perfil. Con esto podremos
+                personalizar mejor tu experiencia en OncoActivate.
               </p>
             </div>
 
@@ -86,7 +86,7 @@ export default function QuestionsPage() {
         <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-4xl flex-col items-center justify-between">
           <Image
             src="/brand/imagotype-white.png"
-            alt="Oncoactive"
+            alt="OncoActivate"
             width={260}
             height={80}
             className="h-20 w-auto"

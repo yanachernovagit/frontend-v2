@@ -239,11 +239,11 @@ export function UserDetailModal({
           <DialogHeader className="sr-only">
             <DialogTitle>Cargando usuario</DialogTitle>
             <DialogDescription>
-              Se esta cargando la informacion administrativa del usuario.
+              Se está cargando la información administrativa del usuario.
             </DialogDescription>
           </DialogHeader>
           <div className="py-12 text-center text-gray-500">
-            Cargando informacion del usuario...
+            Cargando información del usuario...
           </div>
         </DialogContent>
       </Dialog>
@@ -417,9 +417,9 @@ export function UserDetailModal({
     try {
       await onResetPlan(user.id);
       setConfirmResetPlan(false);
-      showFeedback("success", "Plan reseteado correctamente.");
+      showFeedback("success", "Plan reiniciado correctamente.");
     } catch {
-      showFeedback("error", "Error al resetear el plan.");
+      showFeedback("error", "Error al reiniciar el plan.");
     } finally {
       setResetPlanSubmitting(false);
     }
@@ -450,7 +450,7 @@ export function UserDetailModal({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto border-2 border-purple/15 shadow-2xl">
         {!user ? (
           <div className="py-12 text-center text-gray-500">
-            Cargando informacion del usuario...
+            Cargando información del usuario...
           </div>
         ) : (
           <>
@@ -514,7 +514,7 @@ export function UserDetailModal({
 
             {loading && (
               <div className="py-8 text-center text-gray-400">
-                Cargando informacion del usuario...
+                Cargando información del usuario...
               </div>
             )}
 
@@ -527,7 +527,7 @@ export function UserDetailModal({
                       <div className="flex items-center gap-2.5 pb-1">
                         <div className="w-1 h-5 bg-gradient-to-b from-purple to-magent rounded-full" />
                         <h3 className="text-xs font-bold text-black uppercase tracking-widest">
-                          Informacion general
+                          Información general
                         </h3>
                       </div>
                       <div className="grid grid-cols-2 gap-4">

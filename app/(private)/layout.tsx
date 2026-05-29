@@ -13,6 +13,7 @@ import {
 import { Home, Shield, LogOut, Dumbbell, User } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { useAuth } from "@/hooks/useAuth";
 import { LoggedUserHeader } from "@/components/shared/LoggedUserHeader";
@@ -56,24 +57,26 @@ export default function PrivateLayout({
             className="mx-auto mb-6"
           />
           <h2 className="text-2xl font-bold text-gray-900 mb-3">
-            Tenemos una App
+            Tenemos una app
           </h2>
           <p className="text-gray-600 mb-6 leading-relaxed">
             Para una mejor experiencia, descarga la app de{" "}
-            <span className="font-semibold text-purple">Oncoactive</span>{" "}
+            <span className="font-semibold text-purple">OncoActivate</span>{" "}
             disponible en App Store y Play Store.
           </p>
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
-              <span className="text-sm font-semibold text-gray-700">
-                Próximamente en App Store
-              </span>
-            </div>
-            <div className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
-              <span className="text-sm font-semibold text-gray-700">
-                Próximamente en Play Store
-              </span>
-            </div>
+            <Link
+              href="https://apps.apple.com/app/id6753783749"
+              className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100"
+            >
+              Descargar en App Store
+            </Link>
+            <Link
+              href="https://play.google.com/store/apps/details?id=com.oncoactivate.app"
+              className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100"
+            >
+              Descargar en Play Store
+            </Link>
           </div>
         </div>
       </div>

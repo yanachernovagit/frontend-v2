@@ -141,7 +141,7 @@ export default function UpdatePasswordPage() {
               Contraseña actualizada
             </CardTitle>
             <CardDescription className="text-center">
-              Tu contraseña ha sido actualizada exitosamente. Ya puedes cerrar
+              Tu contraseña ha sido actualizada correctamente. Ya puedes cerrar
               esta página y volver a la aplicación para iniciar sesión con tu
               nueva contraseña.
             </CardDescription>
