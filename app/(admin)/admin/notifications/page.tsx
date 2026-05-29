@@ -160,7 +160,7 @@ export default function AdminNotificationsPage() {
       await sendTest(testUserId, testTitle, testBody);
       setTestResult({
         type: "success",
-        message: "Notificacion de prueba enviada correctamente.",
+        message: "Notificación de prueba enviada correctamente.",
       });
       setTestUserId("");
       setTestTitle("");
@@ -168,7 +168,7 @@ export default function AdminNotificationsPage() {
     } catch {
       setTestResult({
         type: "error",
-        message: "Error al enviar la notificacion de prueba.",
+        message: "Error al enviar la notificación de prueba.",
       });
     } finally {
       setTestSending(false);
@@ -273,7 +273,7 @@ export default function AdminNotificationsPage() {
             columns={templateColumns}
             onEdit={handleEdit}
             searchKey="type"
-            title="Plantillas de notificacion"
+            title="Plantillas de notificación"
             isLoading={loading}
           />
 
@@ -330,7 +330,7 @@ export default function AdminNotificationsPage() {
             <div className="flex items-center gap-2.5 pb-1">
               <div className="w-1 h-5 bg-gradient-to-b from-purple to-magent rounded-full" />
               <h3 className="text-xs font-bold text-black uppercase tracking-widest">
-                Datos de la notificacion
+                Datos de la notificación
               </h3>
             </div>
 
@@ -354,13 +354,13 @@ export default function AdminNotificationsPage() {
                   htmlFor="test-title"
                   className="text-black-400 text-sm font-semibold block mb-1.5"
                 >
-                  Titulo
+                  Título
                 </label>
                 <Input
                   id="test-title"
                   value={testTitle}
                   onChange={(e) => setTestTitle(e.target.value)}
-                  placeholder="Titulo de la notificacion"
+                  placeholder="Título de la notificación"
                 />
               </div>
               <div>
@@ -374,7 +374,7 @@ export default function AdminNotificationsPage() {
                   id="test-body"
                   value={testBody}
                   onChange={(e) => setTestBody(e.target.value)}
-                  placeholder="Cuerpo de la notificacion"
+                  placeholder="Cuerpo de la notificación"
                   rows={4}
                 />
               </div>
@@ -399,7 +399,7 @@ export default function AdminNotificationsPage() {
             className="bg-gradient-to-r from-purple to-magent hover:from-purple/90 hover:to-magent/90 shadow-lg hover:shadow-xl transition-all font-semibold"
           >
             <Send className="w-4 h-4 mr-2" />
-            {testSending ? "Enviando..." : "Enviar notificacion de prueba"}
+            {testSending ? "Enviando..." : "Enviar notificación de prueba"}
           </Button>
         </div>
       )}

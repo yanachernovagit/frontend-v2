@@ -99,7 +99,7 @@ export function TemplateFormModal({
             </DialogTitle>
           </div>
           <p className="text-xs text-black-400 mt-2 font-medium ml-[52px]">
-            Modifica el contenido de la plantilla de notificacion
+            Modifica el contenido de la plantilla de notificación
           </p>
         </DialogHeader>
 
@@ -112,7 +112,7 @@ export function TemplateFormModal({
               <div className="flex items-center gap-2.5 pb-1">
                 <div className="w-1 h-5 bg-gradient-to-b from-purple to-magent rounded-full" />
                 <h3 className="text-xs font-bold text-black uppercase tracking-widest">
-                  Tipo de notificacion
+                  Tipo de notificación
                 </h3>
               </div>
               <div className="p-4 rounded-xl bg-white border-2 border-purple/15 shadow-sm">

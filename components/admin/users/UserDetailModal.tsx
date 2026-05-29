@@ -392,9 +392,9 @@ export function UserDetailModal({
     try {
       await onResetPassword(user.id, newPassword);
       setNewPassword("");
-      showFeedback("success", "Contrasena actualizada correctamente.");
+      showFeedback("success", "Contraseña actualizada correctamente.");
     } catch {
-      showFeedback("error", "Error al resetear la contrasena.");
+      showFeedback("error", "Error al restablecer la contraseña.");
     } finally {
       setPasswordSubmitting(false);
     }
@@ -404,9 +404,9 @@ export function UserDetailModal({
     setEmailSending(true);
     try {
       await onSendResetEmail(user.id);
-      showFeedback("success", "Email de recuperacion enviado correctamente.");
+      showFeedback("success", "Correo de recuperación enviado correctamente.");
     } catch {
-      showFeedback("error", "Error al enviar el email de recuperacion.");
+      showFeedback("error", "Error al enviar el correo de recuperación.");
     } finally {
       setEmailSending(false);
     }
@@ -430,9 +430,9 @@ export function UserDetailModal({
     try {
       await onDeletePrescriptionCache(user.id);
       setConfirmDeleteCache(false);
-      showFeedback("success", "Cache de prescripcion limpiado.");
+      showFeedback("success", "Caché de prescripción limpiada.");
     } catch {
-      showFeedback("error", "Error al limpiar el cache.");
+      showFeedback("error", "Error al limpiar la caché.");
     } finally {
       setDeleteCacheSubmitting(false);
     }
@@ -1043,7 +1043,7 @@ export function UserDetailModal({
                         ) : (
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-red-600 font-medium">
-                              Seguro? Esto reinicia todo el progreso.
+                              ¿Seguro? Esto reinicia todo el progreso.
                             </span>
                             <Button
                               size="sm"
@@ -1075,12 +1075,12 @@ export function UserDetailModal({
                             className="border-amber-200 text-amber-600 hover:bg-amber-50 font-semibold"
                           >
                             <Trash2 className="w-4 h-4 mr-1" />
-                            Limpiar cache IA
+                            Limpiar caché IA
                           </Button>
                         ) : (
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-amber-600 font-medium">
-                              Seguro? Se regeneraran las prescripciones.
+                              ¿Seguro? Se regenerarán las prescripciones.
                             </span>
                             <Button
                               size="sm"
@@ -1177,12 +1177,12 @@ export function UserDetailModal({
                       <div className="flex items-center gap-2.5 pb-1">
                         <div className="w-1 h-5 bg-gradient-to-b from-purple to-magent rounded-full" />
                         <h3 className="text-xs font-bold text-black uppercase tracking-widest">
-                          Recuperacion de contrasena
+                          Recuperación de contraseña
                         </h3>
                       </div>
                       <p className="text-sm text-gray-500">
-                        Envia un email al usuario con un enlace para que pueda
-                        restablecer su contrasena.
+                        Envía un correo al usuario con un enlace para que pueda
+                        restablecer su contraseña.
                       </p>
                       <Button
                         size="sm"
@@ -1194,7 +1194,7 @@ export function UserDetailModal({
                         <Mail className="w-4 h-4 mr-1" />
                         {emailSending
                           ? "Enviando..."
-                          : "Enviar email de recuperacion"}
+                          : "Enviar correo de recuperación"}
                       </Button>
                     </div>
 
@@ -1203,12 +1203,12 @@ export function UserDetailModal({
                       <div className="flex items-center gap-2.5 pb-1">
                         <div className="w-1 h-5 bg-gradient-to-b from-purple to-magent rounded-full" />
                         <h3 className="text-xs font-bold text-black uppercase tracking-widest">
-                          Establecer nueva contrasena
+                          Establecer nueva contraseña
                         </h3>
                       </div>
                       <p className="text-sm text-gray-500">
-                        Establece una nueva contrasena directamente. El usuario
-                        debera usarla en su proximo inicio de sesion.
+                        Establece una nueva contraseña directamente. El usuario
+                        deberá usarla en su próximo inicio de sesión.
                       </p>
                       <div className="flex items-end gap-3">
                         <div className="flex-1 space-y-2">
@@ -1216,7 +1216,7 @@ export function UserDetailModal({
                             htmlFor="new-password"
                             className="text-sm font-semibold text-gray-700"
                           >
-                            Nueva contrasena (minimo 6 caracteres)
+                            Nueva contraseña (mínimo 6 caracteres)
                           </Label>
                           <Input
                             id="new-password"

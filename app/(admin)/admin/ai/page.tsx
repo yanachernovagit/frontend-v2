@@ -183,7 +183,7 @@ export default function AdminAIPage() {
     }
     const duration = parseInt(form.durationIncrement);
     if (isNaN(duration) || duration < 0) {
-      return "El incremento de duracion debe ser un numero positivo.";
+      return "El incremento de duración debe ser un número positivo.";
     }
     return null;
   };
@@ -448,8 +448,8 @@ export default function AdminAIPage() {
           <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
           <p className="text-sm text-blue-700">
             Los cambios se aplican a las prescripciones generadas a partir de
-            mañana. Las prescripciones de hoy están cacheadas y no se ven
-            afectadas.
+            mañana. Las prescripciones de hoy están almacenadas en caché y no se
+            ven afectadas.
           </p>
         </div>
 

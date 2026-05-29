@@ -19,6 +19,7 @@ export default function UpdatePasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [recoveryType, setRecoveryType] = useState<"recovery" | null>(null);
   const [isCheckingToken, setIsCheckingToken] = useState(true);
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function UpdatePasswordPage() {
 
       if (accessToken && type === "recovery") {
         setToken(accessToken);
+        setRecoveryType("recovery");
       }
     }
     setIsCheckingToken(false);
@@ -57,7 +59,11 @@ export default function UpdatePasswordPage() {
     setIsLoading(true);
 
     try {
-      await updatePasswordWithTokenService({ token, newPassword: password });
+      await updatePasswordWithTokenService({
+        token,
+        type: recoveryType ?? undefined,
+        newPassword: password,
+      });
       setIsSuccess(true);
     } catch (err: unknown) {
       const message =

@@ -65,7 +65,7 @@ const sections = [
   },
   {
     title: "Notificaciones",
-    description: "Gestiona plantillas y revisa el historial de envios.",
+    description: "Gestiona plantillas y revisa el historial de envíos.",
     href: "/admin/notifications",
     icon: Bell,
     color: "purple",

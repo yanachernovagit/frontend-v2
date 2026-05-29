@@ -106,7 +106,7 @@ export function PersonalInfo() {
 
       <div className="mb-4">
         <p className="mb-1 text-sm font-semibold text-gray-700">
-          Correo electronico:
+          Correo electrónico:
         </p>
         <div className="rounded-xl border border-gray-200 px-4 py-3">
           <p className="text-gray-900">{displayValue(user?.email)}</p>

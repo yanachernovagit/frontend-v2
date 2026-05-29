@@ -22,6 +22,7 @@ export type RequestResetPasswordDto = {
 
 export type UpdatePasswordWithTokenDto = {
   token: string;
+  type?: "recovery";
   newPassword: string;
 };
 

@@ -26,7 +26,7 @@ export async function getNotificationTemplates(): Promise<
     const response = await authApi.get(ADMIN_ENDPOINTS.NOTIFICATIONS.TEMPLATES);
     return response.data;
   } catch {
-    throw new Error("No se pudieron obtener las plantillas de notificacion.");
+    throw new Error("No se pudieron obtener las plantillas de notificación.");
   }
 }
 
@@ -97,6 +97,6 @@ export async function sendTestNotification(
       body,
     });
   } catch {
-    throw new Error("No se pudo enviar la notificacion de prueba.");
+    throw new Error("No se pudo enviar la notificación de prueba.");
   }
 }

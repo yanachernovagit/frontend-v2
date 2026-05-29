@@ -152,7 +152,7 @@ export function useAdminUsers() {
       setError(
         err instanceof Error
           ? err.message
-          : "Error al limpiar cache de prescripción",
+          : "Error al limpiar la caché de prescripción",
       );
       throw err;
     }

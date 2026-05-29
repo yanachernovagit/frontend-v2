@@ -55,7 +55,7 @@ export async function resetAdminUserPassword(
       newPassword,
     });
   } catch {
-    throw new Error("No se pudo resetear la contraseña.");
+    throw new Error("No se pudo restablecer la contraseña.");
   }
 }
 
@@ -81,7 +81,7 @@ export async function deleteAdminUserPrescriptionCache(
   try {
     await authApi.delete(ADMIN_ENDPOINTS.USERS.DELETE_PRESCRIPTION_CACHE(id));
   } catch {
-    throw new Error("No se pudo limpiar el cache de prescripción.");
+    throw new Error("No se pudo limpiar la caché de prescripción.");
   }
 }
 
