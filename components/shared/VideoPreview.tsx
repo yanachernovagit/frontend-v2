@@ -65,8 +65,9 @@ export function VideoPreview({
   }, [autoPlay, isActive, loop, muted]);
 
   useEffect(() => {
+    const video = videoRef.current;
+
     return () => {
-      const video = videoRef.current;
       if (video) {
         try {
           video.pause();

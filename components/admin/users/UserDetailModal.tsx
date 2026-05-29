@@ -22,6 +22,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -235,6 +236,12 @@ export function UserDetailModal({
     return (
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto border-2 border-purple/15 shadow-2xl">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Cargando usuario</DialogTitle>
+            <DialogDescription>
+              Se esta cargando la informacion administrativa del usuario.
+            </DialogDescription>
+          </DialogHeader>
           <div className="py-12 text-center text-gray-500">
             Cargando informacion del usuario...
           </div>
@@ -457,9 +464,9 @@ export function UserDetailModal({
                   <DialogTitle className="text-xl font-bold text-black">
                     {user.fullName ?? "Usuario"}
                   </DialogTitle>
-                  <p className="text-xs text-gray-500 font-medium">
+                  <DialogDescription className="text-xs text-gray-500 font-medium">
                     {user.email ?? "Sin email"}
-                  </p>
+                  </DialogDescription>
                 </div>
                 {/* Debug badge */}
                 {user.debug && (
