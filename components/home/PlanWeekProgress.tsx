@@ -70,7 +70,15 @@ export function PlanWeekProgress() {
         <h3 className="text-base font-semibold text-gray-900">
           Progreso del plan
         </h3>
-        <p className="mt-2 text-sm text-gray-600">Plan no disponible</p>
+        <p className="mt-2 text-sm text-gray-600">
+          No pudimos cargar tu plan. Intenta nuevamente.
+        </p>
+        <Button
+          onClick={refetch}
+          className="mt-4 w-full rounded-full bg-purple text-white hover:bg-purple/90"
+        >
+          Reintentar
+        </Button>
       </div>
     );
   }
@@ -100,7 +108,7 @@ export function PlanWeekProgress() {
       setFeedback("Fase actualizada. Tu plan ahora está en postcirugía.");
     } catch {
       setFeedbackType("error");
-      setFeedback("No se pudo actualizar la fase. Intentalo nuevamente.");
+      setFeedback("No se pudo actualizar la fase. Inténtalo nuevamente.");
     } finally {
       setIsUpdatingPhase(false);
     }
@@ -203,7 +211,7 @@ export function PlanWeekProgress() {
             className="w-full rounded-full bg-purple text-white hover:bg-purple/90"
             disabled={isUpdatingPhase}
           >
-            Ya me opere
+            Ya me operé
           </Button>
         </div>
       ) : null}

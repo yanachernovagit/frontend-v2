@@ -12,10 +12,15 @@ import { CompletedUserEvaluation, UserEvaluation } from "@/types";
 import { Card } from "@/components/ui/card";
 import { useEvaluations } from "@/hooks/useEvaluations";
 import { useUserPlan } from "@/hooks/useUserPlan";
+import { useUserTasks } from "@/hooks/useUserTasks";
 import { EvaluationTypeEnum, PhaseEnum } from "@/constants/enums";
 
 export default function EvaluationsPage() {
-  const { userPlan } = useUserPlan();
+  const { userTasks } = useUserTasks();
+  const shouldFetchPlan =
+    userTasks?.profileCompleted === true &&
+    userTasks?.firstEvaluationCompleted === true;
+  const { userPlan } = useUserPlan({ autoFetch: shouldFetchPlan });
   const { evaluations, loading, completeEvaluation, refetch } =
     useEvaluations();
   const [selectedPhaseFilter, setSelectedPhaseFilter] = useState<

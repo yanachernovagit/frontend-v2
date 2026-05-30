@@ -242,7 +242,7 @@ export function ProfileQuestions({ updateTasks, onComplete }: Props) {
                 className="min-h-[52px] min-w-0 flex-1 rounded-full"
               >
                 <ArrowLeft className="mr-2 h-5 w-5" />
-                Atras
+                Atrás
               </Button>
             ) : null}
 

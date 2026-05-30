@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { UserPlan } from "@/types";
+import { captureFrontendEvent } from "@/lib/posthog";
 import {
   getUserPlanService,
   updateUserPlanProgressService,
@@ -40,11 +41,16 @@ export const useUserPlan = ({
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Error desconocido";
+      captureFrontendEvent("plan_state_unexpected", {
+        source: "useUserPlan.fetch",
+        autoFetch,
+        errorMessage,
+      });
       setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [autoFetch]);
 
   const updatePlanProgress = async () => {
     setUpdatingProgress(true);
@@ -65,6 +71,11 @@ export const useUserPlan = ({
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Error desconocido";
+      captureFrontendEvent("plan_state_unexpected", {
+        source: "useUserPlan.updateProgress",
+        autoFetch,
+        errorMessage,
+      });
       setError(errorMessage);
     } finally {
       setUpdatingProgress(false);

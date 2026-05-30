@@ -3,6 +3,7 @@ import type { ProfileQuestion, ProfileQuestionAnswer } from "@/types";
 import { getProfileService } from "@/services/profileQuestionsService";
 import { saveAllProfileAnswersService } from "@/services/profileAnswersService";
 import { useAuth } from "./useAuth";
+import { clearProfileQuestionsSkipped } from "@/services/postLoginRouteService";
 
 interface UseProfileQuestionsReturn {
   questions: ProfileQuestion[];
@@ -20,6 +21,49 @@ interface UseProfileQuestionsReturn {
     error?: string;
   }>;
 }
+
+const pruneHiddenAnswers = (
+  questions: ProfileQuestion[],
+  candidateAnswers: ProfileQuestionAnswer[],
+) => {
+  if (questions.length === 0) {
+    return candidateAnswers;
+  }
+
+  const questionsById = new Map(
+    questions.map((question) => [question.id, question]),
+  );
+  const answerMap = new Map(
+    candidateAnswers.map((item) => [item.questionId, item.answer]),
+  );
+  const visibilityCache = new Map<string, boolean>();
+
+  const isVisible = (question: ProfileQuestion): boolean => {
+    const cached = visibilityCache.get(question.id);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    if (!question.dependsOnQuestionId || !question.dependsOnValue) {
+      visibilityCache.set(question.id, true);
+      return true;
+    }
+
+    const parentQuestion = questionsById.get(question.dependsOnQuestionId);
+    const visible =
+      !!parentQuestion &&
+      isVisible(parentQuestion) &&
+      answerMap.get(question.dependsOnQuestionId) === question.dependsOnValue;
+
+    visibilityCache.set(question.id, visible);
+    return visible;
+  };
+
+  return candidateAnswers.filter((item) => {
+    const question = questionsById.get(item.questionId);
+    return !!question && isVisible(question);
+  });
+};
 
 export const useProfileQuestions = (): UseProfileQuestionsReturn => {
   const [questions, setQuestions] = useState<ProfileQuestion[]>([]);
@@ -71,8 +115,9 @@ export const useProfileQuestions = (): UseProfileQuestionsReturn => {
     setAnswers((prev) => {
       const updated = prev.filter((a) => a.questionId !== questionId);
       updated.push({ questionId, answer, userId: currentUserId });
-      setStoredAnswers(updated);
-      return updated;
+      const sanitized = pruneHiddenAnswers(questions, updated);
+      setStoredAnswers(sanitized);
+      return sanitized;
     });
   };
 
@@ -97,14 +142,24 @@ export const useProfileQuestions = (): UseProfileQuestionsReturn => {
     canDisplay,
     submitAllAnswers: async () => {
       try {
-        await saveAllProfileAnswersService(answers);
+        const visibleAnswers = pruneHiddenAnswers(questions, answers);
+        if (visibleAnswers.length === 0) {
+          return {
+            success: false,
+            total: 0,
+            error:
+              "Debes responder las preguntas de perfil antes de continuar.",
+          };
+        }
+        await saveAllProfileAnswersService(visibleAnswers);
+        clearProfileQuestionsSkipped(user?.sub);
         await refreshSession();
         if (storageKey && typeof window !== "undefined") {
           localStorage.removeItem(storageKey);
         }
         return {
           success: true,
-          total: answers.length,
+          total: visibleAnswers.length,
         };
       } catch (error) {
         const errorMessage =

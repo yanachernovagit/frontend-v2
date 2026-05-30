@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signInService, signUpService } from "@/services/authService";
@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getPostLoginPath } from "@/services/postLoginRouteService";
 import {
   Card,
   CardContent,
@@ -28,10 +29,17 @@ export default function SignUpPage() {
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const completedSignupRef = useRef(false);
 
   useEffect(() => {
-    if (!loading && isAuthenticated) {
-      router.push("/inicio");
+    if (!loading && isAuthenticated && !completedSignupRef.current) {
+      let cancelled = false;
+      getPostLoginPath().then((path) => {
+        if (!cancelled) router.push(path);
+      });
+      return () => {
+        cancelled = true;
+      };
     }
   }, [isAuthenticated, loading, router]);
 
@@ -44,6 +52,8 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
+
     setError("");
 
     if (formData.password !== formData.confirmPassword) {
@@ -75,8 +85,10 @@ export default function SignUpPage() {
         refreshToken: session.refreshToken,
       });
 
-      router.push("/preguntas");
+      completedSignupRef.current = true;
+      router.push(await getPostLoginPath());
     } catch (err: unknown) {
+      completedSignupRef.current = false;
       setError(err instanceof Error ? err.message : "Error al registrarse");
     } finally {
       setIsLoading(false);

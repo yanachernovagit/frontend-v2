@@ -1,5 +1,7 @@
 import api from "./api";
 import authApi from "./authApi";
+import { extractApiErrorMessage } from "./apiError";
+import { captureAuthFlowFailure } from "./httpDiagnostics";
 import { ENDPOINTS } from "@/constants/endpoints";
 import {
   SignInDto,
@@ -10,33 +12,24 @@ import {
   AuthSession,
 } from "@/types/auth";
 
-type HttpError = {
-  response?: {
-    status?: number;
-  };
-};
-
 export async function signInService(data: SignInDto): Promise<AuthSession> {
   try {
     const response = await api.post(ENDPOINTS.AUTH.SIGNIN, data);
     return response.data;
   } catch (error: unknown) {
-    const status = (error as HttpError)?.response?.status;
-    let message = "No se pudo iniciar sesión.";
-
-    if (status === 400) {
-      message = "Solicitud inválida. Revisa tus datos.";
-    } else if (status === 401) {
-      message = "Correo o contraseña incorrectos.";
-    } else if (status === 403) {
-      message = "No tienes permiso para acceder.";
-    } else if (status === 404) {
-      message = "Usuario no encontrado.";
-    } else if (status === 500) {
-      message = "Error inesperado. Intenta nuevamente.";
-    }
-
-    throw new Error(message);
+    captureAuthFlowFailure("sign_in", error);
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo iniciar sesión.",
+        statusMessages: {
+          400: "Solicitud inválida. Revisa tus datos.",
+          401: "Correo o contraseña incorrectos.",
+          403: "No tienes permiso para acceder.",
+          404: "Usuario no encontrado.",
+          500: "Error inesperado. Intenta nuevamente.",
+        },
+      }),
+    );
   }
 }
 
@@ -45,17 +38,17 @@ export async function signUpService(data: SignUpDto): Promise<void> {
     const response = await api.post(ENDPOINTS.AUTH.SIGNUP, data);
     return response.data;
   } catch (error: unknown) {
-    const status = (error as HttpError)?.response?.status;
-    let message = "Ocurrió un error al registrarse.";
-
-    if (status === 409) {
-      message = "El correo ya está registrado.";
-    } else if (status === 400) {
-      message = "Datos inválidos. Revisa el formulario.";
-    } else if (status === 500) {
-      message = "Error interno del servidor. Intenta más tarde.";
-    }
-    throw new Error(message);
+    captureAuthFlowFailure("sign_up", error);
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "Ocurrió un error al registrarse.",
+        statusMessages: {
+          400: "Datos inválidos. Revisa el formulario.",
+          409: "El correo ya está registrado.",
+          500: "Error interno del servidor. Intenta más tarde.",
+        },
+      }),
+    );
   }
 }
 
@@ -66,20 +59,18 @@ export async function changePasswordService(
     const response = await authApi.post(ENDPOINTS.AUTH.CHANGE_PASSWORD, data);
     return response.data;
   } catch (error: unknown) {
-    const status = (error as HttpError)?.response?.status;
-    let message = "No se pudo cambiar la contraseña.";
-
-    if (status === 400) {
-      message = "Los datos enviados no son válidos.";
-    } else if (status === 401) {
-      message = "Contraseña actual es incorrecta.";
-    } else if (status === 404) {
-      message = "Usuario no encontrado.";
-    } else if (status === 500) {
-      message = "Error del servidor. Intenta más tarde.";
-    }
-
-    throw new Error(message);
+    captureAuthFlowFailure("change_password", error);
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo cambiar la contraseña.",
+        statusMessages: {
+          400: "Los datos enviados no son válidos.",
+          401: "La contraseña actual es incorrecta.",
+          404: "Usuario no encontrado.",
+          500: "Error del servidor. Intenta más tarde.",
+        },
+      }),
+    );
   }
 }
 
@@ -93,18 +84,17 @@ export async function requestResetPasswordService(
     );
     return response.data;
   } catch (error: unknown) {
-    const status = (error as HttpError)?.response?.status;
-    let message = "No se pudo enviar el correo de recuperación.";
-
-    if (status === 404) {
-      message = "Correo incorrecto.";
-    } else if (status === 400) {
-      message = "Correo inválido. Revisa el formato.";
-    } else if (status === 500) {
-      message = "Error del servidor. Intenta nuevamente más tarde.";
-    }
-
-    throw new Error(message);
+    captureAuthFlowFailure("request_reset_password", error);
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo enviar el correo de recuperación.",
+        statusMessages: {
+          400: "Correo inválido. Revisa el formato.",
+          404: "Servicio no disponible. Intenta más tarde.",
+          500: "Error del servidor. Intenta nuevamente más tarde.",
+        },
+      }),
+    );
   }
 }
 
@@ -114,16 +104,16 @@ export async function updatePasswordWithTokenService(
   try {
     await api.post(ENDPOINTS.AUTH.UPDATE_PASSWORD, data);
   } catch (error: unknown) {
-    const status = (error as HttpError)?.response?.status;
-    let message = "No se pudo actualizar la contraseña.";
-
-    if (status === 400) {
-      message = "El enlace es inválido o ha expirado.";
-    } else if (status === 500) {
-      message = "Error del servidor. Intenta nuevamente más tarde.";
-    }
-
-    throw new Error(message);
+    captureAuthFlowFailure("update_password", error);
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo actualizar la contraseña.",
+        statusMessages: {
+          400: "El enlace es inválido o ha expirado.",
+          500: "Error del servidor. Intenta nuevamente más tarde.",
+        },
+      }),
+    );
   }
 }
 
@@ -137,7 +127,8 @@ export async function refreshSessionService(
     if (!response.data?.accessToken)
       throw new Error("Invalid refresh response");
     return response.data;
-  } catch {
+  } catch (error: unknown) {
+    captureAuthFlowFailure("refresh_session", error);
     throw new Error("No se pudo refrescar la sesión.");
   }
 }

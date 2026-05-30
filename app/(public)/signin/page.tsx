@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { USER_ROLES } from "@/constants/UserRoles";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getPostLoginPath } from "@/services/postLoginRouteService";
 import {
   Card,
   CardContent,
@@ -32,7 +33,13 @@ export default function SignInPage() {
       if (user?.user_metadata?.role === USER_ROLES.ADMIN) {
         setShowAdminSelection(true);
       } else {
-        router.push("/inicio");
+        let cancelled = false;
+        getPostLoginPath().then((path) => {
+          if (!cancelled) router.push(path);
+        });
+        return () => {
+          cancelled = true;
+        };
       }
     }
   }, [isAuthenticated, loading, router, user]);

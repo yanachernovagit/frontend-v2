@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -16,7 +17,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserTasks } from "@/hooks/useUserTasks";
 import { LoggedUserHeader } from "@/components/shared/LoggedUserHeader";
+import { hasProfileQuestionsSkipped } from "@/services/postLoginRouteService";
 
 const menuItems = [
   { icon: Home, label: "Inicio", href: "/inicio" },
@@ -30,22 +33,66 @@ const menuItems = [
 
 const SIDEBAR_WIDTH = "15%";
 
-export default function PrivateLayout({
+function PrivateShell({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const {
+    userTasks,
+    loading: loadingTasks,
+    error: tasksError,
+  } = useUserTasks();
+
+  const isOnboardingRoute = pathname === "/preguntas";
+  const skipUserId =
+    userTasks?.userId && userTasks.userId !== "empty"
+      ? userTasks.userId
+      : user?.sub;
+  const skippedForCurrentUser = hasProfileQuestionsSkipped(skipUserId);
+  const hasIncompleteProfile =
+    !!userTasks && userTasks.profileCompleted === false;
+
+  useEffect(() => {
+    if (
+      !loadingTasks &&
+      !tasksError &&
+      hasIncompleteProfile &&
+      !skippedForCurrentUser &&
+      !isOnboardingRoute
+    ) {
+      router.replace("/preguntas");
+    }
+  }, [
+    hasIncompleteProfile,
+    isOnboardingRoute,
+    loadingTasks,
+    pathname,
+    router,
+    skippedForCurrentUser,
+    tasksError,
+  ]);
 
   const handleLogout = () => {
     logout();
     router.push("/signin");
   };
 
+  if (
+    !isOnboardingRoute &&
+    !tasksError &&
+    ((loadingTasks && !skippedForCurrentUser) ||
+      (!userTasks && !skippedForCurrentUser) ||
+      (hasIncompleteProfile && !skippedForCurrentUser))
+  ) {
+    return null;
+  }
+
   return (
-    <AuthGuard>
+    <>
       {/* Mobile message */}
       <div className="flex lg:hidden h-screen w-full bg-linear-to-r from-blue via-purple to-magent items-center justify-center p-8">
         <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-xl">
@@ -155,6 +202,18 @@ export default function PrivateLayout({
           </div>
         </div>
       </SidebarProvider>
+    </>
+  );
+}
+
+export default function PrivateLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <AuthGuard>
+      <PrivateShell>{children}</PrivateShell>
     </AuthGuard>
   );
 }

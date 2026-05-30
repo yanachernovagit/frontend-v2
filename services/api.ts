@@ -1,4 +1,5 @@
 import axios from "axios";
+import { installHttpDiagnostics } from "./httpDiagnostics";
 
 const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL;
 if (!baseURL) {
@@ -10,6 +11,8 @@ const api = axios.create({
   baseURL,
   timeout: 10000,
 });
+
+installHttpDiagnostics(api, "publicApi");
 
 api.interceptors.response.use(
   (response) => response,

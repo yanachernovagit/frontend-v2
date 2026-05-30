@@ -2,6 +2,7 @@ import axios, { AxiosHeaders, type InternalAxiosRequestConfig } from "axios";
 import { ENDPOINTS } from "@/constants/endpoints";
 import { AuthEvents, AuthStorage } from "@/hooks/useAuth";
 import api from "./api";
+import { installHttpDiagnostics } from "./httpDiagnostics";
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
@@ -16,6 +17,8 @@ const authApi = axios.create({
   baseURL,
   timeout: 30000,
 });
+
+installHttpDiagnostics(authApi, "authApi");
 
 authApi.interceptors.request.use(async (config) => {
   try {
@@ -79,7 +82,6 @@ authApi.interceptors.response.use(
         window.location.href = "/signin";
       }
     }
-
     return Promise.reject(error);
   },
 );

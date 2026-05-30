@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { AlertTriangle, RotateCcw } from "lucide-react";
+import { captureFrontendException } from "@/lib/posthog";
 
 export default function AdminError({
   error,
@@ -12,6 +13,10 @@ export default function AdminError({
 }) {
   useEffect(() => {
     console.error("[Admin Error]", error);
+    captureFrontendException(error, {
+      boundary: "admin",
+      digest: error.digest ?? null,
+    });
   }, [error]);
 
   return (
@@ -20,10 +25,10 @@ export default function AdminError({
         <div className="mx-auto w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
           <AlertTriangle className="w-7 h-7 text-red-500" />
         </div>
-        <h2 className="text-lg font-bold text-black">Algo salio mal</h2>
+        <h2 className="text-lg font-bold text-black">Algo salió mal</h2>
         <p className="text-sm text-gray-500">
-          Ocurrio un error inesperado en el panel de administracion. Intenta
-          recargar la seccion.
+          Ocurrió un error inesperado en el panel de administración. Intenta
+          recargar la sección.
         </p>
         {error.message && (
           <pre className="text-xs text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 overflow-auto max-h-32 text-left">

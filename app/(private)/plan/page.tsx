@@ -21,16 +21,20 @@ type SelectedExercise = {
 export default function PlanPage() {
   const router = useRouter();
 
+  const { userTasks, loading: loadingTasks, refetch } = useUserTasks();
+  const shouldFetchPlan =
+    userTasks?.profileCompleted === true &&
+    userTasks?.firstEvaluationCompleted === true;
   const {
     userPlan,
     loading: loadingPlan,
+    error: planError,
     updatePlanProgress,
     updatingProgress,
     changedRoutine,
     viewNextRoutine,
-  } = useUserPlan();
-
-  const { userTasks, loading: loadingTasks, refetch } = useUserTasks();
+    refetch: refetchPlan,
+  } = useUserPlan({ autoFetch: shouldFetchPlan });
 
   const [selectedExercise, setSelectedExercise] =
     useState<SelectedExercise>(null);
@@ -64,6 +68,7 @@ export default function PlanPage() {
   const isBlocked =
     loadingTasks ||
     !userTasks ||
+    (shouldFetchPlan && (!userPlan || !!planError)) ||
     !userTasks.profileCompleted ||
     !userTasks.firstEvaluationCompleted ||
     (userPlan &&
@@ -128,6 +133,29 @@ export default function PlanPage() {
             >
               Completar Evaluación
             </Button>
+          </div>
+        ) : !loadingTasks && shouldFetchPlan && (!userPlan || planError) ? (
+          <div className="h-full w-full flex flex-col items-center justify-center px-8">
+            {!planError ? (
+              <>
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-magent border-r-transparent mb-4" />
+                <p className="text-center text-xl font-bold text-magent">
+                  Cargando plan...
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-center text-xl font-bold text-magent mb-4">
+                  No pudimos cargar tu plan. Intenta nuevamente.
+                </p>
+                <Button
+                  onClick={refetchPlan}
+                  className="bg-magent w-full max-w-[250px]"
+                >
+                  Reintentar
+                </Button>
+              </>
+            )}
           </div>
         ) : !loadingTasks &&
           userPlan &&

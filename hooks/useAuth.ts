@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { identifyPostHogUser, resetPostHogUser } from "@/lib/posthog";
 import { refreshSessionService } from "@/services/authService";
 
 const TOKEN_KEY = "auth_token";
@@ -78,6 +79,28 @@ export function useAuth() {
     return now >= exp;
   }, [user]);
 
+  const isAuthenticated = !!token && !isExpired;
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (!isAuthenticated || !user?.sub) {
+      resetPostHogUser();
+      return;
+    }
+
+    identifyPostHogUser(user.sub, {
+      role: user.user_metadata?.role ?? "USER",
+      hasEmail: Boolean(user.email),
+    });
+  }, [
+    isAuthenticated,
+    loading,
+    user?.email,
+    user?.sub,
+    user?.user_metadata?.role,
+  ]);
+
   const login = useCallback((tokens: AuthTokens) => {
     setToken(tokens.accessToken);
     AuthEvents.emit(tokens.accessToken);
@@ -116,7 +139,7 @@ export function useAuth() {
   return {
     token,
     user,
-    isAuthenticated: !!token && !isExpired,
+    isAuthenticated,
     isExpired,
     loading,
     login,

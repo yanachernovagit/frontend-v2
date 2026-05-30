@@ -7,10 +7,13 @@ import { useState } from "react";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { ProfileQuestions } from "@/components/questions";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import ConfettiIcon from "@/public/icons/white/Confetti.svg";
+import { markProfileQuestionsSkipped } from "@/services/postLoginRouteService";
 
 export default function QuestionsPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [showProfileQuestions, setShowProfileQuestions] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
@@ -19,6 +22,7 @@ export default function QuestionsPage() {
   };
 
   const handleSkip = () => {
+    markProfileQuestionsSkipped(user?.sub);
     router.replace("/inicio");
   };
 
