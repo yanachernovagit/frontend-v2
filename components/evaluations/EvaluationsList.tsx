@@ -23,6 +23,7 @@ type Props = {
   onFilterChange?: (filter: FilterType) => void;
   onSelectEvaluation?: (evaluation: UserEvaluation) => void;
   selectedEvaluationId?: string;
+  isPostPlanLocked?: boolean;
 };
 
 export function EvaluationsList({
@@ -35,6 +36,7 @@ export function EvaluationsList({
   onFilterChange,
   onSelectEvaluation,
   selectedEvaluationId,
+  isPostPlanLocked = false,
 }: Props) {
   const [internalFilter, setInternalFilter] = useState<FilterType>("pre");
   const resolvedFilter = filter ?? internalFilter;
@@ -53,11 +55,6 @@ export function EvaluationsList({
 
     return showAll ? allEvaluations : allEvaluations.filter((e) => e.completed);
   }, [resolvedEvaluations, showAll, resolvedFilter]);
-
-  const isPostPlanLocked =
-    resolvedFilter === "post" &&
-    resolvedUserPlan &&
-    resolvedUserPlan.currentWeek <= resolvedUserPlan.totalWeeks;
 
   return (
     <Card className="bg-bg-secondary rounded-xl h-full flex flex-col gap-1 p-2">
