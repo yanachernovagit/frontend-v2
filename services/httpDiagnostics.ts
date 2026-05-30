@@ -6,6 +6,7 @@ import axios, {
 } from "axios";
 
 import { captureFrontendEvent } from "@/lib/posthog";
+import { createSupportCode } from "./supportCode";
 
 declare module "axios" {
   export interface AxiosRequestConfig {
@@ -147,6 +148,8 @@ export const captureApiFailure = (
 ) => {
   if (!axios.isAxiosError(error)) return;
   if (!options.force && !shouldCaptureApiFailure(error)) return;
+  const requestId = getResponseHeader(error.response?.headers, "x-request-id");
+  const clientRequestId = error.config?._clientRequestId ?? null;
 
   captureFrontendEvent(options.event ?? "api_request_failed", {
     clientName,
@@ -157,8 +160,9 @@ export const captureApiFailure = (
     axiosCode: error.code ?? null,
     hasResponse: Boolean(error.response),
     errorMessage: error.message || null,
-    requestId: getResponseHeader(error.response?.headers, "x-request-id"),
-    clientRequestId: error.config?._clientRequestId ?? null,
+    requestId,
+    clientRequestId,
+    supportCode: createSupportCode(requestId ?? clientRequestId),
     cfRay: getResponseHeader(error.response?.headers, "cf-ray"),
     durationMs: getDurationMs(error),
     ...getBrowserContext(),
@@ -167,6 +171,11 @@ export const captureApiFailure = (
 
 export const captureAuthFlowFailure = (flow: string, error: unknown) => {
   if (axios.isAxiosError(error)) {
+    const requestId = getResponseHeader(
+      error.response?.headers,
+      "x-request-id",
+    );
+    const clientRequestId = error.config?._clientRequestId ?? null;
     captureFrontendEvent("auth_flow_failed", {
       flow,
       clientName: "publicApi",
@@ -177,8 +186,9 @@ export const captureAuthFlowFailure = (flow: string, error: unknown) => {
       axiosCode: error.code ?? null,
       hasResponse: Boolean(error.response),
       errorMessage: error.message || null,
-      requestId: getResponseHeader(error.response?.headers, "x-request-id"),
-      clientRequestId: error.config?._clientRequestId ?? null,
+      requestId,
+      clientRequestId,
+      supportCode: createSupportCode(requestId ?? clientRequestId),
       cfRay: getResponseHeader(error.response?.headers, "cf-ray"),
       durationMs: getDurationMs(error),
       ...getBrowserContext(),

@@ -1,5 +1,6 @@
 import { UserTasksStatus } from "@/types";
 import authApi from "./authApi";
+import { extractApiErrorMessage } from "./apiError";
 import { ENDPOINTS } from "@/constants/endpoints";
 
 const EMPTY_USER_TASKS_STATUS: UserTasksStatus = {
@@ -25,7 +26,11 @@ export async function getUserTasksService(): Promise<UserTasksStatus | null> {
     }
 
     return response.data as UserTasksStatus;
-  } catch {
-    throw new Error("No se pudo obtener las tareas.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo obtener las tareas.",
+      }),
+    );
   }
 }
