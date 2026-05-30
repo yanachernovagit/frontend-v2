@@ -14,13 +14,11 @@ import { useEvaluations } from "@/hooks/useEvaluations";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { useUserTasks } from "@/hooks/useUserTasks";
 import { EvaluationTypeEnum, PhaseEnum } from "@/constants/enums";
+import { isPlanFinished } from "@/lib/planStatus";
 
 export default function EvaluationsPage() {
   const { userTasks } = useUserTasks();
-  const shouldFetchPlan =
-    userTasks?.profileCompleted === true &&
-    userTasks?.firstEvaluationCompleted === true;
-  const { userPlan } = useUserPlan({ autoFetch: shouldFetchPlan });
+  const { userPlan } = useUserPlan({ autoFetch: true });
   const { evaluations, loading, completeEvaluation, refetch } =
     useEvaluations();
   const [selectedPhaseFilter, setSelectedPhaseFilter] = useState<
@@ -50,6 +48,10 @@ export default function EvaluationsPage() {
     setSelectedEvaluation(evaluation);
     setCompletedResults(null);
   };
+
+  const postPlanUnlocked = isPlanFinished(userPlan);
+  const isPostPlanLocked =
+    !postPlanUnlocked || !userTasks?.firstEvaluationCompleted;
 
   const currentPhaseEvaluations =
     selectedPhaseFilter === "pre"
@@ -85,6 +87,7 @@ export default function EvaluationsPage() {
           showAll
           onSelectEvaluation={handleSelectEvaluation}
           selectedEvaluationId={selectedEvaluation?.evaluation.id}
+          isPostPlanLocked={selectedPhaseFilter === "post" && isPostPlanLocked}
         />
       </div>
       <div className="w-[55%] h-full min-w-0 flex flex-col gap-3">
