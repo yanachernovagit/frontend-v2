@@ -1,4 +1,5 @@
 import authApi from "./authApi";
+import { extractApiErrorMessage } from "./apiError";
 import { ProfileQuestion } from "@/types";
 import { ADMIN_ENDPOINTS } from "@/constants/adminEndpoints";
 
@@ -6,8 +7,12 @@ export async function getAdminQuestions(): Promise<ProfileQuestion[]> {
   try {
     const response = await authApi.get(ADMIN_ENDPOINTS.QUESTIONS.LIST);
     return response.data;
-  } catch {
-    throw new Error("No se pudieron obtener las preguntas.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron obtener las preguntas.",
+      }),
+    );
   }
 }
 
@@ -17,8 +22,12 @@ export async function createAdminQuestion(
   try {
     const response = await authApi.post(ADMIN_ENDPOINTS.QUESTIONS.CREATE, data);
     return response.data;
-  } catch {
-    throw new Error("No se pudo crear la pregunta.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo crear la pregunta.",
+      }),
+    );
   }
 }
 
@@ -32,15 +41,23 @@ export async function updateAdminQuestion(
       data,
     );
     return response.data;
-  } catch {
-    throw new Error("No se pudo actualizar la pregunta.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo actualizar la pregunta.",
+      }),
+    );
   }
 }
 
 export async function deleteAdminQuestion(id: string): Promise<void> {
   try {
     await authApi.delete(ADMIN_ENDPOINTS.QUESTIONS.DELETE(id));
-  } catch {
-    throw new Error("No se pudo eliminar la pregunta.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo eliminar la pregunta.",
+      }),
+    );
   }
 }

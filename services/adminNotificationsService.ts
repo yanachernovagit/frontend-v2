@@ -1,4 +1,5 @@
 import authApi from "./authApi";
+import { extractApiErrorMessage } from "./apiError";
 import {
   NotificationTemplate,
   NotificationLog,
@@ -25,8 +26,12 @@ export async function getNotificationTemplates(): Promise<
   try {
     const response = await authApi.get(ADMIN_ENDPOINTS.NOTIFICATIONS.TEMPLATES);
     return response.data;
-  } catch {
-    throw new Error("No se pudieron obtener las plantillas de notificación.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron obtener las plantillas de notificación.",
+      }),
+    );
   }
 }
 
@@ -40,8 +45,12 @@ export async function updateNotificationTemplate(
       data,
     );
     return response.data;
-  } catch {
-    throw new Error("No se pudo actualizar la plantilla.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo actualizar la plantilla.",
+      }),
+    );
   }
 }
 
@@ -66,8 +75,12 @@ export async function getNotificationStats(): Promise<NotificationStats> {
       sentToday: raw.sentToday ?? raw.today ?? 0,
       byType,
     };
-  } catch {
-    throw new Error("No se pudieron obtener las estadisticas.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron obtener las estadísticas.",
+      }),
+    );
   }
 }
 
@@ -80,8 +93,12 @@ export async function getNotificationLogs(
       params: { page, limit },
     });
     return response.data;
-  } catch {
-    throw new Error("No se pudieron obtener los registros.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron obtener los registros.",
+      }),
+    );
   }
 }
 
@@ -96,7 +113,11 @@ export async function sendTestNotification(
       title,
       body,
     });
-  } catch {
-    throw new Error("No se pudo enviar la notificación de prueba.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo enviar la notificación de prueba.",
+      }),
+    );
   }
 }

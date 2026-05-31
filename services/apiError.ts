@@ -1,4 +1,6 @@
 import axios from "axios";
+import type { AxiosResponse } from "axios";
+import { appendSupportCode, createSupportCode } from "./supportCode";
 
 type ExtractApiErrorMessageOptions = {
   fallback: string;
@@ -32,6 +34,73 @@ const collectMessages = (value: unknown): string[] => {
     ...collectMessages(value.error),
     ...collectMessages(value.details),
   ];
+};
+
+const getRecordString = (
+  value: unknown,
+  key: "requestId" | "supportCode",
+): string | null => {
+  if (!isRecord(value)) return null;
+  const item = value[key];
+  return typeof item === "string" && item.trim() ? item.trim() : null;
+};
+
+const getResponseHeader = (
+  headers: AxiosResponse["headers"] | Record<string, unknown> | undefined,
+  name: string,
+): string | null => {
+  if (!headers) return null;
+  const normalizedName = name.toLowerCase();
+
+  if (typeof (headers as { get?: unknown }).get === "function") {
+    const value = (headers as { get: (key: string) => unknown }).get(name);
+    return typeof value === "string" ? value : null;
+  }
+
+  for (const [key, value] of Object.entries(headers)) {
+    if (key.toLowerCase() !== normalizedName) continue;
+    if (typeof value === "string") return value;
+    if (Array.isArray(value)) return value.join(",");
+    if (value != null) return String(value);
+  }
+
+  return null;
+};
+
+export const getApiSupportCode = (error: unknown): string | null => {
+  if (!axios.isAxiosError(error)) return null;
+
+  const responseSupportCode = getRecordString(
+    error.response?.data,
+    "supportCode",
+  );
+  if (responseSupportCode) return responseSupportCode;
+
+  const requestId =
+    getRecordString(error.response?.data, "requestId") ??
+    getResponseHeader(error.response?.headers, "x-request-id");
+  const clientRequestId =
+    getResponseHeader(error.response?.headers, "x-client-request-id") ??
+    error.config?._clientRequestId;
+
+  return createSupportCode(requestId ?? clientRequestId ?? null);
+};
+
+const shouldShowSupportCode = (error: unknown): boolean => {
+  if (!axios.isAxiosError(error)) return false;
+
+  const status = error.response?.status;
+  return (
+    error.code === "ECONNABORTED" ||
+    !error.response ||
+    status === 408 ||
+    (typeof status === "number" && status >= 500)
+  );
+};
+
+const withSupportCode = (message: string, error: unknown): string => {
+  if (!shouldShowSupportCode(error)) return message;
+  return appendSupportCode(message, getApiSupportCode(error));
 };
 
 const translateKnownApiMessage = (message: string): string => {
@@ -90,23 +159,29 @@ export const extractApiErrorMessage = (
   }
 
   if (error.code === "ECONNABORTED") {
-    return "La solicitud tardó demasiado. Intenta nuevamente.";
+    return withSupportCode(
+      "La solicitud tardó demasiado. Intenta nuevamente.",
+      error,
+    );
   }
 
   if (!error.response) {
-    return "No pudimos conectarnos con el servidor. Revisa tu conexión e inténtalo nuevamente.";
+    return withSupportCode(
+      "No pudimos conectarnos con el servidor. Revisa tu conexión e inténtalo nuevamente.",
+      error,
+    );
   }
 
   const status = error.response.status;
   const [payloadMessage] = collectMessages(error.response.data);
 
   if (payloadMessage) {
-    return translateKnownApiMessage(payloadMessage);
+    return withSupportCode(translateKnownApiMessage(payloadMessage), error);
   }
 
   if (statusMessages?.[status]) {
-    return statusMessages[status]!;
+    return withSupportCode(statusMessages[status]!, error);
   }
 
-  return fallback;
+  return withSupportCode(fallback, error);
 };

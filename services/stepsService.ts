@@ -1,4 +1,5 @@
 import authApi from "./authApi";
+import { extractApiErrorMessage } from "./apiError";
 import { ENDPOINTS } from "@/constants/endpoints";
 import { UserStep } from "@/types/user-step";
 
@@ -18,8 +19,12 @@ export async function getDailyStepsService(
     }
 
     return [];
-  } catch {
-    throw new Error("No se pudieron obtener tus pasos diarios.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron obtener tus pasos diarios.",
+      }),
+    );
   }
 }
 
@@ -29,7 +34,11 @@ export async function postDailyStepsService(steps: number): Promise<void> {
       steps,
     });
     return response.data;
-  } catch {
-    throw new Error("No se pudieron registrar tus pasos diarios.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron registrar tus pasos diarios.",
+      }),
+    );
   }
 }

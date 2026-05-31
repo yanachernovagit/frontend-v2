@@ -5,13 +5,18 @@ import {
   GroupedUserEvaluations,
 } from "@/types";
 import authApi from "./authApi";
+import { extractApiErrorMessage } from "./apiError";
 
 export async function getUserEvaluationsService(): Promise<GroupedUserEvaluations> {
   try {
     const response = await authApi.get(ENDPOINTS.EVALUATIONS.USER_LIST);
     return response.data;
-  } catch {
-    throw new Error("No se pudieron obtener tus evaluaciones.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron obtener tus evaluaciones.",
+      }),
+    );
   }
 }
 
@@ -21,7 +26,11 @@ export async function completeUserEvaluationService(
   try {
     const response = await authApi.post(ENDPOINTS.EVALUATIONS.COMPLETE, data);
     return response.data;
-  } catch {
-    throw new Error("No se pudo completar la evaluación.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo completar la evaluación.",
+      }),
+    );
   }
 }

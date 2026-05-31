@@ -1,4 +1,5 @@
 import authApi from "./authApi";
+import { extractApiErrorMessage } from "./apiError";
 import { AdminUser, AdminUserDetail, PrescriptionHistoryItem } from "@/types";
 import { ADMIN_ENDPOINTS } from "@/constants/adminEndpoints";
 
@@ -6,8 +7,12 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
   try {
     const response = await authApi.get(ADMIN_ENDPOINTS.USERS.LIST);
     return response.data;
-  } catch {
-    throw new Error("No se pudieron obtener los usuarios.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron obtener los usuarios.",
+      }),
+    );
   }
 }
 
@@ -15,8 +20,12 @@ export async function getAdminUserDetail(id: string): Promise<AdminUserDetail> {
   try {
     const response = await authApi.get(ADMIN_ENDPOINTS.USERS.GET(id));
     return response.data;
-  } catch {
-    throw new Error("No se pudo obtener el detalle del usuario.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo obtener el detalle del usuario.",
+      }),
+    );
   }
 }
 
@@ -30,8 +39,12 @@ export async function updateAdminUserRole(
       { role },
     );
     return response.data;
-  } catch {
-    throw new Error("No se pudo actualizar el rol.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo actualizar el rol.",
+      }),
+    );
   }
 }
 
@@ -41,8 +54,12 @@ export async function updateAdminUserPlan(
 ): Promise<void> {
   try {
     await authApi.patch(ADMIN_ENDPOINTS.USERS.UPDATE_PLAN(id), data);
-  } catch {
-    throw new Error("No se pudo actualizar el plan del usuario.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo actualizar el plan del usuario.",
+      }),
+    );
   }
 }
 
@@ -54,24 +71,36 @@ export async function resetAdminUserPassword(
     await authApi.post(ADMIN_ENDPOINTS.USERS.RESET_PASSWORD(id), {
       newPassword,
     });
-  } catch {
-    throw new Error("No se pudo restablecer la contraseña.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo restablecer la contraseña.",
+      }),
+    );
   }
 }
 
 export async function sendAdminUserResetEmail(id: string): Promise<void> {
   try {
     await authApi.post(ADMIN_ENDPOINTS.USERS.SEND_RESET_EMAIL(id));
-  } catch {
-    throw new Error("No se pudo enviar el email de recuperación.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo enviar el correo de recuperación.",
+      }),
+    );
   }
 }
 
 export async function resetAdminUserPlan(id: string): Promise<void> {
   try {
     await authApi.post(ADMIN_ENDPOINTS.USERS.RESET_PLAN(id));
-  } catch {
-    throw new Error("No se pudo resetear el plan del usuario.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo reiniciar el plan del usuario.",
+      }),
+    );
   }
 }
 
@@ -80,8 +109,12 @@ export async function deleteAdminUserPrescriptionCache(
 ): Promise<void> {
   try {
     await authApi.delete(ADMIN_ENDPOINTS.USERS.DELETE_PRESCRIPTION_CACHE(id));
-  } catch {
-    throw new Error("No se pudo limpiar la caché de prescripción.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo limpiar la caché de prescripción.",
+      }),
+    );
   }
 }
 
@@ -94,8 +127,12 @@ export async function createAdminUserPlan(
       phase,
     });
     return response.data;
-  } catch {
-    throw new Error("No se pudo crear el plan del usuario.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo crear el plan del usuario.",
+      }),
+    );
   }
 }
 
@@ -114,8 +151,12 @@ export async function updateAdminUserTasks(
       tasks,
     );
     return response.data;
-  } catch {
-    throw new Error("No se pudieron actualizar las tareas.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron actualizar las tareas.",
+      }),
+    );
   }
 }
 
@@ -128,8 +169,12 @@ export async function setAdminUserFatigue(
       level,
     });
     return response.data;
-  } catch {
-    throw new Error("No se pudo registrar la fatiga.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo registrar la fatiga.",
+      }),
+    );
   }
 }
 
@@ -148,8 +193,12 @@ export async function updateAdminUserPlanDetails(
       data,
     );
     return response.data;
-  } catch {
-    throw new Error("No se pudieron actualizar los detalles del plan.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron actualizar los detalles del plan.",
+      }),
+    );
   }
 }
 
@@ -159,8 +208,12 @@ export async function getAdminUserPrescriptions(
   try {
     const response = await authApi.get(ADMIN_ENDPOINTS.USERS.PRESCRIPTIONS(id));
     return response.data;
-  } catch {
-    throw new Error("No se pudo obtener el historial de prescripciones.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo obtener el historial de prescripciones.",
+      }),
+    );
   }
 }
 
@@ -174,7 +227,11 @@ export async function toggleAdminUserDebug(
       { debug },
     );
     return response.data;
-  } catch {
-    throw new Error("No se pudo cambiar el modo debug.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo cambiar el modo debug.",
+      }),
+    );
   }
 }

@@ -1,4 +1,5 @@
 import authApi from "./authApi";
+import { extractApiErrorMessage } from "./apiError";
 import { ENDPOINTS } from "@/constants/endpoints";
 import type { UpdateProfileDto } from "@/types";
 
@@ -13,8 +14,12 @@ export async function uploadProfilePicture(
       formData,
     );
     return response.data;
-  } catch {
-    throw new Error("No se pudo subir la foto de perfil.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo subir la foto de perfil.",
+      }),
+    );
   }
 }
 
@@ -23,7 +28,11 @@ export async function updateProfileService(
 ): Promise<void> {
   try {
     await authApi.patch(ENDPOINTS.PROFILE.EDIT, payload);
-  } catch {
-    throw new Error("No se pudo actualizar el perfil.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo actualizar el perfil.",
+      }),
+    );
   }
 }

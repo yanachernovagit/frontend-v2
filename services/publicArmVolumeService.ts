@@ -1,4 +1,5 @@
 import api from "./api";
+import { extractApiErrorMessage } from "./apiError";
 import { ENDPOINTS } from "@/constants/endpoints";
 
 type ArmVolumePayload = Record<string, string>;
@@ -25,8 +26,12 @@ export async function submitPublicArmVolumeService(
       numericPayload,
     );
     return response.data ?? {};
-  } catch {
-    throw new Error("No se pudieron enviar los resultados.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron enviar los resultados.",
+      }),
+    );
   }
 }
 
@@ -36,7 +41,11 @@ export async function getPublicArmVolumeService(): Promise<{
   try {
     const response = await api.get(ENDPOINTS.PUBLIC.ARM_VOLUME_VIDEO);
     return response.data ?? {};
-  } catch {
-    throw new Error("No se pudieron enviar los resultados.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo cargar el video de evaluación.",
+      }),
+    );
   }
 }

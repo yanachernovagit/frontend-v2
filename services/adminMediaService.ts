@@ -1,4 +1,5 @@
 import authApi from "./authApi";
+import { extractApiErrorMessage } from "./apiError";
 import { ADMIN_ENDPOINTS } from "@/constants/adminEndpoints";
 import { MediaAsset, MediaRenameResponse, MediaUploadResponse } from "@/types";
 
@@ -18,8 +19,12 @@ export async function uploadAdminMedia(
       formData,
     );
     return response.data;
-  } catch {
-    throw new Error("No se pudo subir el archivo.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo subir el archivo.",
+      }),
+    );
   }
 }
 
@@ -29,8 +34,12 @@ export async function getAdminMediaAssets(): Promise<MediaAsset[]> {
       ADMIN_ENDPOINTS.MEDIA.LIST,
     );
     return response.data;
-  } catch {
-    throw new Error("No se pudieron obtener los archivos.");
+  } catch (error) {
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudieron obtener los archivos.",
+      }),
+    );
   }
 }
 
@@ -46,10 +55,11 @@ export async function renameAdminMedia(params: {
     );
     return response.data;
   } catch (error) {
-    const apiError = error as { response?: { data?: { message?: string } } };
-    const message =
-      apiError?.response?.data?.message || "No se pudo renombrar el archivo.";
-    throw new Error(message);
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo renombrar el archivo.",
+      }),
+    );
   }
 }
 
@@ -59,9 +69,10 @@ export async function deleteAdminMedia(key: string): Promise<void> {
       params: { key },
     });
   } catch (error) {
-    const apiError = error as { response?: { data?: { message?: string } } };
-    const message =
-      apiError?.response?.data?.message || "No se pudo eliminar el archivo.";
-    throw new Error(message);
+    throw new Error(
+      extractApiErrorMessage(error, {
+        fallback: "No se pudo eliminar el archivo.",
+      }),
+    );
   }
 }
