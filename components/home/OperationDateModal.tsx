@@ -46,7 +46,7 @@ export function OperationDateModal({
 
     const parsed = new Date(`${operationDate}T00:00:00`);
     if (Number.isNaN(parsed.getTime())) {
-      setError("La fecha ingresada no es valida.");
+      setError("La fecha ingresada no es válida.");
       return;
     }
 
@@ -64,9 +64,9 @@ export function OperationDateModal({
         }}
       >
         <DialogHeader>
-          <DialogTitle>Fecha de operacion</DialogTitle>
+          <DialogTitle>Fecha de operación</DialogTitle>
           <DialogDescription>
-            Ingresa la fecha de tu operacion.
+            Ingresa la fecha de tu operación.
           </DialogDescription>
         </DialogHeader>
 

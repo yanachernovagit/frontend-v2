@@ -455,7 +455,7 @@ export default function AdminAIPage() {
 
         {saveSuccess && (
           <div className="p-4 rounded-xl border bg-green-50 border-green-200 text-green-700 text-sm font-medium">
-            Configuracion guardada correctamente.
+            Configuración guardada correctamente.
           </div>
         )}
 

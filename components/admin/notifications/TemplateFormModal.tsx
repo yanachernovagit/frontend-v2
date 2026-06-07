@@ -27,7 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { NotificationTemplate } from "@/types";
 
 const templateSchema = z.object({
-  title: z.string().min(1, "El titulo es obligatorio"),
+  title: z.string().min(1, "El título es obligatorio"),
   body: z.string().min(1, "El mensaje es obligatorio"),
   enabled: z.boolean(),
 });
@@ -136,7 +136,7 @@ export function TemplateFormModal({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-black-400 text-sm font-semibold">
-                      Titulo
+                      Título
                     </FormLabel>
                     <FormControl>
                       <Input {...field} />
