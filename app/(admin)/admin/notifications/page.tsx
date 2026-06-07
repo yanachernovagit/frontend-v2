@@ -66,7 +66,7 @@ export default function AdminNotificationsPage() {
         </Badge>
       ),
     },
-    { key: "title", label: "Titulo" },
+    { key: "title", label: "Título" },
     {
       key: "body",
       label: "Mensaje",
@@ -111,7 +111,7 @@ export default function AdminNotificationsPage() {
         </Badge>
       ),
     },
-    { key: "title", label: "Titulo" },
+    { key: "title", label: "Título" },
     {
       key: "status",
       label: "Estado",
