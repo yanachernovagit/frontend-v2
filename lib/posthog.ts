@@ -20,6 +20,16 @@ const getBackendHost = (): string | null => {
   }
 };
 
+const getFrontendPostHogBaseProperties = () => ({
+  appSurface: "web",
+  platform: "web",
+  environment: process.env.NODE_ENV ?? "development",
+  route:
+    typeof window !== "undefined"
+      ? `${window.location.pathname}${window.location.search}`
+      : null,
+});
+
 type PostHogTracingConfig = Partial<PostHogConfig> & {
   __add_tracing_headers?: string[];
 };
@@ -64,7 +74,10 @@ export const captureFrontendException = (
   properties?: Record<string, unknown>,
 ) => {
   if (!posthogEnabled) return;
-  posthog.captureException(error, properties);
+  posthog.captureException(error, {
+    ...getFrontendPostHogBaseProperties(),
+    ...properties,
+  });
 };
 
 export const captureFrontendEvent = (
@@ -72,7 +85,10 @@ export const captureFrontendEvent = (
   properties?: Record<string, unknown>,
 ) => {
   if (!posthogEnabled) return;
-  posthog.capture(event, properties);
+  posthog.capture(event, {
+    ...getFrontendPostHogBaseProperties(),
+    ...properties,
+  });
 };
 
 export const identifyPostHogUser = (
@@ -80,7 +96,10 @@ export const identifyPostHogUser = (
   properties?: Record<string, unknown>,
 ) => {
   if (!posthogEnabled) return;
-  posthog.identify(userId, properties);
+  posthog.identify(userId, {
+    ...getFrontendPostHogBaseProperties(),
+    ...properties,
+  });
 };
 
 export const resetPostHogUser = () => {
