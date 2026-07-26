@@ -49,8 +49,8 @@ const routineVariationSchema = z.object({
   phase: z.coerce.number().min(0),
   availableWeeks: z
     .array(
-      z
-        .coerce.number()
+      z.coerce
+        .number()
         .int()
         .min(1, "La semana debe ser mayor a 0")
         .max(18, "La semana debe ser 18 o menor"),
