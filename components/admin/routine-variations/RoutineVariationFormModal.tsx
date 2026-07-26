@@ -366,376 +366,375 @@ export function RoutineVariationFormModal({
             <div className="flex-1 min-h-0 overflow-y-auto">
               {/* Info básica */}
               <div className="px-6 pt-4 pb-3">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-black-400 text-sm font-semibold">
-                        Nombre
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Ej: Variación A"
-                          className="border-2 border-gray-100 focus:border-purple transition-colors"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phase"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-black-400 text-sm font-semibold">
-                        Fase
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          value={String(field.value)}
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          }
-                          className="border-2 border-gray-100 focus:border-purple transition-colors"
-                        >
-                          {PHASE_OPTIONS.map((phase) => (
-                            <SelectItem
-                              key={phase.value}
-                              value={String(phase.value)}
-                            >
-                              {phase.label}
-                            </SelectItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="mt-4">
-                <FormField
-                  control={form.control}
-                  name="availableWeeks"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel className="text-black-400 text-sm font-semibold">
-                        Semanas disponibles
-                      </FormLabel>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs text-gray-500">
-                            Haz click para agregar o quitar semanas
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-gray-400">
-                              {watchedAvailableWeeks.length} seleccionadas
-                            </span>
-                            <button
-                              type="button"
-                              onClick={handleClearWeeks}
-                              disabled={watchedAvailableWeeks.length === 0}
-                              className="text-xs font-semibold text-gray-400 transition-colors hover:text-magent disabled:opacity-40"
-                            >
-                              Limpiar
-                            </button>
-                          </div>
-                        </div>
-                        {[
-                          {
-                            label: "Durante el plan",
-                            hint: "Semanas 1 a 9",
-                            weeks: IN_PLAN_WEEKS,
-                          },
-                          {
-                            label: "Después del plan",
-                            hint: "Semanas 10 a 18",
-                            weeks: POST_PLAN_WEEKS,
-                          },
-                        ].map((group) => {
-                          const allSelected = group.weeks.every((week) =>
-                            watchedAvailableWeeks.includes(week),
-                          );
-                          return (
-                            <div
-                              key={group.label}
-                              className="space-y-1.5 rounded-md border border-gray-100 bg-gray-50/40 p-2"
-                            >
-                              <div className="flex items-center justify-between px-0.5">
-                                <div className="flex items-baseline gap-1.5">
-                                  <span className="text-xs font-semibold text-black-400">
-                                    {group.label}
-                                  </span>
-                                  <span className="text-[10px] text-gray-400">
-                                    {group.hint}
-                                  </span>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleSelectWeekRange(group.weeks)
-                                  }
-                                  className="text-[11px] font-semibold text-purple transition-colors hover:text-magent"
-                                >
-                                  {allSelected ? "Quitar todas" : "Todas"}
-                                </button>
-                              </div>
-                              <div className="grid grid-cols-9 gap-1.5">
-                                {group.weeks.map((week) => {
-                                  const isSelected =
-                                    watchedAvailableWeeks.includes(week);
-                                  return (
-                                    <button
-                                      key={week}
-                                      type="button"
-                                      onClick={() => handleToggleWeek(week)}
-                                      title={`Semana ${week}`}
-                                      className={`h-9 rounded-md border text-xs font-semibold transition-colors ${
-                                        isSelected
-                                          ? "border-magent/40 bg-magent/12 text-magent"
-                                          : "border-gray-200 bg-white text-gray-500 hover:border-purple/30 hover:text-purple"
-                                      }`}
-                                      aria-pressed={isSelected}
-                                    >
-                                      {week}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <FormControl>
-                        <input
-                          type="hidden"
-                          value={watchedAvailableWeeks.join(",")}
-                          readOnly
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* Two-panel: Rutinas | Ejercicios */}
-            <div className="flex border-t border-gray-100 mx-6 mt-2">
-              {/* Left panel - Rutinas */}
-              <div className="w-[280px] shrink-0 border-r border-gray-100 flex flex-col">
-                <div className="flex items-center justify-between py-3 pr-3">
-                  <div className="flex items-center gap-2">
-                    <ListChecks className="w-4 h-4 text-purple" />
-                    <span className="text-xs font-bold text-black uppercase tracking-widest">
-                      Rutinas
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleAddRoutine}
-                    className="flex items-center gap-1 text-[11px] text-purple hover:text-purple/80 font-semibold px-2 py-1 rounded-md hover:bg-purple/5 transition-colors"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    Agregar
-                  </button>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black-400 text-sm font-semibold">
+                          Nombre
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Ej: Variación A"
+                            className="border-2 border-gray-100 focus:border-purple transition-colors"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phase"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-black-400 text-sm font-semibold">
+                          Fase
+                        </FormLabel>
+                        <FormControl>
+                          <Select
+                            value={String(field.value)}
+                            onValueChange={(value) =>
+                              field.onChange(Number(value))
+                            }
+                            className="border-2 border-gray-100 focus:border-purple transition-colors"
+                          >
+                            {PHASE_OPTIONS.map((phase) => (
+                              <SelectItem
+                                key={phase.value}
+                                value={String(phase.value)}
+                              >
+                                {phase.label}
+                              </SelectItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-
-                <div className="space-y-1 pr-2 pb-2">
-                  {routineFields.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-10 text-center">
-                      <ListChecks className="w-8 h-8 text-gray-200 mb-2" />
-                      <p className="text-xs text-gray-400">No hay rutinas</p>
-                    </div>
-                  )}
-
-                  {routineFields.map((routineField, rIndex) => {
-                    const routineId =
-                      watchedRoutines[rIndex]?.routineCatalogId ?? "";
-                    const catalog = routineCatalogs.find(
-                      (rc) => rc.id === routineId,
-                    );
-                    const exerciseCount =
-                      watchedRoutines[rIndex]?.exercises?.length ?? 0;
-                    const isActive = resolvedActiveRoutineIndex === rIndex;
-
-                    return (
-                      <div
-                        key={routineField.id}
-                        className={`group flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-colors ${
-                          isActive
-                            ? "bg-purple/8 border border-purple/20"
-                            : "hover:bg-gray-50 border border-transparent"
-                        }`}
-                        onClick={() => setActiveRoutineIndex(rIndex)}
-                      >
-                        <div
-                          className={`flex items-center justify-center w-7 h-7 rounded-md shrink-0 ${
-                            isActive
-                              ? "bg-purple/15 text-purple"
-                              : "bg-gray-100 text-gray-400"
-                          }`}
-                        >
-                          {catalog?.iconUrl ? (
-                            <Image
-                              src={catalog.iconUrl}
-                              alt=""
-                              width={16}
-                              height={16}
-                              className="w-4 h-4 object-contain"
-                              unoptimized
-                            />
-                          ) : (
-                            <span className="text-xs font-bold">
-                              {rIndex + 1}
-                            </span>
-                          )}
+                <div className="mt-4">
+                  <FormField
+                    control={form.control}
+                    name="availableWeeks"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel className="text-black-400 text-sm font-semibold">
+                          Semanas disponibles
+                        </FormLabel>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-gray-500">
+                              Haz click para agregar o quitar semanas
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-medium text-gray-400">
+                                {watchedAvailableWeeks.length} seleccionadas
+                              </span>
+                              <button
+                                type="button"
+                                onClick={handleClearWeeks}
+                                disabled={watchedAvailableWeeks.length === 0}
+                                className="text-xs font-semibold text-gray-400 transition-colors hover:text-magent disabled:opacity-40"
+                              >
+                                Limpiar
+                              </button>
+                            </div>
+                          </div>
+                          {[
+                            {
+                              label: "Durante el plan",
+                              hint: "Semanas 1 a 9",
+                              weeks: IN_PLAN_WEEKS,
+                            },
+                            {
+                              label: "Después del plan",
+                              hint: "Semanas 10 a 18",
+                              weeks: POST_PLAN_WEEKS,
+                            },
+                          ].map((group) => {
+                            const allSelected = group.weeks.every((week) =>
+                              watchedAvailableWeeks.includes(week),
+                            );
+                            return (
+                              <div
+                                key={group.label}
+                                className="space-y-1.5 rounded-md border border-gray-100 bg-gray-50/40 p-2"
+                              >
+                                <div className="flex items-center justify-between px-0.5">
+                                  <div className="flex items-baseline gap-1.5">
+                                    <span className="text-xs font-semibold text-black-400">
+                                      {group.label}
+                                    </span>
+                                    <span className="text-[10px] text-gray-400">
+                                      {group.hint}
+                                    </span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleSelectWeekRange(group.weeks)
+                                    }
+                                    className="text-[11px] font-semibold text-purple transition-colors hover:text-magent"
+                                  >
+                                    {allSelected ? "Quitar todas" : "Todas"}
+                                  </button>
+                                </div>
+                                <div className="grid grid-cols-9 gap-1.5">
+                                  {group.weeks.map((week) => {
+                                    const isSelected =
+                                      watchedAvailableWeeks.includes(week);
+                                    return (
+                                      <button
+                                        key={week}
+                                        type="button"
+                                        onClick={() => handleToggleWeek(week)}
+                                        title={`Semana ${week}`}
+                                        className={`h-9 rounded-md border text-xs font-semibold transition-colors ${
+                                          isSelected
+                                            ? "border-magent/40 bg-magent/12 text-magent"
+                                            : "border-gray-200 bg-white text-gray-500 hover:border-purple/30 hover:text-purple"
+                                        }`}
+                                        aria-pressed={isSelected}
+                                      >
+                                        {week}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className={`text-sm truncate ${
+                        <FormControl>
+                          <input
+                            type="hidden"
+                            value={watchedAvailableWeeks.join(",")}
+                            readOnly
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Two-panel: Rutinas | Ejercicios */}
+              <div className="flex border-t border-gray-100 mx-6 mt-2">
+                {/* Left panel - Rutinas */}
+                <div className="w-[280px] shrink-0 border-r border-gray-100 flex flex-col">
+                  <div className="flex items-center justify-between py-3 pr-3">
+                    <div className="flex items-center gap-2">
+                      <ListChecks className="w-4 h-4 text-purple" />
+                      <span className="text-xs font-bold text-black uppercase tracking-widest">
+                        Rutinas
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddRoutine}
+                      className="flex items-center gap-1 text-[11px] text-purple hover:text-purple/80 font-semibold px-2 py-1 rounded-md hover:bg-purple/5 transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Agregar
+                    </button>
+                  </div>
+
+                  <div className="space-y-1 pr-2 pb-2">
+                    {routineFields.length === 0 && (
+                      <div className="flex flex-col items-center justify-center py-10 text-center">
+                        <ListChecks className="w-8 h-8 text-gray-200 mb-2" />
+                        <p className="text-xs text-gray-400">No hay rutinas</p>
+                      </div>
+                    )}
+
+                    {routineFields.map((routineField, rIndex) => {
+                      const routineId =
+                        watchedRoutines[rIndex]?.routineCatalogId ?? "";
+                      const catalog = routineCatalogs.find(
+                        (rc) => rc.id === routineId,
+                      );
+                      const exerciseCount =
+                        watchedRoutines[rIndex]?.exercises?.length ?? 0;
+                      const isActive = resolvedActiveRoutineIndex === rIndex;
+
+                      return (
+                        <div
+                          key={routineField.id}
+                          className={`group flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-colors ${
+                            isActive
+                              ? "bg-purple/8 border border-purple/20"
+                              : "hover:bg-gray-50 border border-transparent"
+                          }`}
+                          onClick={() => setActiveRoutineIndex(rIndex)}
+                        >
+                          <div
+                            className={`flex items-center justify-center w-7 h-7 rounded-md shrink-0 ${
                               isActive
-                                ? "font-semibold text-purple"
-                                : "text-gray-700"
+                                ? "bg-purple/15 text-purple"
+                                : "bg-gray-100 text-gray-400"
                             }`}
                           >
-                            {catalog?.title || "Sin seleccionar"}
-                          </p>
-                          <p className="text-[10px] text-gray-400">
-                            {exerciseCount} ejercicio
-                            {exerciseCount !== 1 && "s"}
-                          </p>
+                            {catalog?.iconUrl ? (
+                              <Image
+                                src={catalog.iconUrl}
+                                alt=""
+                                width={16}
+                                height={16}
+                                className="w-4 h-4 object-contain"
+                                unoptimized
+                              />
+                            ) : (
+                              <span className="text-xs font-bold">
+                                {rIndex + 1}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p
+                              className={`text-sm truncate ${
+                                isActive
+                                  ? "font-semibold text-purple"
+                                  : "text-gray-700"
+                              }`}
+                            >
+                              {catalog?.title || "Sin seleccionar"}
+                            </p>
+                            <p className="text-[10px] text-gray-400">
+                              {exerciseCount} ejercicio
+                              {exerciseCount !== 1 && "s"}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveRoutine(rIndex);
+                            }}
+                            className="p-1 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                          <ChevronRight
+                            className={`w-3.5 h-3.5 shrink-0 ${
+                              isActive ? "text-purple" : "text-gray-200"
+                            }`}
+                          />
                         </div>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveRoutine(rIndex);
-                          }}
-                          className="p-1 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors opacity-0 group-hover:opacity-100"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                        <ChevronRight
-                          className={`w-3.5 h-3.5 shrink-0 ${
-                            isActive ? "text-purple" : "text-gray-200"
-                          }`}
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Right panel - Ejercicios */}
+                <div className="flex-1 flex flex-col pl-4">
+                  {resolvedActiveRoutineIndex !== null &&
+                  resolvedActiveRoutineIndex < routineFields.length ? (
+                    <>
+                      {/* Routine config */}
+                      <div className="flex items-center gap-3 py-3 shrink-0">
+                        <FormField
+                          control={form.control}
+                          name={`routines.${resolvedActiveRoutineIndex}.routineCatalogId`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1 space-y-0">
+                              <FormLabel className="text-[10px] text-gray-400 uppercase font-semibold">
+                                Rutina del catálogo
+                              </FormLabel>
+                              <FormControl>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                  className="border border-gray-200 focus:border-purple transition-colors"
+                                >
+                                  <SelectItem value="">
+                                    Seleccionar rutina...
+                                  </SelectItem>
+                                  {routineCatalogs.map((rc) => (
+                                    <SelectItem key={rc.id} value={rc.id}>
+                                      {rc.title}
+                                    </SelectItem>
+                                  ))}
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`routines.${resolvedActiveRoutineIndex}.order`}
+                          render={({ field }) => (
+                            <FormItem className="w-20 space-y-0">
+                              <FormLabel className="text-[10px] text-gray-400 uppercase font-semibold">
+                                Orden
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  {...field}
+                                  value={
+                                    typeof field.value === "number"
+                                      ? field.value
+                                      : ""
+                                  }
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      e.target.value === ""
+                                        ? ""
+                                        : Number(e.target.value),
+                                    )
+                                  }
+                                  className="border border-gray-200 focus:border-purple transition-colors h-9 text-center"
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
                         />
                       </div>
-                    );
-                  })}
+
+                      {/* Exercises header */}
+                      <div className="flex items-center gap-2 pb-2 border-b border-gray-100 shrink-0">
+                        <Dumbbell className="w-4 h-4 text-magent" />
+                        <span className="text-xs font-bold text-black uppercase tracking-widest">
+                          Ejercicios
+                        </span>
+                        {activeRoutineCatalog && (
+                          <span className="text-xs text-gray-400">
+                            de {activeRoutineCatalog.title}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Exercises list */}
+                      <div className="pt-2">
+                        <ExercisesPanel
+                          key={`exercises-${resolvedActiveRoutineIndex}`}
+                          routineIndex={resolvedActiveRoutineIndex}
+                          control={form.control}
+                          exerciseCatalogs={exerciseCatalogs}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex-1 flex flex-col items-center justify-center text-center">
+                      <div className="w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+                        <ChevronRight className="w-6 h-6 text-gray-200" />
+                      </div>
+                      <p className="text-sm text-gray-400">
+                        {routineFields.length === 0
+                          ? "Agrega una rutina para comenzar"
+                          : "Selecciona una rutina para ver sus ejercicios"}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {/* Right panel - Ejercicios */}
-              <div className="flex-1 flex flex-col pl-4">
-                {resolvedActiveRoutineIndex !== null &&
-                resolvedActiveRoutineIndex < routineFields.length ? (
-                  <>
-                    {/* Routine config */}
-                    <div className="flex items-center gap-3 py-3 shrink-0">
-                      <FormField
-                        control={form.control}
-                        name={`routines.${resolvedActiveRoutineIndex}.routineCatalogId`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1 space-y-0">
-                            <FormLabel className="text-[10px] text-gray-400 uppercase font-semibold">
-                              Rutina del catálogo
-                            </FormLabel>
-                            <FormControl>
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                                className="border border-gray-200 focus:border-purple transition-colors"
-                              >
-                                <SelectItem value="">
-                                  Seleccionar rutina...
-                                </SelectItem>
-                                {routineCatalogs.map((rc) => (
-                                  <SelectItem key={rc.id} value={rc.id}>
-                                    {rc.title}
-                                  </SelectItem>
-                                ))}
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`routines.${resolvedActiveRoutineIndex}.order`}
-                        render={({ field }) => (
-                          <FormItem className="w-20 space-y-0">
-                            <FormLabel className="text-[10px] text-gray-400 uppercase font-semibold">
-                              Orden
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                                value={
-                                  typeof field.value === "number"
-                                    ? field.value
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  field.onChange(
-                                    e.target.value === ""
-                                      ? ""
-                                      : Number(e.target.value),
-                                  )
-                                }
-                                className="border border-gray-200 focus:border-purple transition-colors h-9 text-center"
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* Exercises header */}
-                    <div className="flex items-center gap-2 pb-2 border-b border-gray-100 shrink-0">
-                      <Dumbbell className="w-4 h-4 text-magent" />
-                      <span className="text-xs font-bold text-black uppercase tracking-widest">
-                        Ejercicios
-                      </span>
-                      {activeRoutineCatalog && (
-                        <span className="text-xs text-gray-400">
-                          de {activeRoutineCatalog.title}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Exercises list */}
-                    <div className="pt-2">
-                      <ExercisesPanel
-                        key={`exercises-${resolvedActiveRoutineIndex}`}
-                        routineIndex={resolvedActiveRoutineIndex}
-                        control={form.control}
-                        exerciseCatalogs={exerciseCatalogs}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex-1 flex flex-col items-center justify-center text-center">
-                    <div className="w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center mb-3">
-                      <ChevronRight className="w-6 h-6 text-gray-200" />
-                    </div>
-                    <p className="text-sm text-gray-400">
-                      {routineFields.length === 0
-                        ? "Agrega una rutina para comenzar"
-                        : "Selecciona una rutina para ver sus ejercicios"}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
             </div>
             {/* Fin cuerpo scrolleable */}
 
