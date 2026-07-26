@@ -48,14 +48,27 @@ const routineVariationSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
   phase: z.coerce.number().min(0),
   availableWeeks: z
-    .array(z.coerce.number().int().min(1, "La semana debe ser mayor a 0"))
+    .array(
+      z
+        .coerce.number()
+        .int()
+        .min(1, "La semana debe ser mayor a 0")
+        .max(18, "La semana debe ser 18 o menor"),
+    )
     .min(1, "Agrega al menos una semana disponible"),
   routines: z.array(routineEntrySchema),
 });
 
 type FormValues = z.infer<typeof routineVariationSchema>;
 type FormInputValues = z.input<typeof routineVariationSchema>;
-const AVAILABLE_WEEKS_OPTIONS = Array.from({ length: 9 }, (_, i) => i + 1);
+const TOTAL_AVAILABLE_WEEKS = 18;
+const AVAILABLE_WEEKS_OPTIONS = Array.from(
+  { length: TOTAL_AVAILABLE_WEEKS },
+  (_, i) => i + 1,
+);
+// Semanas divididas en dos tramos para la UI: durante el plan (1-9) y despues (10-18)
+const IN_PLAN_WEEKS = AVAILABLE_WEEKS_OPTIONS.filter((week) => week <= 9);
+const POST_PLAN_WEEKS = AVAILABLE_WEEKS_OPTIONS.filter((week) => week > 9);
 
 interface RoutineVariationFormModalProps {
   open: boolean;
@@ -273,18 +286,34 @@ export function RoutineVariationFormModal({
     0,
   );
 
+  const setWeeks = (weeks: number[]) => {
+    form.setValue(
+      "availableWeeks",
+      [...new Set(weeks)].sort((a, b) => a - b),
+      { shouldDirty: true, shouldValidate: true },
+    );
+  };
+
   const handleToggleWeek = (week: number) => {
     const currentWeeks = (form.getValues("availableWeeks") ?? []) as number[];
     const nextWeeks = currentWeeks.includes(week)
       ? currentWeeks.filter((currentWeek) => currentWeek !== week)
       : [...currentWeeks, week];
 
-    form.setValue(
-      "availableWeeks",
-      nextWeeks.sort((a, b) => a - b),
-      { shouldDirty: true, shouldValidate: true },
+    setWeeks(nextWeeks);
+  };
+
+  const handleSelectWeekRange = (weeks: number[]) => {
+    const currentWeeks = (form.getValues("availableWeeks") ?? []) as number[];
+    const allSelected = weeks.every((week) => currentWeeks.includes(week));
+    setWeeks(
+      allSelected
+        ? currentWeeks.filter((week) => !weeks.includes(week))
+        : [...currentWeeks, ...weeks],
     );
   };
+
+  const handleClearWeeks = () => setWeeks([]);
 
   const activeRoutineCatalogId =
     resolvedActiveRoutineIndex !== null
@@ -395,31 +424,89 @@ export function RoutineVariationFormModal({
                       <FormLabel className="text-black-400 text-sm font-semibold">
                         Semanas disponibles
                       </FormLabel>
-                      <div className="space-y-2">
-                        <p className="text-xs text-gray-500">
-                          Haz click para agregar o quitar semanas
-                        </p>
-                        <div className="grid grid-cols-9 gap-2 rounded-md border border-gray-100 bg-gray-50/40 p-2">
-                          {AVAILABLE_WEEKS_OPTIONS.map((week) => {
-                            const isSelected =
-                              watchedAvailableWeeks.includes(week);
-                            return (
-                              <button
-                                key={week}
-                                type="button"
-                                onClick={() => handleToggleWeek(week)}
-                                className={`h-9 rounded-md border text-xs font-semibold transition-colors ${
-                                  isSelected
-                                    ? "border-magent/40 bg-magent/12 text-magent"
-                                    : "border-gray-200 bg-white text-gray-500 hover:border-purple/30 hover:text-purple"
-                                }`}
-                                aria-pressed={isSelected}
-                              >
-                                Semana {week}
-                              </button>
-                            );
-                          })}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-gray-500">
+                            Haz click para agregar o quitar semanas
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-gray-400">
+                              {watchedAvailableWeeks.length} seleccionadas
+                            </span>
+                            <button
+                              type="button"
+                              onClick={handleClearWeeks}
+                              disabled={watchedAvailableWeeks.length === 0}
+                              className="text-xs font-semibold text-gray-400 transition-colors hover:text-magent disabled:opacity-40"
+                            >
+                              Limpiar
+                            </button>
+                          </div>
                         </div>
+                        {[
+                          {
+                            label: "Durante el plan",
+                            hint: "Semanas 1 a 9",
+                            weeks: IN_PLAN_WEEKS,
+                          },
+                          {
+                            label: "Después del plan",
+                            hint: "Semanas 10 a 18",
+                            weeks: POST_PLAN_WEEKS,
+                          },
+                        ].map((group) => {
+                          const allSelected = group.weeks.every((week) =>
+                            watchedAvailableWeeks.includes(week),
+                          );
+                          return (
+                            <div
+                              key={group.label}
+                              className="space-y-1.5 rounded-md border border-gray-100 bg-gray-50/40 p-2"
+                            >
+                              <div className="flex items-center justify-between px-0.5">
+                                <div className="flex items-baseline gap-1.5">
+                                  <span className="text-xs font-semibold text-black-400">
+                                    {group.label}
+                                  </span>
+                                  <span className="text-[10px] text-gray-400">
+                                    {group.hint}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleSelectWeekRange(group.weeks)
+                                  }
+                                  className="text-[11px] font-semibold text-purple transition-colors hover:text-magent"
+                                >
+                                  {allSelected ? "Quitar todas" : "Todas"}
+                                </button>
+                              </div>
+                              <div className="grid grid-cols-9 gap-1.5">
+                                {group.weeks.map((week) => {
+                                  const isSelected =
+                                    watchedAvailableWeeks.includes(week);
+                                  return (
+                                    <button
+                                      key={week}
+                                      type="button"
+                                      onClick={() => handleToggleWeek(week)}
+                                      title={`Semana ${week}`}
+                                      className={`h-9 rounded-md border text-xs font-semibold transition-colors ${
+                                        isSelected
+                                          ? "border-magent/40 bg-magent/12 text-magent"
+                                          : "border-gray-200 bg-white text-gray-500 hover:border-purple/30 hover:text-purple"
+                                      }`}
+                                      aria-pressed={isSelected}
+                                    >
+                                      {week}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                       <FormControl>
                         <input
